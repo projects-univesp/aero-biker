@@ -41,9 +41,9 @@ export const logger = {
 
   error: (message: string, error?: unknown) => {
     if (env.NODE_ENV === "production") {
-       tsLogInstance.error(message, { err: error });
+      tsLogInstance.error(message, { err: error });
     } else {
-       tsLogInstance.error(message, error);
+      tsLogInstance.error(message, error);
     }
   },
 

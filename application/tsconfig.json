@@ -1,27 +1,27 @@
 {
-    "compilerOptions": {
-      "module": "ESNext",
-      "target": "ESNext",
-      "moduleResolution": "node",
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-      "strict": true,
-      "rootDir": "./",
-      "outDir": "./dist",
-      "baseUrl": ".",
-      "paths": {
-        "@config/*": ["src/config/*"],
-        "@models/*": ["src/models/*"],
-        "@services/*": ["src/services/*"],
-        "@controllers/*": ["src/controllers/*"],
-        "@middlewares/*": ["src/middlewares/*"],
-        "@routes/*": ["src/routes/*"],
-        "@views/*": ["src/views/*"],
-        "@utils/*": ["src/utils/*"],
-        "@js/*": ["public/js/*"],
-        "@css/*": ["public/css/*"],
-      }
-    },
-    "include": ["src/**/*", "public/**/*"],
-    "exclude": ["node_modules"]
-  }
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "rootDir": "./",
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@config/*": ["src/config/*"],
+      "@models/*": ["src/models/*"],
+      "@services/*": ["src/services/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@routes/*": ["src/routes/*"],
+      "@views/*": ["src/views/*"],
+      "@utils/*": ["src/utils/*"],
+      "@js/*": ["public/js/*"],
+      "@css/*": ["public/css/*"]
+    }
+  },
+  "include": ["src/**/*", "public/**/*"],
+  "exclude": ["node_modules"]
+}
