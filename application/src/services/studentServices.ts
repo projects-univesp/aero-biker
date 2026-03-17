@@ -3,12 +3,12 @@ import { logger } from "@utils/logger"
 import { responseFormat } from "@utils/responseFormat";
 
 export class StudentServices {
-    create = async (studentData: {name: string, phone: number}) => {
+    create = async (studentData: {name: string, phone: string, isActive: boolean}) => {
         const existingStudent = await Student.count({
             where: {phone: studentData.phone}
         })
 
-        if (existingStudent > 0) throw logger.error("Student Already exists", 500);
+        if (existingStudent > 0) throw logger.error("Student Already exists", 409);
         const createStudent = await Student.create(studentData)
         
         return responseFormat({

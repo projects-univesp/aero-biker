@@ -5,7 +5,7 @@ import { DataTypes, Model } from "sequelize";
 export class Student extends Model {
     declare id: UUID
     declare name: string
-    declare phone: number
+    declare phone: string
     declare isActive: boolean
 }
 
@@ -21,7 +21,11 @@ Student.init(
             allowNull: false
         },
         phone: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.STRING(25),
+            allowNull: false
+        },
+        isActive: {
+            type: DataTypes.BOOLEAN,
             allowNull: false
         }
     },
