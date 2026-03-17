@@ -52,6 +52,7 @@
     "pkgroll": "^2.21.4",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
+    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^3.2.4"
   },
   "lint-staged": {

@@ -22,6 +22,6 @@
       "@css/*": ["public/css/*"]
     }
   },
-  "include": ["src/**/*", "public/**/*"],
+  "include": ["src/**/*", "public/**/*", "specs/**/*"],
   "exclude": ["node_modules"]
 }
