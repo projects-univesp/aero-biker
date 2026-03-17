@@ -1,0 +1,55 @@
+volumes:
+  database-data:
+    driver: local
+    name: pg-aero-biker
+networks:
+  node-app:
+    name: aero-biker-net
+  global-net:
+    external: true
+
+services:
+  db:
+    image: postgres:16.6
+    restart: always
+    container_name: dev-aero-biker-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - node-app
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${IMAGE_NAME}:${VERSION:-latest}
+    container_name: dev-aero-biker-api
+    restart: always
+    environment:
+      NODE_ENV: development
+      PORT: 3333
+      DATABASE_URL: ${DATABASE_URL}
+      DB_HOST: db
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: 5432
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-604800}
+      SALT_RESULT: ${SALT_RESULT:-10}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - node-app
+      - global-net
