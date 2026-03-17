@@ -107,14 +107,12 @@ describe("Students Services - Update", () => {
       name: "Ana Beatriz",
       phone: "11999999999",
       isActive: true,
-      update: vi
-        .fn()
-        .mockResolvedValue({
-          id: fakeId,
-          name: "Ana Beatriz",
-          phone: updateData.phone,
-          isActive: true,
-        }),
+      update: vi.fn().mockResolvedValue({
+        id: fakeId,
+        name: "Ana Beatriz",
+        phone: updateData.phone,
+        isActive: true,
+      }),
     };
 
     vi.mocked(Student.findByPk).mockResolvedValue(fakeStudentInstance as any);
