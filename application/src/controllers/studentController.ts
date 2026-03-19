@@ -22,6 +22,11 @@ export class StudentController {
     return response.status(200).send(student);
   };
 
+   getAllStudents = async (request: Request, response: Response) => {
+    const students = await this.studentServices.getAll();
+    return response.status(200).send(students);
+  };
+
   updateStudent = async (request: Request, response: Response) => {
     const parsedStudent = this.verifyData.verifyStudent(request.body);
     const { id } = this.verifyData.verifyId(request.params.id);

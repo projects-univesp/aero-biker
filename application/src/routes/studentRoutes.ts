@@ -8,6 +8,7 @@ const student = new StudentController();
 
 export const apiStudentRoutes = Router()
   .post("/", tryCatch(student.createStudent))
+  .get("/", tryCatch(student.getAllStudents))
   .get("/:id", tryCatch(student.getStudent))
   .patch("/:id", tryCatch(student.updateStudent))
   .delete("/:id", tryCatch(student.deleteStudent));
