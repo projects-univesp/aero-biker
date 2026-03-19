@@ -10,13 +10,14 @@ const app = express();
 
 // HandleBars Config
 app.engine(
-  "handlebars",
+  ".hbs",
   engine({
     defaultLayout: "main",
+    extname: ".hbs"
   }),
 );
 
-app.set("view engine", "handlebars");
+app.set("view engine", ".hbs");
 app.set("views", path.join(process.cwd(), "views"));
 app.use(express.static(path.join(process.cwd(), "public")));
 
