@@ -35,10 +35,10 @@ export class StudentServices {
 
   getAll = async () => {
     const students = await Student.findAll();
-    if (students === null) throw logger.error("Student not found", 404);
+    if (students === null) throw logger.error("Students not found", 404);
 
     return responseFormat({
-      message: "Student found successfully",
+      message: "Students found successfully",
       statusCode: 200,
       data: students,
     });

@@ -16,7 +16,7 @@ export const apiStudentRoutes = Router()
 export const studentRoutes = Router()
   .get("/create", renderPage("students/create"))
   .get("/", renderApi("/api/students", "pages/students/index", "students"))
-  
+
   .get(
     "/:id",
     renderApi(

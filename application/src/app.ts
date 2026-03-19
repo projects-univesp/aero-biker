@@ -13,7 +13,7 @@ app.engine(
   ".hbs",
   engine({
     defaultLayout: "main",
-    extname: ".hbs"
+    extname: ".hbs",
   }),
 );
 
