@@ -30,13 +30,12 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       # App Secrets
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_NAME: ${{ secrets.DB_NAME }}
+      DEV_DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
+      DEV_DB_HOST: ${{ secrets.DEV_DB_HOST }}
+      DEV_DB_NAME: ${{ secrets.DEV_DB_NAME }}
       DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD:  ${{ secrets.DB_PASSWORD }}
+      DEV_DB_PASSWORD:  ${{ secrets.DEV_DB_PASSWORD }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
 
     steps:
       - name: Code Checkout
