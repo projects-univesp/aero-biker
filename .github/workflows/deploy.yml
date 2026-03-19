@@ -3,7 +3,7 @@ name: Deploy Aero-Biker
 on:
   push:
     branches:
-      - main
+      - feat/dev
     paths:
       - "application/**"
       - ".github/workflows/deploy.yml"
@@ -11,6 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: projects-environment
     permissions:
       contents: read
       packages: write
@@ -29,13 +30,12 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       # App Secrets
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_NAME: ${{ secrets.DB_NAME }}
+      DEV_DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
+      DEV_DB_HOST: ${{ secrets.DEV_DB_HOST }}
+      DEV_DB_NAME: ${{ secrets.DEV_DB_NAME }}
       DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD:  ${{ secrets.DB_PASSWORD }}
+      DEV_DB_PASSWORD:  ${{ secrets.DEV_DB_PASSWORD }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
 
     steps:
       - name: Code Checkout
@@ -81,7 +81,7 @@ jobs:
           "docker login ghcr.io -u ${{ github.actor }} --password-stdin"
           
           envsubst < ${{ env.WORKDIR }}/docker-compose.yml | ssh -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
-          "docker compose -p backend-aero-biker -f - up -d --no-build --remove-orphans --force-recreate"
+          "docker compose -p aero-biker -f - up -d --no-build --remove-orphans --force-recreate"
 
       - name: Clean old images
         uses: snok/container-retention-policy@v3.0.1

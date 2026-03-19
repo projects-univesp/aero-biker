@@ -86,6 +86,34 @@ describe("Students Services - Get", () => {
   });
 });
 
+describe("Students Services - GetAll", () => {
+  let studentServices: StudentServices;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    studentServices = new StudentServices();
+  });
+
+  const mockStudents = [
+    { id: "123", name: "Saymon", phone: "11999999999", isActive: true },
+  ];
+
+  it("Must get student information sucessfully", async () => {
+    vi.mocked(Student.findAll).mockResolvedValue(mockStudents as any);
+
+    const response = await studentServices.getAll();
+
+    expect(response.statusCode).toBe(200);
+    expect(response.message).toBe("Students found successfully");
+  });
+
+  it("Must throw a 404 error if student is not found", async () => {
+    vi.mocked(Student.findAll).mockResolvedValue([]);
+
+    await expect(studentServices.getAll()).rejects.toThrow();
+  });
+});
+
 describe("Students Services - Update", () => {
   let studentServices: StudentServices;
 

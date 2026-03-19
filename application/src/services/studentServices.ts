@@ -33,6 +33,17 @@ export class StudentServices {
     });
   };
 
+  getAll = async () => {
+    const students = await Student.findAll();
+    if (students === null) throw logger.error("Students not found", 404);
+
+    return responseFormat({
+      message: "Students found successfully",
+      statusCode: 200,
+      data: students,
+    });
+  };
+
   update = async (
     id: string,
     studentData: { name: string; phone: string; isActive: boolean },
