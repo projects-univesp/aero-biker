@@ -5,3 +5,4 @@ database.db
 database.db-journal
 migrations
 dist/
+requests.http
