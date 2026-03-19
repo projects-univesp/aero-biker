@@ -14,13 +14,13 @@ export const apiStudentRoutes = Router()
 
 export const studentRoutes = Router()
   .get("/create", renderPage("students/create"))
-  .get("/", renderApi("/api/students", "students/index", "students"))
+  .get("/", renderApi("/api/students", "pages/students/index", "students"))
   
   .get(
     "/:id",
     renderApi(
       (req) => `/api/students/${req.params.id}`,
-      "students/profile",
+      "pages/students/profile",
       "student",
     ),
   )
@@ -29,7 +29,7 @@ export const studentRoutes = Router()
     "/:id/edit",
     renderApi(
       (req) => `/api/students/${req.params.id}`,
-      "students/edit",
+      "pages/students/edit",
       "student",
     ),
   );
