@@ -3,7 +3,7 @@ name: Deploy Aero-Biker
 on:
   push:
     branches:
-      - main
+      - feat/dev
     paths:
       - "application/**"
       - ".github/workflows/deploy.yml"
