@@ -37,11 +37,11 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3333
-      DEV_DATABASE_URL: ${DEV_DATABASE_URL}
-      DEV_DB_HOST: ${DEV_DB_HOST}
-      DEV_DB_NAME: ${DEV_DB_NAME}
+      DATABASE_URL: ${DEV_DATABASE_URL}
+      DB_HOST: ${DEV_DB_HOST}
+      DB_NAME: ${DEV_DB_NAME}
       DB_USER: ${DB_USER}
-      DEV_DB_PASSWORD: ${DEV_DB_PASSWORD}
+      DB_PASSWORD: ${DEV_DB_PASSWORD}
       DB_PORT: 5432
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
