@@ -31,8 +31,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ${IMAGE_NAME}:${VERSION:-latest}
-    container_name: dev-aero-biker-api
+    image: ${IMAGE_NAME}:${VERSION}
+    container_name: dev-aero-biker
     restart: always
     environment:
       NODE_ENV: development
@@ -44,8 +44,8 @@ services:
       DEV_DB_PASSWORD: ${DEV_DB_PASSWORD}
       DB_PORT: 5432
       JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-604800}
-      SALT_RESULT: ${SALT_RESULT:-10}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      SALT_RESULT: ${SALT_RESULT}
     depends_on:
       db:
         condition: service_healthy

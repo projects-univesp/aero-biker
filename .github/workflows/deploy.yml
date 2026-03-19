@@ -81,7 +81,7 @@ jobs:
           "docker login ghcr.io -u ${{ github.actor }} --password-stdin"
           
           envsubst < ${{ env.WORKDIR }}/docker-compose.yml | ssh -i ~/.ssh/id_rsa ${{ env.SSH_USER }}@${{ env.SSH_HOST }} \
-          "docker compose -p backend-aero-biker -f - up -d --no-build --remove-orphans --force-recreate"
+          "docker compose -p aero-biker -f - up -d --no-build --remove-orphans --force-recreate"
 
       - name: Clean old images
         uses: snok/container-retention-policy@v3.0.1
