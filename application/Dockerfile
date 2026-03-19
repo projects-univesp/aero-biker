@@ -5,13 +5,13 @@ WORKDIR /build
 
 COPY --chown=node:node package.json package-lock.json ./
 
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 COPY --chown=node:node . .
 
 RUN npm run build
 
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
 # hadolint ignore=DL3007
 FROM gcr.io/distroless/nodejs24-debian13:latest
