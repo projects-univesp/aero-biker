@@ -1,19 +1,20 @@
-FROM node:20 AS build
+# hadolint ignore=DL3007
+FROM cgr.dev/chainguard/node:latest AS build
 
 WORKDIR /build
 
-COPY package.json package-lock.json ./
+COPY --chown=node:node package.json package-lock.json ./
 
 RUN npm ci --ignore-scripts
 
-COPY . .
+COPY --chown=node:node . .
 
 RUN npm run build
 
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
-
-FROM gcr.io/distroless/nodejs24-debian12
+# hadolint ignore=DL3007
+FROM gcr.io/distroless/nodejs24-debian13:latest
 
 WORKDIR /app
 
@@ -23,6 +24,6 @@ COPY --from=build /build/package.json ./package.json
 COPY --from=build /build/src/views ./views
 COPY --from=build /build/public ./public
 
-EXPOSE 3333
+EXPOSE $PORT
 
-CMD ["dist/app.js"]
+CMD [ "dist/app.js" ]
