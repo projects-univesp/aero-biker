@@ -1,0 +1,12 @@
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  <div>
+      <h1 class="text-2xl font-bold text-gray-900">{{tagName}}</h1>
+      <p id="{{tagId}}" class="text-gray-500 text-sm mt-1"></p>
+  </div>
+  <button onclick="{{action}}" class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-xl font-medium transition-colors shadow-lg shadow-green-200">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      {{tagButton}}
+  </button>
+</div>

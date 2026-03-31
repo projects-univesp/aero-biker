@@ -52,7 +52,7 @@ export class StudentServices {
     if (student === null) throw logger.error("Student not found", 404);
     if (studentData.phone && studentData.phone !== student.phone) {
       const existingStudent = await Student.findOne({
-        where: { email: studentData.phone },
+        where: { phone: studentData.phone },
       });
 
       if (existingStudent) throw logger.error("Phone already in use", 409);

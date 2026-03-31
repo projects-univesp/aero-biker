@@ -14,6 +14,7 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.coerce.number().default(604800),
   SALT_RESULT: z.coerce.number().default(10),
   CORS_ORIGIN: z.string().default("http://localhost:5500"),
+  VIEWS_PATH: z.enum(["views", "src/views"]).default("src/views"),
 });
 
 const _env = envSchema.safeParse(process.env);
