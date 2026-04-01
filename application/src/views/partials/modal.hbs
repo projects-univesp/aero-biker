@@ -1,0 +1,26 @@
+<div id="{{modalId}}" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-gray-900/50 backdrop-blur-sm transition-opacity">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">    
+    
+    <div class="flex items-center justify-between p-6 border-b border-gray-100">
+      <h2 class="font-bold text-gray-900" id="{{titleId}}">{{title}}</h2>
+      <button type="button" onclick="closeModal('{{modalId}}')">
+        <svg class="w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div> 
+
+    <form id="{{formId}}" onsubmit="handleSubmit(event, {{configName}})">
+      <input type="hidden" id="{{hiddenId}}">
+
+      <div class="p-6 space-y-4">
+        {{> @partial-block }}
+      </div>
+
+      <div class="p-6 pt-0 flex gap-3">
+        <button type="button" onclick="closeModal('{{modalId}}')" class="flex-1 border border-gray-200 text-gray-600 px-4 py-2.5 rounded-xl text-sm">Cancelar</button>
+        <button type="submit" class="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>

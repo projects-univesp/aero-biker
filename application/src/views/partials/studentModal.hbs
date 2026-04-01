@@ -1,43 +1,16 @@
-<div id="modal-student" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-gray-900/50 backdrop-blur-sm transition-opacity">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">    
+{{#> modal 
+    modalId="modal-student" 
+    titleId="student-modal-title"
+    formId="student-form" 
+    hiddenId="student-id" 
+    configName="APP_CONFIG.STUDENTS" 
+    title="Novo Aluno" 
+}}
+    {{> input id="student-name" label="Nome*" placeholder="Nome completo" required=true}}
+    {{> input id="student-phone" label="Telefone / WhatsApp" placeholder="(00) 00000-0000" required=true}}
     
-    <div class="flex items-center justify-between p-6 border-b border-gray-100">
-      <h2 class="font-bold text-gray-900" id="student-modal-title">Novo Aluno</h2>
-      <button type="button" onclick="closeModal('modal-student')">
-        <svg class="w-5 h-5 text-gray-400 hover:text-gray-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div> 
-
-    <form id="student-form" onsubmit="handleSubmit(event, {
-      id: 'student-id',
-      path: 'students',
-      modalId: 'modal-student',
-      fields: {
-        name: 'student-name',
-        phone: 'student-phone'
-      },
-      checkboxes: {
-        isActive: 'student-active'
-      }
-    })">
-      <input type="hidden" id="student-id">
-
-      <div class="p-6 space-y-4">
-        {{> input id="student-name" label="Nome*" placeholder="Nome completo" required=true}}
-        {{> input id="student-phone" label="Telefone / WhatsApp" placeholder="(00) 00000-0000" required=true}}
-        
-        <label class="flex items-center gap-3 cursor-pointer">
-          <input type="checkbox" id="student-active" class="w-4 h-4 accent-green-500" checked>
-          <span class="text-sm font-medium text-gray-700">Aluno ativo</span>
-        </label>
-      </div>
-
-      <div class="p-6 pt-0 flex gap-3">
-        <button type="button" onclick="closeModal('modal-student')" class="flex-1 border border-gray-200 text-gray-600 px-4 py-2.5 rounded-xl text-sm">Cancelar</button>
-        <button type="submit" class="flex-1 bg-green-500 hover:bg-green-600 text-white px-4 py-2.5 rounded-xl text-sm font-medium flex items-center justify-center gap-2">Salvar</button>
-      </div>
-    </form>
-  </div>
-</div>
+    <label class="flex items-center gap-3 cursor-pointer">
+      <input type="checkbox" id="student-active" class="w-4 h-4 accent-green-500" checked>
+      <span class="text-sm font-medium text-gray-700">Aluno ativo</span>
+    </label>
+{{/modal}}

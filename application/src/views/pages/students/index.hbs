@@ -1,11 +1,8 @@
-<script type="module" src="/js/modal.js"></script>
 <script src="/js/student.js"></script>
-<script type="module" src="/js/getData.js"></script>
-<script type="module" src="/js/sendData.js"></script>
 
 <div class="flex-1 overflow-y-auto p-4 lg:p-6">
     <div class="space-y-6">
-        {{> top tagName="Alunos" tagButton="Novo Aluno" tagId="student-counters" action="populateAndOpen(null, { id: 'student-id', path: 'students', modalId: 'modal-student', fields: { name: 'student-name', phone: 'student-phone' }, checkboxes: { isActive: 'student-active' } })" }}
+        {{> top tagName="Alunos" tagButton="Novo Aluno" tagId="student-counters" action="handleOpen(null, APP_CONFIG.STUDENTS)" }}
 
         <div class="flex flex-col sm:flex-row gap-3">
             <div class="relative flex-1">
