@@ -12,6 +12,7 @@
     "paths": {
       "@config/*": ["src/config/*"],
       "@models/*": ["src/models/*"],
+      "@dtos/*": ["src/dtos/*"],
       "@services/*": ["src/services/*"],
       "@controllers/*": ["src/controllers/*"],
       "@middlewares/*": ["src/middlewares/*"],

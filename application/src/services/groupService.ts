@@ -1,57 +1,82 @@
+import { GroupDTO } from "@dtos/group";
 import { Group } from "@models/group";
-import { groupSchema, GroupDTO } from "@utils/groupSchema";
+import { logger } from "@utils/logger";
+import { responseFormat } from "@utils/responseFormat";
 
-export class GroupService {
+export class GroupServices {
   // CREATE
-  static async create(data: GroupDTO): Promise<Group> {
-    const validated = groupSchema.parse(data);
+  create = async (groupData: Partial<GroupDTO>) => {
+    const existingGroup = await Group.count({
+      where: { name: groupData.name },
+    });
 
-    const group = await Group.create(validated);
+    if (existingGroup > 0) throw logger.error("Group Already exists", 409);
+    const createGroup = await Group.create(groupData);
 
-    return group;
-  }
+    return responseFormat({
+      message: "Group created succesfully",
+      statusCode: 201,
+      data: createGroup,
+    });
+  };
 
   // GET ALL
-  static async findAll(): Promise<Group[]> {
-    return await Group.findAll();
+    getAll = async () => {
+    const groups = await Group.findAll();
+
+    if (!groups) throw logger.error("Groups not found", 404);
+
+    return responseFormat({
+      message: "Groups found successfully",
+      statusCode: 200,
+      data: groups,
+    });
   }
 
   // GET BY ID
-  static async findById(id: string): Promise<Group> {
+    get = async (id: string) => {
     const group = await Group.findByPk(id);
 
-    if (!group) {
-      throw new Error("Group not found");
-    }
+    if (!group) throw logger.error("Group not found", 404);
 
-    return group;
+    return responseFormat({
+      message: "Group found successfully",
+      statusCode: 200,
+      data: group,
+    });
   }
 
   // UPDATE
-  static async update(id: string, data: Partial<GroupDTO>): Promise<Group> {
+    update = async (id: string, groupData: GroupDTO) => {
     const group = await Group.findByPk(id);
 
-    if (!group) {
-      throw new Error("Group not found");
+    if (!group) throw logger.error("Group not found", 404);
+    if (groupData.name && groupData.name !== group.name) {
+      const existingGroup = await Group.count({
+        where: { name: groupData.name },
+      });
+
+      if (existingGroup > 0) throw logger.error("Group Already exists", 409);
     }
 
-    const validated = groupSchema.partial().parse(data);
+    const updatedGroup = await group.update(groupData);
 
-    await group.update(validated);
-
-    return group;
+    return responseFormat({
+      message: "Group updated succesfully",
+      statusCode: 200,
+      data: updatedGroup,
+    });
   }
 
   // SOFT DELETE
-  static async remove(id: string): Promise<{ message: string }> {
+    delete = async (id: string) => {
     const group = await Group.findByPk(id);
-
-    if (!group) {
-      throw new Error("Group not found");
-    }
-
+    if (!group) throw new Error("Group not found");
     await group.update({ isActive: false });
 
-    return { message: "Group deactivated successfully" };
+    return responseFormat({
+      message: "Group deactivated succesfully",
+      statusCode: 200,
+    });
   }
 }

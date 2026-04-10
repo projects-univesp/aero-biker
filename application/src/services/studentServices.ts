@@ -1,13 +1,10 @@
+import { StudentDTO } from "@dtos/student";
 import { Student } from "@models/student";
 import { logger } from "@utils/logger";
 import { responseFormat } from "@utils/responseFormat";
 
 export class StudentServices {
-  create = async (studentData: {
-    name: string;
-    phone: string;
-    isActive: boolean;
-  }) => {
+  create = async (studentData: Partial<StudentDTO>) => {
     const existingStudent = await Student.count({
       where: { phone: studentData.phone },
     });
@@ -46,7 +43,7 @@ export class StudentServices {
 
   update = async (
     id: string,
-    studentData: { name: string; phone: string; isActive: boolean },
+    studentData: StudentDTO
   ) => {
     const student = await Student.findByPk(id);
     if (student === null) throw logger.error("Student not found", 404);
