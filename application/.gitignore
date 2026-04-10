@@ -4,5 +4,6 @@ node_modules
 database.db
 database.db-journal
 migrations
+application/dist/
 dist/
 requests.http
