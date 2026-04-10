@@ -13,9 +13,7 @@ describe("Plan API", () => {
   };
 
   it("should create a plan", async () => {
-    const response = await request(app)
-      .post("/api/plans")
-      .send(mockPlan);
+    const response = await request(app).post("/api/plans").send(mockPlan);
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("id");
@@ -31,9 +29,7 @@ describe("Plan API", () => {
   });
 
   it("should return a plan by id", async () => {
-    const response = await request(app).get(
-      `/api/plans/${createdPlanId}`
-    );
+    const response = await request(app).get(`/api/plans/${createdPlanId}`);
 
     expect(response.status).toBe(200);
     expect(response.body.id).toBe(createdPlanId);
@@ -49,9 +45,7 @@ describe("Plan API", () => {
   });
 
   it("should delete a plan", async () => {
-    const response = await request(app).delete(
-      `/api/plans/${createdPlanId}`
-    );
+    const response = await request(app).delete(`/api/plans/${createdPlanId}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("message");

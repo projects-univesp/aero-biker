@@ -48,6 +48,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.5.0",
+    "@types/supertest": "^7.2.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "pkgroll": "^2.21.4",

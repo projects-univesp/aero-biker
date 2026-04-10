@@ -7,7 +7,7 @@ import { logger } from "@utils/logger";
 import { sequelize } from "@config/database";
 import { formatDate } from "@utils/date-format";
 
-const app = express();
+export const app = express();
 
 // HandleBars Config
 app.engine(
