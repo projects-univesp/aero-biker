@@ -1,6 +1,6 @@
 import request from "supertest";
 import { describe, it, expect } from "vitest";
-import { app } from "../app";
+import { app } from "../../src/app";
 
 describe("Plan API", () => {
   let createdPlanId: string;
