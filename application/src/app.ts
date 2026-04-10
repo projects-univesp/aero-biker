@@ -5,6 +5,7 @@ import { engine } from "express-handlebars";
 import path from "path";
 import { logger } from "@utils/logger";
 import { sequelize } from "@config/database";
+import { formatDate } from "@utils/date-format";
 
 const app = express();
 
@@ -14,11 +15,13 @@ app.engine(
   engine({
     defaultLayout: "main",
     extname: ".hbs",
+    partialsDir: path.join(process.cwd(), env.VIEWS_PATH, "partials"),
+    helpers: { formatDate },
   }),
 );
 
 app.set("view engine", ".hbs");
-app.set("views", path.join(process.cwd(), "views"));
+app.set("views", path.join(process.cwd(), env.VIEWS_PATH));
 app.use(express.static(path.join(process.cwd(), "public")));
 
 // Middlewares

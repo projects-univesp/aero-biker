@@ -28,10 +28,7 @@ export class GroupService {
   }
 
   // UPDATE
-  static async update(
-    id: string,
-    data: Partial<GroupDTO>,
-  ): Promise<Group> {
+  static async update(id: string, data: Partial<GroupDTO>): Promise<Group> {
     const group = await Group.findByPk(id);
 
     if (!group) {

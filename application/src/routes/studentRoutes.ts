@@ -14,23 +14,5 @@ export const apiStudentRoutes = Router()
   .delete("/:id", tryCatch(student.deleteStudent));
 
 export const studentRoutes = Router()
-  .get("/create", renderPage("students/create"))
   .get("/", renderApi("/api/students", "pages/students/index", "students"))
 
-  .get(
-    "/:id",
-    renderApi(
-      (req) => `/api/students/${req.params.id}`,
-      "pages/students/profile",
-      "student",
-    ),
-  )
-
-  .get(
-    "/:id/edit",
-    renderApi(
-      (req) => `/api/students/${req.params.id}`,
-      "pages/students/edit",
-      "student",
-    ),
-  );

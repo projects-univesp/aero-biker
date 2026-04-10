@@ -1,0 +1,16 @@
+{{#> modal 
+    modalId="modal-student" 
+    titleId="student-modal-title"
+    formId="student-form" 
+    hiddenId="student-id" 
+    configName="APP_CONFIG.STUDENTS" 
+    title="Novo Aluno" 
+}}
+    {{> input id="student-name" label="Nome*" placeholder="Nome completo" required=true}}
+    {{> input id="student-phone" label="Telefone / WhatsApp" placeholder="(00) 00000-0000" required=true}}
+    
+    <label class="flex items-center gap-3 cursor-pointer">
+      <input type="checkbox" id="student-active" class="w-4 h-4 accent-green-500" checked>
+      <span class="text-sm font-medium text-gray-700">Aluno ativo</span>
+    </label>
+{{/modal}}
