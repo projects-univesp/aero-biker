@@ -1,4 +1,5 @@
 import { GroupController } from "@controllers/groupController";
+import { renderApi } from "@middlewares/renderApi";
 import { tryCatch } from "@middlewares/tryCatch";
 import { Router } from "express";
 
@@ -11,3 +12,4 @@ export const apiGroupRoutes = Router()
   .get("/:id", tryCatch(group.getGroup))
   .patch("/:id", tryCatch(group.updateGroup))
   .delete("/:id", tryCatch(group.deleteGroup));
+
