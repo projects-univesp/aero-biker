@@ -36,6 +36,7 @@ jobs:
       DB_USER: ${{ secrets.DB_USER }}
       DEV_DB_PASSWORD:  ${{ secrets.DEV_DB_PASSWORD }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      VIEWS_PATH: ${{ secrets.VIEWS_PATH }}
 
     steps:
       - name: Code Checkout
