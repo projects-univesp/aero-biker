@@ -1,4 +1,5 @@
 import { GroupDTO } from "@dtos/group";
+import { PlanDTO } from "@dtos/plan";
 import { StudentDTO } from "@dtos/student";
 import { string, z } from "zod";
 
@@ -26,6 +27,18 @@ export class VerifyData {
 
     return schema.parse(group);
   }
+  
+  verifyPlan(plan: PlanDTO) {
+      const schema = z.object({
+        name: z.string().min(1),
+        description: z.string().min(1),
+        price: z.number().positive(),
+        durationMonths: z.number().int().positive(),
+        isActive: z.boolean(),
+      });
+  
+      return schema.parse(plan);
+    }
 
   verifyId(id: string | string[]) {
     const schema = z.object({
