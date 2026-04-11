@@ -1,88 +1,81 @@
-import { randomUUID } from "crypto";
-
-type Plan = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  durationMonths: number;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-type CreatePlanDTO = Omit<
-  Plan,
-  "id" | "isActive" | "createdAt" | "updatedAt"
->;
-
-type UpdatePlanDTO = Partial<CreatePlanDTO>;
-
-const plans: Plan[] = [];
+import { Plan } from "@models/plan";
+import { PlanDTO } from "@dtos/plan";
+import { logger } from "@utils/logger";
+import { responseFormat } from "@utils/responseFormat";
 
 export class PlanService {
-  async create(data: CreatePlanDTO) {
-    const exists = plans.find(
-      (p) => p.name.toLowerCase() === data.name.toLowerCase()
-    );
-
-    if (exists) {
-      throw new Error("Plan already exists");
-    }
-
-    const newPlan: Plan = {
-      id: randomUUID(),
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      ...data,
-    };
-
-    plans.push(newPlan);
-    return newPlan;
-  }
-
-  async getAll() {
-    return plans.filter((p) => p.isActive);
-  }
-
-  async getById(id: string) {
-    const plan = plans.find((p) => p.id === id && p.isActive);
-    return plan || null;
-  }
-
-  async update(id: string, data: UpdatePlanDTO) {
-    const plan = plans.find((p) => p.id === id && p.isActive);
-    if (!plan) return null;
-
-    if (data.name) {
-      const name = data.name.toLowerCase();
-
-      const exists = plans.find(
-        (p) =>
-          p.name.toLowerCase() === name &&
-          p.id !== id
-      );
-
-      if (exists) {
-        throw new Error("Plan already exists");
-      }
-    }
-
-    Object.assign(plan, data, {
-      updatedAt: new Date(),
+  create = async (planData: Partial<PlanDTO>) => {
+    const existingPlan = await Plan.count({
+      where: { name: planData.name },
     });
 
-    return plan;
-  }
+    if (existingPlan > 0) throw logger.error("Plan Already exists", 409);
 
-  async remove(id: string) {
-    const plan = plans.find((p) => p.id === id && p.isActive);
-    if (!plan) return null;
+    const createdPlan = await Plan.create(planData);
 
-    plan.isActive = false;
-    plan.updatedAt = new Date();
+    return responseFormat({
+      message: "Plan created succesfully",
+      statusCode: 201,
+      data: createdPlan,
+    });
+  };
 
-    return plan;
-  }
+  getAll = async () => {
+    const plans = await Plan.findAll();
+
+    if (!plans) throw logger.error("Plans not found", 404);
+
+    return responseFormat({
+      message: "Plans found successfully",
+      statusCode: 200,
+      data: plans,
+    });
+  };
+
+  get = async (id: string) => {
+    const plan = await Plan.findByPk(id);
+
+    if (!plan) throw logger.error("Plan not found", 404);
+
+    return responseFormat({
+      message: "Plan found successfully",
+      statusCode: 200,
+      data: plan,
+    });
+  };
+
+  update = async (id: string, planData: Partial<PlanDTO>) => {
+    const plan = await Plan.findByPk(id);
+
+    if (!plan) throw logger.error("Plan not found", 404);
+
+    if (planData.name && planData.name !== plan.name) {
+      const existingPlan = await Plan.count({
+        where: { name: planData.name },
+      });
+
+      if (existingPlan > 0) throw logger.error("Plan Already exists", 409);
+    }
+
+    const updatedPlan = await plan.update(planData);
+
+    return responseFormat({
+      message: "Plan updated succesfully",
+      statusCode: 200,
+      data: updatedPlan,
+    });
+  };
+
+  delete = async (id: string) => {
+    const plan = await Plan.findByPk(id);
+
+    if (!plan) throw logger.error("Plan not found", 404);
+
+    await plan.update({ isActive: false });
+
+    return responseFormat({
+      message: "Plan deactivated succesfully",
+      statusCode: 200,
+    });
+  };
 }

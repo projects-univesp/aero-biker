@@ -11,57 +11,33 @@ export class PlanController {
     this.verifyData = new VerifyData();
   }
 
-  createPlan = async (req: Request, res: Response) => {
-    try {
-      const data = this.verifyData.verifyPlan(req.body);
-      const plan = await this.planService.create(data);
-      return res.status(201).json(plan);
-    } catch (error: any) {
-      return res.status(400).json({ message: error.message });
-    }
+  createPlan = async (request: Request, response: Response) => {
+    const parsedPlan = this.verifyData.verifyPlan(request.body);
+    const plan = await this.planService.create(parsedPlan);
+    return response.status(201).send(plan);
   };
 
-  getAllPlans = async (_req: Request, res: Response) => {
+  getPlan = async (request: Request, response: Response) => {
+    const { id } = this.verifyData.verifyId(request.params.id);
+    const plan = await this.planService.get(id);
+    return response.status(200).send(plan);
+  };
+
+  getAllPlans = async (request: Request, response: Response) => {
     const plans = await this.planService.getAll();
-    return res.status(200).json(plans);
+    return response.status(200).send(plans);
   };
 
-  getPlan = async (req: Request, res: Response) => {
-    const { id } = this.verifyData.verifyId(req.params.id);
-    const plan = await this.planService.getById(id);
-
-    if (!plan) {
-      return res.status(404).json({ message: "Plan not found" });
-    }
-
-    return res.status(200).json(plan);
+  updatePlan = async (request: Request, response: Response) => {
+    const parsedPlan = this.verifyData.verifyUpdatePlan(request.body);
+    const { id } = this.verifyData.verifyId(request.params.id);
+    const plan = await this.planService.update(id, parsedPlan);
+    return response.status(200).send(plan);
   };
 
-  updatePlan = async (req: Request, res: Response) => {
-    try {
-      const { id } = this.verifyData.verifyId(req.params.id);
-      const data = this.verifyData.verifyUpdatePlan(req.body);
-
-      const updated = await this.planService.update(id, data);
-
-      if (!updated) {
-        return res.status(404).json({ message: "Plan not found" });
-      }
-
-      return res.status(200).json(updated);
-    } catch (error: any) {
-      return res.status(400).json({ message: error.message });
-    }
-  };
-
-  deletePlan = async (req: Request, res: Response) => {
-    const { id } = this.verifyData.verifyId(req.params.id);
-    const result = await this.planService.remove(id);
-
-    if (!result) {
-      return res.status(404).json({ message: "Plan not found" });
-    }
-
-    return res.status(200).json(result);
+  deletePlan = async (request: Request, response: Response) => {
+    const { id } = this.verifyData.verifyId(request.params.id);
+    const plan = await this.planService.delete(id);
+    return response.status(200).send(plan);
   };
 }

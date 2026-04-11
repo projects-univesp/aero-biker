@@ -1,96 +1,221 @@
-import { PlanService } from "../../src/services/planService";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
-describe("PlanService", () => {
-  let service: PlanService;
+import { PlanService } from "@services/planService";
+import { Plan } from "@models/plan";
+
+vi.mock("@models/plan");
+
+describe("Plan Services - Create", () => {
+  let planService: PlanService;
 
   beforeEach(() => {
-    service = new PlanService();
+    vi.clearAllMocks();
+    planService = new PlanService();
   });
 
-  it("should create a new plan", async () => {
-    const plan = await service.create({
+  it("Must create a plan sucessfully", async () => {
+    const planData = {
       name: "Plano Básico",
       description: "Teste",
       price: 100,
       durationMonths: 1,
-    });
+    };
 
-    expect(plan).toHaveProperty("id");
-    expect(plan.name).toBe("Plano Básico");
+    vi.mocked(Plan.count).mockResolvedValue(0);
+
+    vi.mocked(Plan.create).mockResolvedValue({
+      id: "mock-uuid-123",
+      ...planData,
+    } as any);
+
+    const response = await planService.create(planData);
+
+    expect(response.statusCode).toBe(201);
+    expect(response.message).toBe("Plan created succesfully");
+    expect(response.data.id).toBe("mock-uuid-123");
   });
 
-  it("should not allow duplicate plans", async () => {
-    await service.create({
+  it("Must give a conflict error due same plan registered", async () => {
+    const planData = {
       name: "Plano Pro",
       description: "Teste",
       price: 200,
       durationMonths: 2,
-    });
+    };
 
-    await expect(
-      service.create({
-        name: "Plano Pro",
-        description: "Outro",
-        price: 300,
-        durationMonths: 3,
-      })
-    ).rejects.toThrow();
+    vi.mocked(Plan.count).mockResolvedValue(1);
+
+    await expect(planService.create(planData)).rejects.toThrow();
+
+    expect(Plan.create).not.toHaveBeenCalled();
+  });
+});
+
+describe("Plan Services - Get", () => {
+  let planService: PlanService;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    planService = new PlanService();
   });
 
-  it("should return all active plans", async () => {
-    await service.create({
+  it("Must get plan information sucessfully", async () => {
+    const fakeId = "mock-uuid-123";
+    const fakePlan = {
+      id: fakeId,
       name: "Plano A",
       description: "Teste",
       price: 100,
       durationMonths: 1,
-    });
+    };
 
-    const plans = await service.getAll();
+    vi.mocked(Plan.findByPk).mockResolvedValue(fakePlan as any);
 
-    expect(plans.length).toBeGreaterThan(0);
+    const response = await planService.get(fakeId);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.message).toBe("Plan found successfully");
+    expect(response.data.name).toBe("Plano A");
   });
 
-  it("should find a plan by id", async () => {
-    const created = await service.create({
-      name: "Plano ID",
-      description: "Teste",
-      price: 150,
-      durationMonths: 2,
-    });
+  it("Must throw a 404 error if plan is not found", async () => {
+    const fakeId = "non-existent-id";
 
-    const found = await service.getById(created.id);
+    vi.mocked(Plan.findByPk).mockResolvedValue(null);
 
-    expect(found).not.toBeNull();
-    expect(found && found.id).toBe(created.id);
+    await expect(planService.get(fakeId)).rejects.toThrow();
+
+    expect(Plan.findByPk).toHaveBeenCalledWith(fakeId);
+  });
+});
+
+describe("Plan Services - GetAll", () => {
+  let planService: PlanService;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    planService = new PlanService();
   });
 
-  it("should update a plan", async () => {
-    const created = await service.create({
-      name: "Plano Update",
+  const mockPlans = [
+    {
+      id: "123",
+      name: "Plano A",
       description: "Teste",
       price: 100,
       durationMonths: 1,
-    });
+    },
+  ];
 
-    const updated = await service.update(created.id, {
+  it("Must get plans information sucessfully", async () => {
+    vi.mocked(Plan.findAll).mockResolvedValue(mockPlans as any);
+
+    const response = await planService.getAll();
+
+    expect(response.statusCode).toBe(200);
+    expect(response.message).toBe("Plans found successfully");
+  });
+
+  it("Must throw a 404 error if plans are not found", async () => {
+    vi.mocked(Plan.findAll).mockResolvedValue([]);
+
+    await expect(planService.getAll()).rejects.toThrow();
+  });
+});
+
+describe("Plan Services - Update", () => {
+  let planService: PlanService;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    planService = new PlanService();
+  });
+
+  it("Must update a plan sucessfully", async () => {
+    const fakeId = "mock-uuid-123";
+    const updateData = {
       name: "Plano Atualizado",
-    });
+    };
 
-    expect(updated?.name).toBe("Plano Atualizado");
+    const fakePlanInstance = {
+      id: fakeId,
+      name: "Plano Antigo",
+      update: vi.fn().mockResolvedValue({
+        id: fakeId,
+        name: updateData.name,
+      }),
+    };
+
+    vi.mocked(Plan.findByPk).mockResolvedValue(fakePlanInstance as any);
+    vi.mocked(Plan.count).mockResolvedValue(0);
+
+    const response = await planService.update(fakeId, updateData);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.message).toBe("Plan updated succesfully");
+    expect(fakePlanInstance.update).toHaveBeenCalledWith(updateData);
   });
 
-  it("should soft delete a plan", async () => {
-    const created = await service.create({
-      name: "Plano Delete",
-      description: "Teste",
-      price: 100,
-      durationMonths: 1,
+  it("Must throw a 409 error if plan already exists", async () => {
+    const fakeId = "mock-uuid-123";
+    const updateData = {
+      name: "Plano Novo",
+    };
+
+    const fakePlanInstance = {
+      id: fakeId,
+      name: "Plano Antigo",
+    };
+
+    vi.mocked(Plan.findByPk).mockResolvedValue(fakePlanInstance as any);
+    vi.mocked(Plan.count).mockResolvedValue(1);
+
+    await expect(planService.update(fakeId, updateData)).rejects.toThrow();
+  });
+
+  it("Must throw a 404 error if plan is not found", async () => {
+    const fakeId = "non-existent-id";
+
+    vi.mocked(Plan.findByPk).mockResolvedValue(null);
+
+    await expect(
+      planService.update(fakeId, { name: "Teste" })
+    ).rejects.toThrow();
+  });
+});
+
+describe("Plan Services - Delete", () => {
+  let planService: PlanService;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    planService = new PlanService();
+  });
+
+  it("Must fake delete plan information sucessfully", async () => {
+    const fakeId = "mock-uuid-123";
+
+    const fakePlanInstance = {
+      id: fakeId,
+      update: vi.fn().mockResolvedValue(true),
+    };
+
+    vi.mocked(Plan.findByPk).mockResolvedValue(fakePlanInstance as any);
+
+    const response = await planService.delete(fakeId);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.message).toBe("Plan deactivated succesfully");
+    expect(fakePlanInstance.update).toHaveBeenCalledWith({
+      isActive: false,
     });
+  });
 
-    await service.remove(created.id);
+  it("Must throw a 404 error if plan is not found", async () => {
+    const fakeId = "non-existent-id";
 
-    const found = await service.getById(created.id);
+    vi.mocked(Plan.findByPk).mockResolvedValue(null);
 
-    expect(found).toBeNull();
+    await expect(planService.delete(fakeId)).rejects.toThrow();
   });
 });
