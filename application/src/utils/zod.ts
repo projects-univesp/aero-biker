@@ -1,9 +1,19 @@
-import { GroupDTO } from "@dtos/group";
-import { StudentDTO } from "@dtos/student";
-import { string, z } from "zod";
+import { z } from "zod";
 
 export class VerifyData {
-  verifyStudent(student: StudentDTO) {
+  verifyId(id: string | string[]) {
+    const schema = z.object({
+      id: z.string().uuid("Invalid UUID"),
+    });
+
+    return schema.parse({ id });
+  }
+
+  verifyStudent(student: {
+    name: string;
+    phone: string;
+    isActive: boolean;
+  }) {
     const schema = z.object({
       name: z.string().max(50),
       phone: z.string().min(10).max(15),
@@ -13,23 +23,49 @@ export class VerifyData {
     return schema.parse(student);
   }
 
-  verifyGroup(group: GroupDTO) {
+  verifyGroup(group: {
+    name: string;
+    description?: string;
+  }) {
     const schema = z.object({
-      name: z.string().min(3).max(50),
-      maxCapacity: z.number().int().positive(),
-      daysOfWeek: z.string().min(3).max(50),
-      time: z.string().min(3).max(20),
-      isActive: z.boolean(),
+      name: z.string().min(1),
+      description: z.string().optional(),
     });
 
     return schema.parse(group);
   }
 
-  verifyId(id: string | string[]) {
+  verifyPlan(plan: {
+    name: string;
+    description: string;
+    price: number;
+    durationMonths: number;
+  }) {
     const schema = z.object({
-      id: z.uuid(),
+      name: z.string().min(1),
+      description: z.string().min(1),
+      price: z.number().positive(),
+      durationMonths: z.number().int().positive(),
     });
 
-    return schema.parse({ id });
+    return schema.parse(plan);
+  }
+
+  verifyUpdatePlan(
+    plan: Partial<{
+      name: string;
+      description: string;
+      price: number;
+      durationMonths: number;
+    }>
+  ) {
+    const schema = z.object({
+      name: z.string().min(1).optional(),
+      description: z.string().min(1).optional(),
+      price: z.number().positive().optional(),
+      durationMonths: z.number().int().positive().optional(),
+    });
+
+    return schema.parse(plan);
   }
 }
