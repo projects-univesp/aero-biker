@@ -9,7 +9,9 @@ export class StudentServices {
       where: { phone: studentData.phone },
     });
 
-    if (existingStudent > 0) throw logger.error("Student Already exists", 409);
+    if (existingStudent > 0)
+      throw logger.error("Student Already exists", 409);
+
     const createStudent = await Student.create(studentData);
 
     return responseFormat({
@@ -21,7 +23,9 @@ export class StudentServices {
 
   get = async (id: string) => {
     const student = await Student.findByPk(id);
-    if (student === null) throw logger.error("Student not found", 404);
+
+    if (student === null)
+      throw logger.error("Student not found", 404);
 
     return responseFormat({
       message: "Student found successfully",
@@ -32,7 +36,10 @@ export class StudentServices {
 
   getAll = async () => {
     const students = await Student.findAll();
-    if (students === null) throw logger.error("Students not found", 404);
+
+    if (!students || students.length === 0) {
+      throw logger.error("Students not found", 404);
+    }
 
     return responseFormat({
       message: "Students found successfully",
@@ -41,18 +48,19 @@ export class StudentServices {
     });
   };
 
-  update = async (
-    id: string,
-    studentData: StudentDTO
-  ) => {
+  update = async (id: string, studentData: StudentDTO) => {
     const student = await Student.findByPk(id);
-    if (student === null) throw logger.error("Student not found", 404);
+
+    if (student === null)
+      throw logger.error("Student not found", 404);
+
     if (studentData.phone && studentData.phone !== student.phone) {
       const existingStudent = await Student.findOne({
         where: { phone: studentData.phone },
       });
 
-      if (existingStudent) throw logger.error("Phone already in use", 409);
+      if (existingStudent)
+        throw logger.error("Phone already in use", 409);
     }
 
     const updatedStudent = await student.update(studentData);
@@ -66,7 +74,10 @@ export class StudentServices {
 
   delete = async (id: string) => {
     const student = await Student.findByPk(id);
-    if (student === null) throw logger.error("Student not found", 404);
+
+    if (student === null)
+      throw logger.error("Student not found", 404);
+
     await student.update({ isActive: false });
 
     return responseFormat({
