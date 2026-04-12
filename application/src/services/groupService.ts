@@ -24,7 +24,7 @@ export class GroupServices {
     getAll = async () => {
     const groups = await Group.findAll();
 
-    if (!groups) throw logger.error("Groups not found", 404);
+    if (groups.length === 0) throw logger.error("Groups not found", 404);
 
     return responseFormat({
       message: "Groups found successfully",

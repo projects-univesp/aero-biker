@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { StudentServices } from "@services/studentServices";
 import { Student } from "@models/student";
+import { StudentDTO } from "@dtos/student";
 
 vi.mock("@models/student");
 
@@ -18,6 +19,8 @@ describe("Students Services - Create", () => {
       name: "Saymon Macedo",
       phone: "551983267343",
       isActive: true,
+      groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
+      enrollment: "ACTIVE"
     };
 
     vi.mocked(Student.count).mockResolvedValue(0);
@@ -39,6 +42,8 @@ describe("Students Services - Create", () => {
       name: "Machado de Assis",
       phone: "5517980367429",
       isActive: true,
+      groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
+      enrollment: "ACTIVE"
     };
 
     vi.mocked(Student.count).mockResolvedValue(1);
@@ -64,6 +69,8 @@ describe("Students Services - Get", () => {
       name: "Ana Beatriz",
       phone: "11999999999",
       isActive: true,
+      groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
+      enrollment: "ACTIVE"
     };
 
     vi.mocked(Student.findByPk).mockResolvedValue(fakeStudent as any);
@@ -95,7 +102,7 @@ describe("Students Services - GetAll", () => {
   });
 
   const mockStudents = [
-    { id: "123", name: "Saymon", phone: "11999999999", isActive: true },
+    { id: "123", name: "Saymon", phone: "11999999999", isActive: true, groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26", enrollment: "ACTIVE" },
   ];
 
   it("Must get student information sucessfully", async () => {
@@ -128,6 +135,8 @@ describe("Students Services - Update", () => {
       name: "Ana Beatriz",
       phone: "11888888888",
       isActive: true,
+      groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
+      enrollment: "ACTIVE"
     };
 
     const fakeStudentInstance = {
@@ -140,6 +149,8 @@ describe("Students Services - Update", () => {
         name: "Ana Beatriz",
         phone: updateData.phone,
         isActive: true,
+        groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
+        enrollment: "ACTIVE"
       }),
     };
 
@@ -158,11 +169,17 @@ describe("Students Services - Update", () => {
       name: "Ana Beatriz",
       phone: "11888888888",
       isActive: true,
+      groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
+      enrollment: "ACTIVE"
     };
 
     const fakeStudentInstance = {
       id: fakeId,
+      name: "Ana Beatriz",
       phone: "11999999999",
+      isActive: true,
+      groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
+      enrollment: "ACTIVE"
     };
 
     vi.mocked(Student.findByPk).mockResolvedValue(fakeStudentInstance as any);
@@ -184,6 +201,8 @@ describe("Students Services - Update", () => {
         name: "Teste",
         phone: "11999999999",
         isActive: true,
+        groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
+        enrollment: "ACTIVE"
       }),
     ).rejects.toThrow();
   });

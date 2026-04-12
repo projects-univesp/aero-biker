@@ -23,7 +23,7 @@ export class PlanService {
   getAll = async () => {
     const plans = await Plan.findAll();
 
-    if (!plans) throw logger.error("Plans not found", 404);
+    if (plans.length === 0) throw logger.error("Plans not found", 404);
 
     return responseFormat({
       message: "Plans found successfully",
@@ -35,7 +35,7 @@ export class PlanService {
   get = async (id: string) => {
     const plan = await Plan.findByPk(id);
 
-    if (!plan) throw logger.error("Plan not found", 404);
+    if (plan === null) throw logger.error("Plan not found", 404);
 
     return responseFormat({
       message: "Plan found successfully",
@@ -47,7 +47,7 @@ export class PlanService {
   update = async (id: string, planData: Partial<PlanDTO>) => {
     const plan = await Plan.findByPk(id);
 
-    if (!plan) throw logger.error("Plan not found", 404);
+    if (plan === null) throw logger.error("Plan not found", 404);
 
     if (planData.name && planData.name !== plan.name) {
       const existingPlan = await Plan.count({
@@ -69,7 +69,7 @@ export class PlanService {
   delete = async (id: string) => {
     const plan = await Plan.findByPk(id);
 
-    if (!plan) throw logger.error("Plan not found", 404);
+    if (plan === null) throw logger.error("Plan not found", 404);
 
     await plan.update({ isActive: false });
 

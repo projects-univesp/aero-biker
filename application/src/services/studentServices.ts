@@ -32,7 +32,7 @@ export class StudentServices {
 
   getAll = async () => {
     const students = await Student.findAll();
-    if (students === null) throw logger.error("Students not found", 404);
+    if (students.length === 0) throw logger.error("Students not found", 404);
 
     return responseFormat({
       message: "Students found successfully",

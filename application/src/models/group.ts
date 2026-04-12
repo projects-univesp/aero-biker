@@ -8,6 +8,7 @@ export class Group extends Model {
   declare maxCapacity: number;
   declare daysOfWeek: string;
   declare time: string;
+  declare isActive: boolean;
 }
 
 Group.init(
@@ -31,6 +32,10 @@ Group.init(
     },
     time: {
       type: DataTypes.STRING(20),
+      allowNull: false,
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
     },
   },
