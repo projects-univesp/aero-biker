@@ -3,5 +3,4 @@ export interface GroupDTO {
   maxCapacity?: number;
   daysOfWeek?: string;
   time?: string;
-  isActive?: boolean;
 }

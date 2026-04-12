@@ -5,6 +5,7 @@ import { engine } from "express-handlebars";
 import path from "path";
 import { logger } from "@utils/logger";
 import { sequelize } from "@config/database";
+import "@models/associations";
 import { formatDate } from "@utils/date-format";
 
 const app = express();

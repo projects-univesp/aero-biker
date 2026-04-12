@@ -8,6 +8,8 @@ export class VerifyData {
       name: z.string().max(50),
       phone: z.string().min(10).max(15),
       isActive: z.boolean(),
+      enrollment: z.enum(["ACTIVE", "INACTIVE"]),
+      groupId: z.uuidv4()
     });
 
     return schema.parse(student);
