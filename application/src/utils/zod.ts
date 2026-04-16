@@ -1,4 +1,3 @@
-import { EnrollmentDTO } from "@dtos/enrollment";
 import { GroupDTO } from "@dtos/group";
 import { PlanDTO } from "@dtos/plan";
 import { StudentDTO } from "@dtos/student";
@@ -14,7 +13,6 @@ export class VerifyData {
       enrollment: z.enum(["ACTIVE", "INACTIVE"]),
       groupId: z.uuidv4()
     });
-
     return schema.parse(student);
   }
 
@@ -26,21 +24,19 @@ export class VerifyData {
       time: z.string().min(3).max(20),
       isActive: z.boolean(),
     });
-
     return schema.parse(group);
   }
-  
+
   verifyPlan(plan: PlanDTO) {
-      const schema = z.object({
-        name: z.string().min(1),
-        description: z.string().min(1),
-        price: z.number().positive(),
-        durationMonths: z.number().int().positive(),
-        isActive: z.boolean(),
-      });
-  
-      return schema.parse(plan);
-    }
+    const schema = z.object({
+      name: z.string().min(1),
+      description: z.string().min(1),
+      price: z.number().positive(),
+      durationMonths: z.number().int().positive(),
+      isActive: z.boolean(),
+    });
+    return schema.parse(plan);
+  }
 
   verifySubscription(subscription: SubscriptionDTO) {
     const schema = z.object({
@@ -52,25 +48,13 @@ export class VerifyData {
       status: z.enum(["ACTIVE", "INACTIVE", "CANCELLED"]),
       paymentMethod: z.string().min(1),
     });
-
     return schema.parse(subscription);
-  }
-
-  verifyEnrollment(enrollment: EnrollmentDTO) {
-    const schema = z.object({
-      studentId: z.uuid(),
-      groupId: z.uuid(),
-      status: z.enum(["ACTIVE", "INACTIVE"]),
-    });
-
-    return schema.parse(enrollment);
   }
 
   verifyId(id: string | string[]) {
     const schema = z.object({
       id: z.uuid(),
     });
-
     return schema.parse({ id });
   }
 }
