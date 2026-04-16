@@ -1,7 +1,8 @@
 import { GroupDTO } from "@dtos/group";
 import { PlanDTO } from "@dtos/plan";
 import { StudentDTO } from "@dtos/student";
-import { string, z } from "zod";
+import { SubscriptionDTO } from "@dtos/subscription";
+import { z } from "zod";
 
 export class VerifyData {
   verifyStudent(student: StudentDTO) {
@@ -39,6 +40,20 @@ export class VerifyData {
   
       return schema.parse(plan);
     }
+
+  verifySubscription(subscription: SubscriptionDTO) {
+    const schema = z.object({
+      studentId: z.uuid(),
+      planId: z.uuid(),
+      subscriptionValue: z.number().positive(),
+      startDate: z.coerce.date(),
+      renovationDate: z.coerce.date(),
+      status: z.enum(["ACTIVE", "INACTIVE", "CANCELLED"]),
+      paymentMethod: z.string().min(1),
+    });
+
+    return schema.parse(subscription);
+  }
 
   verifyId(id: string | string[]) {
     const schema = z.object({

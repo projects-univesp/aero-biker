@@ -2,6 +2,7 @@ import { Router } from "express";
 import { apiStudentRoutes, studentRoutes } from "./studentRoutes";
 import { apiGroupRoutes } from "./groupRoutes";
 import { apiPlanRoutes } from "./planRoutes";
+import { apiSubscriptionRoutes } from "./subscriptionRoutes";
 
 
 export const appRouter = Router();
@@ -10,6 +11,7 @@ export const appRouter = Router();
 appRouter.use("/api/students", apiStudentRoutes);
 appRouter.use("/api/groups", apiGroupRoutes);
 appRouter.use("/api/plans", apiPlanRoutes);
+appRouter.use("/api/subscriptions", apiSubscriptionRoutes);
 
 // FRONT
 appRouter.use("/students", studentRoutes);
