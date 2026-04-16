@@ -1,3 +1,4 @@
+import { EnrollmentDTO } from "@dtos/enrollment";
 import { GroupDTO } from "@dtos/group";
 import { PlanDTO } from "@dtos/plan";
 import { StudentDTO } from "@dtos/student";
@@ -53,6 +54,16 @@ export class VerifyData {
     });
 
     return schema.parse(subscription);
+  }
+
+  verifyEnrollment(enrollment: EnrollmentDTO) {
+    const schema = z.object({
+      studentId: z.uuid(),
+      groupId: z.uuid(),
+      status: z.enum(["ACTIVE", "INACTIVE"]),
+    });
+
+    return schema.parse(enrollment);
   }
 
   verifyId(id: string | string[]) {
