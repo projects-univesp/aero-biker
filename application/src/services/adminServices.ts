@@ -31,7 +31,7 @@ export class AdminServices {
       password: hashedPassword,
     });
 
-    const { password, phone, email, ...safeAdmin } = createAdmin;
+    const { password, ...safeAdmin } = createAdmin;
 
     return responseFormat({
       message: "Admin created succesfully",
