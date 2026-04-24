@@ -21,7 +21,7 @@ export class GroupServices {
   };
 
   // GET ALL
-    getAll = async () => {
+  getAll = async () => {
     const groups = await Group.findAll();
 
     if (groups.length === 0) throw logger.error("Groups not found", 404);
@@ -31,10 +31,10 @@ export class GroupServices {
       statusCode: 200,
       data: groups,
     });
-  }
+  };
 
   // GET BY ID
-    get = async (id: string) => {
+  get = async (id: string) => {
     const group = await Group.findByPk(id);
 
     if (!group) throw logger.error("Group not found", 404);
@@ -44,12 +44,11 @@ export class GroupServices {
       statusCode: 200,
       data: group,
     });
-  }
+  };
 
   // UPDATE
-    update = async (id: string, groupData: GroupDTO) => {
+  update = async (id: string, groupData: Partial<GroupDTO>) => {
     const group = await Group.findByPk(id);
-
     if (!group) throw logger.error("Group not found", 404);
     if (groupData.name && groupData.name !== group.name) {
       const existingGroup = await Group.count({
@@ -66,10 +65,10 @@ export class GroupServices {
       statusCode: 200,
       data: updatedGroup,
     });
-  }
+  };
 
   // SOFT DELETE
-    delete = async (id: string) => {
+  delete = async (id: string) => {
     const group = await Group.findByPk(id);
     if (!group) throw new Error("Group not found");
     await group.update({ isActive: false });
@@ -78,5 +77,5 @@ export class GroupServices {
       message: "Group deactivated succesfully",
       statusCode: 200,
     });
-  }
+  };
 }

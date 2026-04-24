@@ -70,7 +70,7 @@ export class SubscriptionService {
       const plan = await Plan.findByPk(subscriptionData.planId);
       if (!plan) throw logger.error("Plan not found", 404);
     }
-    
+
     const updatedSubscription = await subscription.update(subscriptionData);
 
     return responseFormat({

@@ -41,10 +41,7 @@ export class StudentServices {
     });
   };
 
-  update = async (
-    id: string,
-    studentData: StudentDTO
-  ) => {
+  update = async (id: string, studentData: Partial<StudentDTO>) => {
     const student = await Student.findByPk(id);
     if (student === null) throw logger.error("Student not found", 404);
     if (studentData.phone && studentData.phone !== student.phone) {
