@@ -2,11 +2,13 @@ import express from "express";
 import { appRouter } from "@routes/index";
 import { env } from "@utils/env";
 import { engine } from "express-handlebars";
+import { errorHandler } from "@middlewares/error";
 import path from "path";
 import { logger } from "@utils/logger";
 import { sequelize } from "@config/database";
 import "@models/associations";
 import { formatDate } from "@utils/dateFormat";
+import { notFound } from "@middlewares/notFound";
 
 const app = express();
 
@@ -29,6 +31,8 @@ app.use(express.static(path.join(process.cwd(), "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(appRouter);
+app.use(errorHandler);
+app.use(notFound);
 
 const startServer = async () => {
   try {

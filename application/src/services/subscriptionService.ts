@@ -2,6 +2,8 @@ import { Subscription } from "@models/subscription";
 import { SubscriptionDTO } from "@dtos/subscription";
 import { logger } from "@utils/logger";
 import { responseFormat } from "@utils/responseFormat";
+import { Student } from "@models/student";
+import { Plan } from "@models/plan";
 
 export class SubscriptionService {
   create = async (subscriptionData: Partial<SubscriptionDTO>) => {
@@ -11,6 +13,12 @@ export class SubscriptionService {
 
     if (existingSubscription > 0)
       throw logger.error("Subscription already active", 409);
+
+    const student = await Student.findByPk(subscriptionData.studentId);
+    if (!student) throw logger.error("Student not found", 404);
+
+    const plan = await Plan.findByPk(subscriptionData.planId);
+    if (!plan) throw logger.error("Plan not found", 404);
 
     const createdSubscription = await Subscription.create(subscriptionData);
 
@@ -37,7 +45,8 @@ export class SubscriptionService {
   get = async (id: string) => {
     const subscription = await Subscription.findByPk(id);
 
-    if (subscription === null) throw logger.error("Subscription not found", 404);
+    if (subscription === null)
+      throw logger.error("Subscription not found", 404);
 
     return responseFormat({
       message: "Subscription found successfully",
@@ -49,8 +58,19 @@ export class SubscriptionService {
   update = async (id: string, subscriptionData: Partial<SubscriptionDTO>) => {
     const subscription = await Subscription.findByPk(id);
 
-    if (subscription === null) throw logger.error("Subscription not found", 404);
+    if (subscription === null)
+      throw logger.error("Subscription not found", 404);
 
+    if (subscriptionData.studentId) {
+      const student = await Student.findByPk(subscriptionData.studentId);
+      if (!student) throw logger.error("Student not found", 404);
+    }
+
+    if (subscriptionData.planId) {
+      const plan = await Plan.findByPk(subscriptionData.planId);
+      if (!plan) throw logger.error("Plan not found", 404);
+    }
+    
     const updatedSubscription = await subscription.update(subscriptionData);
 
     return responseFormat({
@@ -63,7 +83,8 @@ export class SubscriptionService {
   delete = async (id: string) => {
     const subscription = await Subscription.findByPk(id);
 
-    if (subscription === null) throw logger.error("Subscription not found", 404);
+    if (subscription === null)
+      throw logger.error("Subscription not found", 404);
 
     await subscription.update({ status: "CANCELLED" });
 
