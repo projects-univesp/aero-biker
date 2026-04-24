@@ -5,4 +5,4 @@ import { Router } from "express";
 const auth = new AuthController()
 
 export const apiAuthRoutes = Router()
-.post('/', tryCatch(auth.authLogin))
+.post('/', tryCatch(auth.emailLogin))

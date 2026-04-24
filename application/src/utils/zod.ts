@@ -1,3 +1,4 @@
+import { AdminDTO } from "@dtos/admin";
 import { GroupDTO } from "@dtos/group";
 import { PlanDTO } from "@dtos/plan";
 import { StudentDTO } from "@dtos/student";
@@ -11,7 +12,7 @@ export class VerifyData {
       phone: z.string().min(10).max(15),
       isActive: z.boolean(),
       enrollment: z.enum(["ACTIVE", "INACTIVE"]),
-      groupId: z.uuidv4()
+      groupId: z.uuidv4(),
     });
     return schema.parse(student);
   }
@@ -51,10 +52,48 @@ export class VerifyData {
     return schema.parse(subscription);
   }
 
+  verifyAdmin(admin: AdminDTO) {
+    const schema = z.object({
+      name: z.string().max(50),
+      phone: z.string().min(10).max(15),
+      email: z.email().max(100),
+      password: z.string().min(6).max(25),
+    });
+    return schema.parse(admin);
+  }
+
+  verifyAdminPartial(admin: AdminDTO) {
+    const schema = z.object({
+      name: z.string().max(50),
+      phone: z.string().min(10).max(15),
+      email: z.email().max(100),
+      password: z.string().min(6).max(25),
+    }).partial();
+    
+    return schema.parse(admin);
+  }
+  
   verifyId(id: string | string[]) {
     const schema = z.object({
       id: z.uuid(),
     });
     return schema.parse({ id });
+  }
+
+  verifyAuthRequest(user: { email: string; password: string }) {
+    const schema = z.object({
+      email: z.email().max(25),
+      password: z.string().min(6).max(25),
+    });
+
+    return schema.parse(user);
+  }
+
+  verifyEmail(email: string) {
+    const schema = z.object({
+      email: z.email(),
+    });
+
+    return schema.parse({ email });
   }
 }

@@ -1,12 +1,13 @@
-import { AuthDTO } from "@dtos/auth";
+import { IToken } from "@dtos/auth";
 import { env } from "@utils/env";
+import { responseFormat } from "@utils/responseFormat";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: AuthDTO;
+      user?: IToken;
     }
   }
 }
@@ -14,12 +15,17 @@ declare global {
 export const auth = (
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const authHeader = request.headers.authorization;
 
+  const data = { request, response, next };
   if (!authHeader) {
-    new Error("Token not provided"), request, response, next);
+    responseFormat({
+      message: "Token not provided",
+      statusCode: 401,
+      ...data,
+    });
     return;
   }
 
@@ -27,11 +33,14 @@ export const auth = (
 
   jwt.verify(tokenWithoutBearer, env.JWT_SECRET as string, (err, decoded) => {
     if (err) {
-      new Error("Invalid token "), request, response, next);
+      responseFormat({
+        message: "Invalid token",
+        statusCode: 401,
+        ...data,
+      });
       return;
     }
-
-    request.user = decoded as AuthDTO;
+    request.user = decoded as IToken;
     next();
   });
 };
