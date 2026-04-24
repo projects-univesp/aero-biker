@@ -6,6 +6,7 @@ export class Admin extends Model {
   declare id: UUID;
   declare code: string | null;
   declare expiresAt: Date | null;
+  declare isActive: boolean;
   declare name: string;
   declare phone: string;
   declare email: string;
