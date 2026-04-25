@@ -1,4 +1,5 @@
 import { StudentController } from "@controllers/studentController";
+import { auth } from "@middlewares/auth";
 import { renderApi } from "@middlewares/renderApi";
 import { renderPage } from "@middlewares/renderPage";
 import { tryCatch } from "@middlewares/tryCatch";
@@ -7,6 +8,7 @@ import { Router } from "express";
 const student = new StudentController();
 
 export const apiStudentRoutes = Router()
+  .use(auth)
   .post("/", tryCatch(student.createStudent))
   .get("/", tryCatch(student.getAllStudents))
   .get("/:id", tryCatch(student.getStudent))

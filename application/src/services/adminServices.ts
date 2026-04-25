@@ -78,6 +78,32 @@ export class AdminServices {
     });
   };
 
+  resetPassword = async (email: string, code: string, newPassword: string) => {
+    const admin = await Admin.findOne({ where: { email } });
+    if (!admin) throw logger.error("Admin not found", 404);
+
+    if (admin.code !== code) {
+      throw logger.error("Invalid recovery code", 400);
+    }
+
+    if (!admin.expiresAt || new Date() > admin.expiresAt) {
+      throw logger.error("Recovery code has expired", 400);
+    }
+
+    const hashedPassword = await generateHashPassword(newPassword);
+
+    await admin.update({
+      password: hashedPassword,
+      code: null,
+      expiresAt: null,
+    });
+
+    return responseFormat({
+      message: "Password reset successfully",
+      statusCode: 200,
+    });
+  };
+
   update = async (id: string, adminData: Partial<AdminDTO>) => {
     const admin = await Admin.findByPk(id);
     if (admin === null) throw logger.error("Admin not found", 404);

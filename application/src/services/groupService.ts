@@ -1,5 +1,6 @@
 import { GroupDTO } from "@dtos/group";
 import { Group } from "@models/group";
+import { Student } from "@models/student";
 import { logger } from "@utils/logger";
 import { responseFormat } from "@utils/responseFormat";
 
@@ -58,6 +59,19 @@ export class GroupServices {
       if (existingGroup > 0) throw logger.error("Group Already exists", 409);
     }
 
+    if (groupData.maxCapacity) {
+      const activeStudents = await Student.count({
+        where: { groupId: id, enrollment: "ACTIVE" },
+      });
+
+      if (groupData.maxCapacity < activeStudents) {
+        throw logger.error(
+          `Cannot reduce capacity below current active students (${activeStudents})`,
+          400,
+        );
+      }
+    }
+
     const updatedGroup = await group.update(groupData);
 
     return responseFormat({
@@ -71,6 +85,18 @@ export class GroupServices {
   delete = async (id: string) => {
     const group = await Group.findByPk(id);
     if (!group) throw new Error("Group not found");
+
+    const activeStudents = await Student.count({
+      where: { groupId: id, enrollment: "ACTIVE" },
+    });
+
+    if (activeStudents > 0) {
+      throw logger.error(
+        "Cannot deactivate a group that has active students",
+        400,
+      );
+    }
+
     await group.update({ isActive: false });
 
     return responseFormat({

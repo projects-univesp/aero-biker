@@ -15,10 +15,10 @@ export class SubscriptionService {
       throw logger.error("Subscription already active", 409);
 
     const student = await Student.findByPk(subscriptionData.studentId);
-    if (!student) throw logger.error("Student not found", 404);
+    if (!student || !student.isActive) throw logger.error("Student not found", 404);
 
     const plan = await Plan.findByPk(subscriptionData.planId);
-    if (!plan) throw logger.error("Plan not found", 404);
+    if (!plan  || !plan.isActive) throw logger.error("Plan not found", 404);
 
     const createdSubscription = await Subscription.create(subscriptionData);
 
@@ -63,12 +63,12 @@ export class SubscriptionService {
 
     if (subscriptionData.studentId) {
       const student = await Student.findByPk(subscriptionData.studentId);
-      if (!student) throw logger.error("Student not found", 404);
+      if (!student || !student.isActive) throw logger.error("Student not found", 404);
     }
 
     if (subscriptionData.planId) {
       const plan = await Plan.findByPk(subscriptionData.planId);
-      if (!plan) throw logger.error("Plan not found", 404);
+      if (!plan || !plan.isActive) throw logger.error("Plan not found", 404);
     }
 
     const updatedSubscription = await subscription.update(subscriptionData);
