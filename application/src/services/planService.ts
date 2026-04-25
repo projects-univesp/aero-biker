@@ -2,6 +2,7 @@ import { Plan } from "@models/plan";
 import { PlanDTO } from "@dtos/plan";
 import { logger } from "@utils/logger";
 import { responseFormat } from "@utils/responseFormat";
+import { Subscription } from "@models/subscription";
 
 export class PlanService {
   create = async (planData: Partial<PlanDTO>) => {
@@ -70,6 +71,17 @@ export class PlanService {
     const plan = await Plan.findByPk(id);
 
     if (plan === null) throw logger.error("Plan not found", 404);
+
+    const activeSubscriptions = await Subscription.count({
+      where: { planId: id, status: "ACTIVE" },
+    });
+
+    if (activeSubscriptions > 0) {
+      throw logger.error(
+        "Cannot deactivate a plan with active subscriptions",
+        400,
+      );
+    }
 
     await plan.update({ isActive: false });
 

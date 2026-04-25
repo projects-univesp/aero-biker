@@ -10,34 +10,42 @@ export class AdminController {
     this.adminServices = new AdminServices();
   }
 
-  createAdmin= async (request: Request, response: Response) => {
-    const parsedAdmin= this.verifyData.verifyAdmin(request.body);
-    const admin= await this.adminServices.create(parsedAdmin);
+  createAdmin = async (request: Request, response: Response) => {
+    const parsedAdmin = this.verifyData.verifyAdmin(request.body);
+    const admin = await this.adminServices.create(parsedAdmin);
     return response.status(201).send(admin);
   };
 
-  getAdmin= async (request: Request, response: Response) => {
+  getAdmin = async (request: Request, response: Response) => {
     const { id } = this.verifyData.verifyId(request.params.id);
-    const admin= await this.adminServices.get(id);
-    return response.status(200).send(admin);
-  };
-  
-  forgotPassword = async (request: Request, response: Response) => {
-    const { email } = this.verifyData.verifyEmail(request.body);
-    const admin= await this.adminServices.forgotPassword(email);
+    const admin = await this.adminServices.get(id);
     return response.status(200).send(admin);
   };
 
-  updateAdmin= async (request: Request, response: Response) => {
-    const parsedAdmin= this.verifyData.verifyAdminPartial(request.body);
+  forgotPassword = async (request: Request, response: Response) => {
+    const { email } = this.verifyData.verifyEmail(request.body);
+    const admin = await this.adminServices.forgotPassword(email);
+    return response.status(200).send(admin);
+  };
+
+  resetPassword = async (request: Request, response: Response) => {
+    const { code, email, password } = this.verifyData.verifyResetPassword(
+      request.body,
+    );
+    const admin = await this.adminServices.resetPassword(code, email, password);
+    return response.status(200).send(admin);
+  };
+
+  updateAdmin = async (request: Request, response: Response) => {
+    const parsedAdmin = this.verifyData.verifyAdminPartial(request.body);
     const { id } = this.verifyData.verifyId(request.params.id);
     const admin = await this.adminServices.update(id, parsedAdmin);
     return response.status(200).send(admin);
   };
 
-  deleteAdmin= async (request: Request, response: Response) => {
+  deleteAdmin = async (request: Request, response: Response) => {
     const { id } = this.verifyData.verifyId(request.params.id);
-    const admin= await this.adminServices.delete(id);
+    const admin = await this.adminServices.delete(id);
     return response.status(200).send(admin);
   };
 }

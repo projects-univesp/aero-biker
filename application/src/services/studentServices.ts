@@ -1,5 +1,7 @@
 import { StudentDTO } from "@dtos/student";
+import { Group } from "@models/group";
 import { Student } from "@models/student";
+import { Subscription } from "@models/subscription";
 import { logger } from "@utils/logger";
 import { responseFormat } from "@utils/responseFormat";
 
@@ -10,6 +12,18 @@ export class StudentServices {
     });
 
     if (existingStudent > 0) throw logger.error("Student Already exists", 409);
+
+    const group = await Group.findByPk(studentData.groupId);
+    if (!group) throw logger.error("Group not found", 404);
+
+    const activeStudentsInGroup = await Student.count({
+      where: { groupId: studentData.groupId, enrollment: "ACTIVE" },
+    });
+
+    if (activeStudentsInGroup >= group.maxCapacity) {
+      throw logger.error("Group has reached maximum capacity", 400);
+    }
+
     const createStudent = await Student.create(studentData);
 
     return responseFormat({
@@ -41,10 +55,7 @@ export class StudentServices {
     });
   };
 
-  update = async (
-    id: string,
-    studentData: StudentDTO
-  ) => {
+  update = async (id: string, studentData: Partial<StudentDTO>) => {
     const student = await Student.findByPk(id);
     if (student === null) throw logger.error("Student not found", 404);
     if (studentData.phone && studentData.phone !== student.phone) {
@@ -53,6 +64,26 @@ export class StudentServices {
       });
 
       if (existingStudent) throw logger.error("Phone already in use", 409);
+    }
+
+    const changingGroup =
+      studentData.groupId && studentData.groupId !== student.groupId;
+    const activatingStudent =
+      studentData.enrollment === "ACTIVE" && student.enrollment !== "ACTIVE";
+
+    if (changingGroup || activatingStudent) {
+      const targetGroupId = studentData.groupId || student.groupId;
+
+      const group = await Group.findByPk(targetGroupId);
+      if (!group) throw logger.error("Group not found", 404);
+
+      const activeStudentsInGroup = await Student.count({
+        where: { groupId: targetGroupId, enrollment: "ACTIVE" },
+      });
+
+      if (activeStudentsInGroup >= group.maxCapacity) {
+        throw logger.error("Group has reached maximum capacity", 400);
+      }
     }
 
     const updatedStudent = await student.update(studentData);
@@ -67,7 +98,12 @@ export class StudentServices {
   delete = async (id: string) => {
     const student = await Student.findByPk(id);
     if (student === null) throw logger.error("Student not found", 404);
-    await student.update({ isActive: false });
+    await student.update({ isActive: false, enrollment: "INACTIVE" });
+
+    await Subscription.update(
+      { status: "CANCELLED" },
+      { where: { studentId: id, status: "ACTIVE" } },
+    );
 
     return responseFormat({
       message: "Student deactivated succesfully",
