@@ -2,8 +2,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { SubscriptionService } from "@services/subscriptionService";
 import { Subscription } from "@models/subscription";
+import { Student } from "@models/student";
+import { Plan } from "@models/plan";
 
 vi.mock("@models/subscription");
+vi.mock("@models/student");
+vi.mock("@models/plan");
 
 describe("Subscription Services - Create", () => {
   let subscriptionService: SubscriptionService;
@@ -25,6 +29,8 @@ describe("Subscription Services - Create", () => {
     };
 
     vi.mocked(Subscription.count).mockResolvedValue(0);
+    vi.mocked(Student.findByPk).mockResolvedValue({ id: subscriptionData.studentId, isActive: true } as any);
+    vi.mocked(Plan.findByPk).mockResolvedValue({ id: subscriptionData.planId, isActive: true } as any);
 
     vi.mocked(Subscription.create).mockResolvedValue({
       id: "mock-uuid-123",

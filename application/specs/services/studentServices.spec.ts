@@ -2,9 +2,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { StudentServices } from "@services/studentServices";
 import { Student } from "@models/student";
+import { Group } from "@models/group";
+import { Subscription } from "@models/subscription";
 import { StudentDTO } from "@dtos/student";
 
 vi.mock("@models/student");
+vi.mock("@models/group");
+vi.mock("@models/subscription");
 
 describe("Students Services - Create", () => {
   let studentServices: StudentServices;
@@ -24,6 +28,7 @@ describe("Students Services - Create", () => {
     };
 
     vi.mocked(Student.count).mockResolvedValue(0);
+    vi.mocked(Group.findByPk).mockResolvedValue({ id: studentData.groupId, maxCapacity: 30 } as any);
 
     vi.mocked(Student.create).mockResolvedValue({
       id: "mock-uuid-123",
@@ -144,6 +149,8 @@ describe("Students Services - Update", () => {
       name: "Ana Beatriz",
       phone: "11999999999",
       isActive: true,
+      groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
+      enrollment: "ACTIVE",
       update: vi.fn().mockResolvedValue({
         id: fakeId,
         name: "Ana Beatriz",
@@ -225,6 +232,7 @@ describe("Students Services - Delete", () => {
     };
 
     vi.mocked(Student.findByPk).mockResolvedValue(fakeStudentInstance as any);
+    vi.mocked(Subscription.update).mockResolvedValue([1, []] as any);
 
     const response = await studentServices.delete(fakeId);
 
@@ -232,6 +240,7 @@ describe("Students Services - Delete", () => {
     expect(response.message).toBe("Student deactivated succesfully");
     expect(fakeStudentInstance.update).toHaveBeenCalledWith({
       isActive: false,
+      enrollment: "INACTIVE",
     });
   });
 
