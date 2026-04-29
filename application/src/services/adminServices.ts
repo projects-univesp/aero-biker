@@ -12,16 +12,9 @@ export class AdminServices {
   constructor(private readonly mail: MailClient = new MailClient()) {}
 
   create = async (adminData: Partial<AdminDTO>) => {
-    const orConditions = [];
-    orConditions.push({ phone: adminData.phone });
-    orConditions.push({ email: adminData.email });
-
-    const existingAdmin = await Admin.findOne({
-      where: { [Op.or]: orConditions },
-    });
-
-    if (existingAdmin) {
-      throw logger.error("Phone or email already in use", 409);
+    const existingAdminsCount = await Admin.count();
+    if (existingAdminsCount > 0) {
+      throw logger.error("An administrator account already exists. Creation blocked.", 403);
     }
 
     const hashedPassword = await generateHashPassword(adminData.password!);
@@ -30,8 +23,10 @@ export class AdminServices {
       ...adminData,
       password: hashedPassword,
     });
-
-    const { password, ...safeAdmin } = createAdmin;
+    
+    const adminJSON = createAdmin.get({ plain: true });
+    
+    const { password, ...safeAdmin } = adminJSON;
 
     return responseFormat({
       message: "Admin created succesfully",
