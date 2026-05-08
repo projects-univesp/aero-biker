@@ -1,6 +1,7 @@
 import { AdminDTO } from "@dtos/admin";
 import { GroupDTO } from "@dtos/group";
 import { PlanDTO } from "@dtos/plan";
+import { ScheduleDTO } from "@dtos/schedule";
 import { StudentDTO } from "@dtos/student";
 import { SubscriptionDTO } from "@dtos/subscription";
 import { z } from "zod";
@@ -53,6 +54,48 @@ export class VerifyData {
       .partial();
 
     return schema.parse(group);
+  }
+
+  verifySchedule(schedule: ScheduleDTO) {
+    const schema = z.object({
+      dayOfWeek: z.number().min(0).max(6),
+      startTime: z
+        .string()
+        .regex(
+          /^([01]\d|2[0-3]):([0-5]\d)$/,
+          "Invalid start time format (HH:MM)",
+        ),
+      endTime: z
+        .string()
+        .regex(
+          /^([01]\d|2[0-3]):([0-5]\d)$/,
+          "Invalid end time format (HH:MM)",
+        ),
+      groupId: z.string().uuid(),
+    });
+    return schema.parse(schedule);
+  }
+
+  verifySchedulePartial(schedule: Partial<ScheduleDTO>) {
+    const schema = z
+      .object({
+        dayOfWeek: z.number().min(0).max(6),
+        startTime: z
+          .string()
+          .regex(
+            /^([01]\d|2[0-3]):([0-5]\d)$/,
+            "Invalid start time format (HH:MM)",
+          ),
+        endTime: z
+          .string()
+          .regex(
+            /^([01]\d|2[0-3]):([0-5]\d)$/,
+            "Invalid end time format (HH:MM)",
+          ),
+        groupId: z.string().uuid(),
+      })
+      .partial();
+    return schema.parse(schedule);
   }
 
   verifyPlan(plan: PlanDTO) {

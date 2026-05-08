@@ -2,6 +2,7 @@ import { Student } from "./student";
 import { Group } from "./group";
 import { Subscription } from "./subscription";
 import { Plan } from "./plan";
+import { Schedule } from "./schedules";
 
 Student.belongsTo(Group, {
   foreignKey: "groupId",
@@ -17,3 +18,5 @@ Subscription.belongsTo(Student, { foreignKey: "studentId", as: "student" });
 Subscription.belongsTo(Plan, { foreignKey: "planId", as: "plan" });
 Student.hasMany(Subscription, { foreignKey: "studentId", as: "subscriptions" });
 Plan.hasMany(Subscription, { foreignKey: "planId", as: "subscriptions" });
+Group.hasMany(Schedule, { foreignKey: "groupId", as: "schedules" });
+Schedule.belongsTo(Group, { foreignKey: "groupId", as: "group" });
