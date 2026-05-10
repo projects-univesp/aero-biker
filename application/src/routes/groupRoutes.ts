@@ -14,3 +14,7 @@ export const apiGroupRoutes = Router()
   .get("/:id", tryCatch(group.getGroup))
   .patch("/:id", tryCatch(group.updateGroup))
   .delete("/:id", tryCatch(group.deleteGroup));
+
+// SSR ROUTES
+export const groupRoutes = Router()
+  .get("/", renderApi("/api/groups", "pages/groups/index", "groups"));

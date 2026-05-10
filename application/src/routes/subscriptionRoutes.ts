@@ -2,6 +2,7 @@ import { Router } from "express";
 import { SubscriptionController } from "@controllers/subscriptionController";
 import { tryCatch } from "@middlewares/tryCatch";
 import { auth } from "@middlewares/auth";
+import { renderApi } from "@middlewares/renderApi";
 
 const subscription = new SubscriptionController();
 
@@ -12,3 +13,6 @@ export const apiSubscriptionRoutes = Router()
   .get("/:id", tryCatch(subscription.getSubscription))
   .patch("/:id", tryCatch(subscription.updateSubscription))
   .delete("/:id", tryCatch(subscription.deleteSubscription));
+
+export const subscriptionRoutes = Router()
+  .get("/", renderApi("/api/subscriptions", "pages/subscriptions/index", "subscriptions"));
