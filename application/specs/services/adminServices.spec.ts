@@ -5,20 +5,20 @@ import { Admin } from "@models/admin";
 import { generateHashPassword, compareHashPasswords } from "@utils/encrypt";
 
 vi.mock("@models/admin");
+vi.mock("@utils/encrypt");
+
+describe("Admin Services - Create", () => {
+  let adminServices: AdminServices;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    adminServices = new AdminServices();
+
+vi.mock("@models/admin");
 vi.mock("@utils/encrypt", () => ({
   generateHashPassword: vi.fn(),
   compareHashPasswords: vi.fn(),
 }));
-
-describe("Admin Services - Create", () => {
-  let adminServices: AdminServices;
-  let mockMail: { sendMail: ReturnType<typeof vi.fn> };
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockMail = { sendMail: vi.fn().mockResolvedValue(undefined) };
-    adminServices = new AdminServices(mockMail as any);
-  });
 
   it("Must create an admin successfully", async () => {
     const adminData = {
@@ -67,12 +67,10 @@ describe("Admin Services - Create", () => {
 
 describe("Admin Services - Get", () => {
   let adminServices: AdminServices;
-  let mockMail: { sendMail: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockMail = { sendMail: vi.fn().mockResolvedValue(undefined) };
-    adminServices = new AdminServices(mockMail as any);
+    adminServices = new AdminServices();
   });
 
   it("Must get admin information successfully", async () => {

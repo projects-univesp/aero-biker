@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { SubscriptionService } from "@services/subscriptionService";
-import { Subscription } from "@models/subscription";
-import { Student } from "@models/student";
-import { Plan } from "@models/plan";
+import { SubscriptionService } from "../../src/services/subscriptionService";
+import { Subscription } from "../../src/models/subscription";
+import { Student } from "../../src/models/student";
+import { Plan } from "../../src/models/plan";
 
 vi.mock("@models/subscription");
 vi.mock("@models/student");
@@ -56,6 +56,76 @@ describe("Subscription Services - Create", () => {
     };
 
     vi.mocked(Subscription.count).mockResolvedValue(1);
+
+    await expect(subscriptionService.create(subscriptionData)).rejects.toThrow();
+
+    expect(Subscription.create).not.toHaveBeenCalled();
+  });
+
+  it("Must throw a 404 error if student is not found", async () => {
+    const subscriptionData = {
+      studentId: "non-existent-student",
+      planId: "550e8400-e29b-41d4-a716-446655440001",
+      subscriptionValue: 150,
+      status: "ACTIVE",
+      paymentMethod: "credit_card",
+    };
+
+    vi.mocked(Subscription.count).mockResolvedValue(0);
+    vi.mocked(Student.findByPk).mockResolvedValue(null);
+
+    await expect(subscriptionService.create(subscriptionData)).rejects.toThrow();
+
+    expect(Subscription.create).not.toHaveBeenCalled();
+  });
+
+  it("Must throw a 404 error if student is inactive", async () => {
+    const subscriptionData = {
+      studentId: "550e8400-e29b-41d4-a716-446655440000",
+      planId: "550e8400-e29b-41d4-a716-446655440001",
+      subscriptionValue: 150,
+      status: "ACTIVE",
+      paymentMethod: "credit_card",
+    };
+
+    vi.mocked(Subscription.count).mockResolvedValue(0);
+    vi.mocked(Student.findByPk).mockResolvedValue({ isActive: false } as any);
+
+    await expect(subscriptionService.create(subscriptionData)).rejects.toThrow();
+
+    expect(Subscription.create).not.toHaveBeenCalled();
+  });
+
+  it("Must throw a 404 error if plan is not found", async () => {
+    const subscriptionData = {
+      studentId: "550e8400-e29b-41d4-a716-446655440000",
+      planId: "non-existent-plan",
+      subscriptionValue: 150,
+      status: "ACTIVE",
+      paymentMethod: "credit_card",
+    };
+
+    vi.mocked(Subscription.count).mockResolvedValue(0);
+    vi.mocked(Student.findByPk).mockResolvedValue({ isActive: true } as any);
+    vi.mocked(Plan.findByPk).mockResolvedValue(null);
+
+    await expect(subscriptionService.create(subscriptionData)).rejects.toThrow();
+
+    expect(Subscription.create).not.toHaveBeenCalled();
+  });
+
+  it("Must throw a 404 error if plan is inactive", async () => {
+    const subscriptionData = {
+      studentId: "550e8400-e29b-41d4-a716-446655440000",
+      planId: "550e8400-e29b-41d4-a716-446655440001",
+      subscriptionValue: 150,
+      status: "ACTIVE",
+      paymentMethod: "credit_card",
+    };
+
+    vi.mocked(Subscription.count).mockResolvedValue(0);
+    vi.mocked(Student.findByPk).mockResolvedValue({ isActive: true } as any);
+    vi.mocked(Plan.findByPk).mockResolvedValue({ isActive: false } as any);
 
     await expect(subscriptionService.create(subscriptionData)).rejects.toThrow();
 
@@ -171,6 +241,44 @@ describe("Subscription Services - Update", () => {
     expect(response.statusCode).toBe(200);
     expect(response.message).toBe("Subscription updated succesfully");
     expect(fakeSubscriptionInstance.update).toHaveBeenCalledWith(updateData);
+  });
+
+  it("Must throw a 404 error if studentId is invalid", async () => {
+    const fakeId = "mock-uuid-123";
+    const updateData = {
+      studentId: "non-existent-student",
+    };
+
+    const fakeSubscriptionInstance = {
+      id: fakeId,
+      update: vi.fn(),
+    };
+
+    vi.mocked(Subscription.findByPk).mockResolvedValue(fakeSubscriptionInstance as any);
+    vi.mocked(Student.findByPk).mockResolvedValue(null);
+
+    await expect(subscriptionService.update(fakeId, updateData)).rejects.toThrow();
+
+    expect(fakeSubscriptionInstance.update).not.toHaveBeenCalled();
+  });
+
+  it("Must throw a 404 error if planId is invalid", async () => {
+    const fakeId = "mock-uuid-123";
+    const updateData = {
+      planId: "non-existent-plan",
+    };
+
+    const fakeSubscriptionInstance = {
+      id: fakeId,
+      update: vi.fn(),
+    };
+
+    vi.mocked(Subscription.findByPk).mockResolvedValue(fakeSubscriptionInstance as any);
+    vi.mocked(Plan.findByPk).mockResolvedValue(null);
+
+    await expect(subscriptionService.update(fakeId, updateData)).rejects.toThrow();
+
+    expect(fakeSubscriptionInstance.update).not.toHaveBeenCalled();
   });
 
   it("Must throw a 404 error if subscription is not found", async () => {

@@ -1,10 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { StudentServices } from "@services/studentServices";
-import { Student } from "@models/student";
-import { Group } from "@models/group";
-import { Subscription } from "@models/subscription";
-import { StudentDTO } from "@dtos/student";
+import { StudentServices } from "../../src/services/studentServices";
+import { Student } from "../../src/models/student";
+import { Group } from "../../src/models/group";
+import { Subscription } from "../../src/models/subscription";
 
 vi.mock("@models/student");
 vi.mock("@models/group");
@@ -52,6 +51,41 @@ describe("Students Services - Create", () => {
     };
 
     vi.mocked(Student.count).mockResolvedValue(1);
+
+    await expect(studentServices.create(studentData)).rejects.toThrow();
+
+    expect(Student.create).not.toHaveBeenCalled();
+  });
+
+  it("Must throw a 404 error if group is not found", async () => {
+    const studentData = {
+      name: "Novo Aluno",
+      phone: "5511988880000",
+      isActive: true,
+      groupId: "non-existent-group",
+      enrollment: "ACTIVE"
+    };
+
+    vi.mocked(Student.count).mockResolvedValueOnce(0);
+    vi.mocked(Group.findByPk).mockResolvedValue(null);
+
+    await expect(studentServices.create(studentData)).rejects.toThrow();
+
+    expect(Student.create).not.toHaveBeenCalled();
+  });
+
+  it("Must throw a 400 error if group has reached maximum capacity", async () => {
+    const studentData = {
+      name: "Novo Aluno",
+      phone: "5511988880001",
+      isActive: true,
+      groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
+      enrollment: "ACTIVE"
+    };
+
+    vi.mocked(Student.count).mockResolvedValueOnce(0);
+    vi.mocked(Group.findByPk).mockResolvedValue({ id: studentData.groupId, maxCapacity: 10 } as any);
+    vi.mocked(Student.count).mockResolvedValueOnce(10);
 
     await expect(studentServices.create(studentData)).rejects.toThrow();
 
@@ -162,6 +196,7 @@ describe("Students Services - Update", () => {
     };
 
     vi.mocked(Student.findByPk).mockResolvedValue(fakeStudentInstance as any);
+    vi.mocked(Student.findOne).mockResolvedValue(null);
 
     const response = await studentServices.update(fakeId, updateData);
 
@@ -190,12 +225,43 @@ describe("Students Services - Update", () => {
     };
 
     vi.mocked(Student.findByPk).mockResolvedValue(fakeStudentInstance as any);
-
-    vi.mocked(Student.findOne).mockResolvedValue({
-      id: "outro-cara-uuid",
-    } as any);
+    vi.mocked(Student.findOne).mockResolvedValue({ id: "outro-cara-uuid" } as any);
 
     await expect(studentServices.update(fakeId, updateData)).rejects.toThrow();
+  });
+
+  it("Must update student successfully when changing group", async () => {
+    const fakeId = "mock-uuid-123";
+    const updateData = {
+      name: "Ana Beatriz",
+      phone: "11999999999",
+      isActive: true,
+      groupId: "new-group-uuid",
+      enrollment: "ACTIVE"
+    };
+
+    const fakeStudentInstance = {
+      id: fakeId,
+      name: "Ana Beatriz",
+      phone: "11999999999",
+      isActive: true,
+      groupId: "old-group-uuid",
+      enrollment: "ACTIVE",
+      update: vi.fn().mockResolvedValue({
+        id: fakeId,
+        ...updateData,
+      }),
+    };
+
+    vi.mocked(Student.findByPk).mockResolvedValue(fakeStudentInstance as any);
+    vi.mocked(Group.findByPk).mockResolvedValue({ id: "new-group-uuid", maxCapacity: 20 } as any);
+    vi.mocked(Student.count).mockResolvedValue(5);
+
+    const response = await studentServices.update(fakeId, updateData);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.message).toBe("Student updated succesfully");
+    expect(fakeStudentInstance.update).toHaveBeenCalledWith(updateData);
   });
 
   it("Must throw a 404 error if student is not found", async () => {

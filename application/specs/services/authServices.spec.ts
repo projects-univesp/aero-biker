@@ -1,14 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { AuthServices } from "@services/authServices";
-import { Admin } from "@models/admin";
-import { compareHashPasswords } from "@utils/encrypt";
+import { AuthServices } from "../../src/services/authServices";
+import { Admin } from "../../src/models/admin";
+import { compareHashPasswords } from "../../src/utils/encrypt";
 import jwt from "jsonwebtoken";
 
 vi.mock("@models/admin");
-vi.mock("@utils/encrypt", () => ({
-  compareHashPasswords: vi.fn(),
-}));
+vi.mock("@utils/encrypt");
 vi.mock("jsonwebtoken");
 
 describe("Auth Services - EmailLogin", () => {

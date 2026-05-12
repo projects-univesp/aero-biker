@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { PlanService } from "@services/planService";
-import { Plan } from "@models/plan";
-import { Subscription } from "@models/subscription";
+import { PlanService } from "../../src/services/planService";
+import { Plan } from "../../src/models/plan";
+import { Subscription } from "../../src/models/subscription";
 
 vi.mock("@models/plan");
 vi.mock("@models/subscription");
@@ -212,6 +212,22 @@ describe("Plan Services - Delete", () => {
     expect(fakePlanInstance.update).toHaveBeenCalledWith({
       isActive: false,
     });
+  });
+
+  it("Must throw a 400 error if plan has active subscriptions", async () => {
+    const fakeId = "mock-uuid-123";
+
+    const fakePlanInstance = {
+      id: fakeId,
+      update: vi.fn(),
+    };
+
+    vi.mocked(Plan.findByPk).mockResolvedValue(fakePlanInstance as any);
+    vi.mocked(Subscription.count).mockResolvedValue(3);
+
+    await expect(planService.delete(fakeId)).rejects.toThrow();
+
+    expect(fakePlanInstance.update).not.toHaveBeenCalled();
   });
 
   it("Must throw a 404 error if plan is not found", async () => {
