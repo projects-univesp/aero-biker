@@ -7,7 +7,7 @@ import { renderApi } from "@middlewares/renderApi";
 const plan = new PlanController();
 
 export const apiPlanRoutes = Router()
-  .use(auth)
+  //.use(auth)
   .post("/", tryCatch(plan.createPlan))
   .get("/", tryCatch(plan.getAllPlans))
   .get("/:id", tryCatch(plan.getPlan))
@@ -15,4 +15,10 @@ export const apiPlanRoutes = Router()
   .delete("/:id", tryCatch(plan.deletePlan));
 
 export const planRoutes = Router()
-  .get("/", renderApi("/api/plans", "pages/plans/index", "plans"));
+  .get(
+    "/",
+    renderApi("/api/plans", "pages/plans/index", "plans", {
+      emptyMessage: "Nenhum plano cadastrado até o momento.",
+      category: "Plans.",
+    }),
+  );
