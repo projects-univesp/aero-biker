@@ -2,8 +2,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { GroupServices } from "@services/groupService";
 import { Group } from "@models/group";
+import { Student } from "@models/student";
 
 vi.mock("@models/group");
+vi.mock("@models/student");
 
 describe("Group Services - Create", () => {
   let groupServices: GroupServices;
@@ -206,6 +208,7 @@ describe("Group Services - Delete", () => {
     };
 
     vi.mocked(Group.findByPk).mockResolvedValue(fakeGroupInstance as any);
+    vi.mocked(Student.count).mockResolvedValue(0);
 
     const response = await groupServices.delete(fakeId);
 

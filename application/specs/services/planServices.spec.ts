@@ -2,8 +2,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { PlanService } from "@services/planService";
 import { Plan } from "@models/plan";
+import { Subscription } from "@models/subscription";
 
 vi.mock("@models/plan");
+vi.mock("@models/subscription");
 
 describe("Plan Services - Create", () => {
   let planService: PlanService;
@@ -201,6 +203,7 @@ describe("Plan Services - Delete", () => {
     };
 
     vi.mocked(Plan.findByPk).mockResolvedValue(fakePlanInstance as any);
+    vi.mocked(Subscription.count).mockResolvedValue(0);
 
     const response = await planService.delete(fakeId);
 
