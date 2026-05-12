@@ -11,22 +11,22 @@ export class StudentServices {
       where: { phone: studentData.phone },
     });
 
-    if (existingStudent > 0) throw logger.error("Student Already exists", 409);
+    if (existingStudent > 0) responseFormat.error("Student Already exists", 409);
 
     const group = await Group.findByPk(studentData.groupId);
-    if (!group) throw logger.error("Group not found", 404);
+    if (!group) responseFormat.error("Group not found", 404);
 
     const activeStudentsInGroup = await Student.count({
       where: { groupId: studentData.groupId, enrollment: "ACTIVE" },
     });
 
     if (activeStudentsInGroup >= group.maxCapacity) {
-      throw logger.error("Group has reached maximum capacity", 400);
+      responseFormat.error("Group has reached maximum capacity", 400);
     }
 
     const createStudent = await Student.create(studentData);
 
-    return responseFormat({
+    return responseFormat.send({
       message: "Student created succesfully",
       statusCode: 201,
       data: createStudent,
@@ -35,9 +35,9 @@ export class StudentServices {
 
   get = async (id: string) => {
     const student = await Student.findByPk(id);
-    if (student === null) throw logger.error("Student not found", 404);
+    if (student === null) responseFormat.error("Student not found", 404);
 
-    return responseFormat({
+    return responseFormat.send({
       message: "Student found successfully",
       statusCode: 200,
       data: student,
@@ -46,9 +46,9 @@ export class StudentServices {
 
   getAll = async () => {
     const students = await Student.findAll();
-    if (students.length === 0) throw logger.error("Students not found", 404);
+    if (students.length === 0) responseFormat.error("Students not found", 404);
 
-    return responseFormat({
+    return responseFormat.send({
       message: "Students found successfully",
       statusCode: 200,
       data: students,
@@ -57,13 +57,13 @@ export class StudentServices {
 
   update = async (id: string, studentData: Partial<StudentDTO>) => {
     const student = await Student.findByPk(id);
-    if (student === null) throw logger.error("Student not found", 404);
+    if (student === null) responseFormat.error("Student not found", 404);
     if (studentData.phone && studentData.phone !== student.phone) {
       const existingStudent = await Student.findOne({
         where: { phone: studentData.phone },
       });
 
-      if (existingStudent) throw logger.error("Phone already in use", 409);
+      if (existingStudent) responseFormat.error("Phone already in use", 409);
     }
 
     const changingGroup =
@@ -75,20 +75,20 @@ export class StudentServices {
       const targetGroupId = studentData.groupId || student.groupId;
 
       const group = await Group.findByPk(targetGroupId);
-      if (!group) throw logger.error("Group not found", 404);
+      if (!group) responseFormat.error("Group not found", 404);
 
       const activeStudentsInGroup = await Student.count({
         where: { groupId: targetGroupId, enrollment: "ACTIVE" },
       });
 
       if (activeStudentsInGroup >= group.maxCapacity) {
-        throw logger.error("Group has reached maximum capacity", 400);
+        responseFormat.error("Group has reached maximum capacity", 400);
       }
     }
 
     const updatedStudent = await student.update(studentData);
 
-    return responseFormat({
+    return responseFormat.send({
       message: "Student updated succesfully",
       statusCode: 200,
       data: updatedStudent,
@@ -97,7 +97,7 @@ export class StudentServices {
 
   delete = async (id: string) => {
     const student = await Student.findByPk(id);
-    if (student === null) throw logger.error("Student not found", 404);
+    if (student === null) responseFormat.error("Student not found", 404);
     await student.update({ isActive: false, enrollment: "INACTIVE" });
 
     await Subscription.update(
@@ -105,7 +105,7 @@ export class StudentServices {
       { where: { studentId: id, status: "ACTIVE" } },
     );
 
-    return responseFormat({
+    return responseFormat.send({
       message: "Student deactivated succesfully",
       statusCode: 200,
     });
