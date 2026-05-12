@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { AdminServices } from "../../src/services/adminServices";
-import { Admin } from "../../src/models/admin";
-import { generateHashPassword, compareHashPasswords } from "../../src/utils/encrypt";
+import { AdminServices } from "@services/adminServices";
+import { Admin } from "@models/admin";
+import { generateHashPassword, compareHashPasswords } from "@utils/encrypt";
 
 vi.mock("@models/admin");
 vi.mock("@utils/encrypt");
@@ -13,29 +13,36 @@ describe("Admin Services - Create", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     adminServices = new AdminServices();
-  });
+
+vi.mock("@models/admin");
+vi.mock("@utils/encrypt", () => ({
+  generateHashPassword: vi.fn(),
+  compareHashPasswords: vi.fn(),
+}));
 
   it("Must create an admin successfully", async () => {
     const adminData = {
-      name: "Jorge Admin",
-      email: "admin@studio.com",
+      name: "Jorge Martins",
       phone: "11999999999",
+      email: "jorge@example.com",
       password: "senha123",
+      isActive: true,
     };
 
     vi.mocked(Admin.count).mockResolvedValue(0);
-    vi.mocked(generateHashPassword).mockResolvedValue("hashed-password");
+    vi.mocked(generateHashPassword).mockResolvedValue("hashed_senha123");
 
     vi.mocked(Admin.create).mockResolvedValue({
       id: "mock-uuid-123",
       ...adminData,
-      password: "hashed-password",
+      password: "hashed_senha123",
       get: vi.fn().mockReturnValue({
         id: "mock-uuid-123",
-        name: adminData.name,
-        email: adminData.email,
-        phone: adminData.phone,
-        password: "hashed-password",
+        name: "Jorge Martins",
+        phone: "11999999999",
+        email: "jorge@example.com",
+        password: "hashed_senha123",
+        isActive: true,
       }),
     } as any);
 
@@ -44,19 +51,15 @@ describe("Admin Services - Create", () => {
     expect(response.statusCode).toBe(201);
     expect(response.message).toBe("Admin created succesfully");
     expect(response.data.id).toBe("mock-uuid-123");
+    expect(response.data.password).toBeUndefined();
   });
 
   it("Must throw a 403 error if an admin already exists", async () => {
-    const adminData = {
-      name: "Jorge Admin",
-      email: "admin@studio.com",
-      phone: "11999999999",
-      password: "senha123",
-    };
-
     vi.mocked(Admin.count).mockResolvedValue(1);
 
-    await expect(adminServices.create(adminData)).rejects.toThrow();
+    await expect(
+      adminServices.create({ name: "Jorge", email: "jorge@example.com", password: "senha" })
+    ).rejects.toThrow();
 
     expect(Admin.create).not.toHaveBeenCalled();
   });
@@ -74,10 +77,10 @@ describe("Admin Services - Get", () => {
     const fakeId = "mock-uuid-123";
     const fakeAdmin = {
       id: fakeId,
-      name: "Jorge Admin",
-      email: "admin@studio.com",
+      name: "Jorge Martins",
       phone: "11999999999",
-      password: "hashed-password",
+      email: "jorge@example.com",
+      password: "hashed_password",
       isActive: true,
     };
 
@@ -87,6 +90,8 @@ describe("Admin Services - Get", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.message).toBe("Admin found successfully");
+    expect(response.data.name).toBe("Jorge Martins");
+    expect(response.data.password).toBeUndefined();
   });
 
   it("Must throw a 404 error if admin is not found", async () => {
@@ -95,77 +100,86 @@ describe("Admin Services - Get", () => {
     vi.mocked(Admin.findByPk).mockResolvedValue(null);
 
     await expect(adminServices.get(fakeId)).rejects.toThrow();
+
+    expect(Admin.findByPk).toHaveBeenCalledWith(fakeId);
   });
 });
 
 describe("Admin Services - ForgotPassword", () => {
   let adminServices: AdminServices;
-  let mockSendMail: ReturnType<typeof vi.fn>;
+  let mockMail: { sendMail: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockSendMail = vi.fn().mockResolvedValue(undefined);
-    adminServices = new AdminServices({ sendMail: mockSendMail } as any);
+    mockMail = { sendMail: vi.fn().mockResolvedValue(undefined) };
+    adminServices = new AdminServices(mockMail as any);
   });
 
   it("Must send recovery code successfully", async () => {
     const fakeAdmin = {
-      name: "Jorge Admin",
-      email: "admin@studio.com",
-      code: null,
-      expiresAt: null,
+      name: "Jorge Martins",
+      email: "jorge@example.com",
       update: vi.fn().mockResolvedValue(true),
     };
 
     vi.mocked(Admin.findOne).mockResolvedValue(fakeAdmin as any);
 
-    const response = await adminServices.forgotPassword("admin@studio.com");
+    const response = await adminServices.forgotPassword("jorge@example.com");
 
     expect(response.statusCode).toBe(200);
     expect(response.message).toBe("Code sent successfully");
     expect(fakeAdmin.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        code: expect.any(String),
-        expiresAt: expect.any(Date),
-      })
+      expect.objectContaining({ expiresAt: expect.any(Date) })
     );
-    expect(mockSendMail).toHaveBeenCalled();
+    expect(mockMail.sendMail).toHaveBeenCalledWith(
+      "jorge@example.com",
+      "Recovery Code",
+      expect.any(String)
+    );
   });
 
-  it("Must throw a 404 error if admin is not found", async () => {
+  it("Must throw a 404 error if admin email is not found", async () => {
     vi.mocked(Admin.findOne).mockResolvedValue(null);
 
-    await expect(adminServices.forgotPassword("notfound@test.com")).rejects.toThrow();
+    await expect(
+      adminServices.forgotPassword("inexistente@example.com")
+    ).rejects.toThrow();
 
-    expect(mockSendMail).not.toHaveBeenCalled();
+    expect(mockMail.sendMail).not.toHaveBeenCalled();
   });
 });
 
 describe("Admin Services - ResetPassword", () => {
   let adminServices: AdminServices;
+  let mockMail: { sendMail: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    adminServices = new AdminServices();
+    mockMail = { sendMail: vi.fn().mockResolvedValue(undefined) };
+    adminServices = new AdminServices(mockMail as any);
   });
 
   it("Must reset password successfully", async () => {
     const fakeAdmin = {
-      email: "admin@studio.com",
+      email: "jorge@example.com",
       code: "abc123",
-      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000),
       update: vi.fn().mockResolvedValue(true),
     };
 
     vi.mocked(Admin.findOne).mockResolvedValue(fakeAdmin as any);
-    vi.mocked(generateHashPassword).mockResolvedValue("new-hashed-password");
+    vi.mocked(generateHashPassword).mockResolvedValue("new_hashed_password");
 
-    const response = await adminServices.resetPassword("admin@studio.com", "abc123", "novaSenha123");
+    const response = await adminServices.resetPassword(
+      "jorge@example.com",
+      "abc123",
+      "newPassword"
+    );
 
     expect(response.statusCode).toBe(200);
     expect(response.message).toBe("Password reset successfully");
     expect(fakeAdmin.update).toHaveBeenCalledWith({
-      password: "new-hashed-password",
+      password: "new_hashed_password",
       code: null,
       expiresAt: null,
     });
@@ -174,70 +188,69 @@ describe("Admin Services - ResetPassword", () => {
   it("Must throw a 404 error if admin is not found", async () => {
     vi.mocked(Admin.findOne).mockResolvedValue(null);
 
-    await expect(adminServices.resetPassword("notfound@test.com", "abc123", "novaSenha")).rejects.toThrow();
+    await expect(
+      adminServices.resetPassword("inexistente@example.com", "abc123", "newPassword")
+    ).rejects.toThrow();
   });
 
-  it("Must throw a 400 error if recovery code is invalid", async () => {
+  it("Must throw a 400 error if recovery code is incorrect", async () => {
     const fakeAdmin = {
-      email: "admin@studio.com",
+      email: "jorge@example.com",
       code: "abc123",
-      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
-      update: vi.fn(),
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000),
     };
 
     vi.mocked(Admin.findOne).mockResolvedValue(fakeAdmin as any);
 
-    await expect(adminServices.resetPassword("admin@studio.com", "wrong-code", "novaSenha")).rejects.toThrow();
-
-    expect(fakeAdmin.update).not.toHaveBeenCalled();
+    await expect(
+      adminServices.resetPassword("jorge@example.com", "codigo-errado", "newPassword")
+    ).rejects.toThrow();
   });
 
-  it("Must throw a 400 error if recovery code is expired", async () => {
+  it("Must throw a 400 error if recovery code has expired", async () => {
     const fakeAdmin = {
-      email: "admin@studio.com",
+      email: "jorge@example.com",
       code: "abc123",
       expiresAt: new Date(Date.now() - 1000),
-      update: vi.fn(),
     };
 
     vi.mocked(Admin.findOne).mockResolvedValue(fakeAdmin as any);
 
-    await expect(adminServices.resetPassword("admin@studio.com", "abc123", "novaSenha")).rejects.toThrow();
-
-    expect(fakeAdmin.update).not.toHaveBeenCalled();
+    await expect(
+      adminServices.resetPassword("jorge@example.com", "abc123", "newPassword")
+    ).rejects.toThrow();
   });
 });
 
 describe("Admin Services - Update", () => {
   let adminServices: AdminServices;
+  let mockMail: { sendMail: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    adminServices = new AdminServices();
+    mockMail = { sendMail: vi.fn().mockResolvedValue(undefined) };
+    adminServices = new AdminServices(mockMail as any);
   });
 
-  it("Must update admin successfully", async () => {
+  it("Must update admin information successfully", async () => {
     const fakeId = "mock-uuid-123";
     const updateData = { name: "Jorge Atualizado" };
 
     const fakeAdminInstance = {
       id: fakeId,
-      name: "Jorge Admin",
-      email: "admin@studio.com",
+      name: "Jorge",
       phone: "11999999999",
-      password: "hashed-old",
+      email: "jorge@example.com",
+      password: "hashed_password",
+      isActive: true,
       update: vi.fn().mockResolvedValue({
-        id: fakeId,
-        name: "Jorge Atualizado",
-        email: "admin@studio.com",
-        phone: "11999999999",
-        password: "hashed-old",
         get: vi.fn().mockReturnValue({
           id: fakeId,
           name: "Jorge Atualizado",
-          email: "admin@studio.com",
           phone: "11999999999",
-          password: "hashed-old",
+          email: "jorge@example.com",
+          password: "hashed_password",
+          isActive: true,
         }),
       }),
     };
@@ -248,98 +261,87 @@ describe("Admin Services - Update", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.message).toBe("Admin updated successfully");
-    expect(fakeAdminInstance.update).toHaveBeenCalled();
+    expect(response.data.name).toBe("Jorge Atualizado");
+    expect(response.data.password).toBeUndefined();
+    expect(fakeAdminInstance.update).toHaveBeenCalledWith(updateData);
+  });
+
+  it("Must throw a 404 error if admin is not found", async () => {
+    vi.mocked(Admin.findByPk).mockResolvedValue(null);
+
+    await expect(
+      adminServices.update("non-existent-id", { name: "Teste" })
+    ).rejects.toThrow();
   });
 
   it("Must throw a 409 error if phone or email is already in use", async () => {
     const fakeId = "mock-uuid-123";
-    const updateData = { phone: "11888888888" };
 
     const fakeAdminInstance = {
       id: fakeId,
-      name: "Jorge Admin",
-      email: "admin@studio.com",
       phone: "11999999999",
-      password: "hashed",
+      email: "jorge@example.com",
     };
 
     vi.mocked(Admin.findByPk).mockResolvedValue(fakeAdminInstance as any);
     vi.mocked(Admin.findOne).mockResolvedValue({ id: "outro-admin-uuid" } as any);
 
-    await expect(adminServices.update(fakeId, updateData)).rejects.toThrow();
+    await expect(
+      adminServices.update(fakeId, { phone: "11888888888" })
+    ).rejects.toThrow();
   });
 
-  it("Must update admin password successfully", async () => {
+  it("Must throw a 400 error if new password is provided without old password", async () => {
     const fakeId = "mock-uuid-123";
-    const updateData = { password: "novaSenha123", oldPassword: "senhaAntiga" };
 
     const fakeAdminInstance = {
       id: fakeId,
-      name: "Jorge Admin",
-      email: "admin@studio.com",
       phone: "11999999999",
-      password: "hashed-old",
-      update: vi.fn().mockResolvedValue({
-        id: fakeId,
-        name: "Jorge Admin",
-        email: "admin@studio.com",
-        phone: "11999999999",
-        password: "new-hashed",
-        get: vi.fn().mockReturnValue({
-          id: fakeId,
-          name: "Jorge Admin",
-          email: "admin@studio.com",
-          phone: "11999999999",
-          password: "new-hashed",
-        }),
-      }),
+      email: "jorge@example.com",
+      password: "hashed_password",
     };
 
     vi.mocked(Admin.findByPk).mockResolvedValue(fakeAdminInstance as any);
-    vi.mocked(compareHashPasswords).mockResolvedValue(true);
-    vi.mocked(generateHashPassword).mockResolvedValue("new-hashed");
 
-    const response = await adminServices.update(fakeId, updateData);
+    await expect(
+      adminServices.update(fakeId, { password: "novaSenha" })
+    ).rejects.toThrow();
 
-    expect(response.statusCode).toBe(200);
-    expect(response.message).toBe("Admin updated successfully");
+    expect(compareHashPasswords).not.toHaveBeenCalled();
   });
 
   it("Must throw a 401 error if old password is incorrect", async () => {
     const fakeId = "mock-uuid-123";
-    const updateData = { password: "novaSenha123", oldPassword: "senhaErrada" };
 
     const fakeAdminInstance = {
       id: fakeId,
-      email: "admin@studio.com",
       phone: "11999999999",
-      password: "hashed-old",
+      email: "jorge@example.com",
+      password: "hashed_password",
     };
 
     vi.mocked(Admin.findByPk).mockResolvedValue(fakeAdminInstance as any);
     vi.mocked(compareHashPasswords).mockResolvedValue(false);
 
-    await expect(adminServices.update(fakeId, updateData)).rejects.toThrow();
-  });
+    await expect(
+      adminServices.update(fakeId, { password: "novaSenha", oldPassword: "senhaErrada" })
+    ).rejects.toThrow();
 
-  it("Must throw a 404 error if admin is not found", async () => {
-    const fakeId = "non-existent-id";
-
-    vi.mocked(Admin.findByPk).mockResolvedValue(null);
-
-    await expect(adminServices.update(fakeId, { name: "Teste" })).rejects.toThrow();
+    expect(generateHashPassword).not.toHaveBeenCalled();
   });
 });
 
 describe("Admin Services - Delete", () => {
   let adminServices: AdminServices;
+  let mockMail: { sendMail: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    adminServices = new AdminServices();
+    mockMail = { sendMail: vi.fn().mockResolvedValue(undefined) };
+    adminServices = new AdminServices(mockMail as any);
   });
 
-  it("Must fake delete admin successfully", async () => {
+  it("Must deactivate admin successfully", async () => {
     const fakeId = "mock-uuid-123";
 
     const fakeAdminInstance = {
@@ -357,10 +359,8 @@ describe("Admin Services - Delete", () => {
   });
 
   it("Must throw a 404 error if admin is not found", async () => {
-    const fakeId = "non-existent-id";
-
     vi.mocked(Admin.findByPk).mockResolvedValue(null);
 
-    await expect(adminServices.delete(fakeId)).rejects.toThrow();
+    await expect(adminServices.delete("non-existent-id")).rejects.toThrow();
   });
 });

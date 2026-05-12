@@ -29,8 +29,8 @@ describe("Subscription Services - Create", () => {
     };
 
     vi.mocked(Subscription.count).mockResolvedValue(0);
-    vi.mocked(Student.findByPk).mockResolvedValue({ isActive: true } as any);
-    vi.mocked(Plan.findByPk).mockResolvedValue({ isActive: true } as any);
+    vi.mocked(Student.findByPk).mockResolvedValue({ id: subscriptionData.studentId, isActive: true } as any);
+    vi.mocked(Plan.findByPk).mockResolvedValue({ id: subscriptionData.planId, isActive: true } as any);
 
     vi.mocked(Subscription.create).mockResolvedValue({
       id: "mock-uuid-123",
