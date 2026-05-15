@@ -39,11 +39,17 @@ export default class HandleData {
   // Helper to build the payload fields
   _buildPayload() {
     const payload = {};
-    
+
     if (this.config.fields) {
       for (const [apiKey, elementId] of Object.entries(this.config.fields)) {
         const el = document.getElementById(elementId);
         if (el) payload[apiKey] = el.value;
+      }
+    }
+    if (this.config.numericFields) {
+      for (const [apiKey, elementId] of Object.entries(this.config.numericFields)) {
+        const el = document.getElementById(elementId);
+        if (el && el.value !== '') payload[apiKey] = parseFloat(el.value);
       }
     }
     if (this.config.checkboxes) {
@@ -66,6 +72,12 @@ export default class HandleData {
         if (el) el.value = '';
       });
     }
+    if (this.config.numericFields) {
+      Object.values(this.config.numericFields).forEach(input => {
+        const el = document.getElementById(input);
+        if (el) el.value = '';
+      });
+    }
 
     if (this.itemId) {
       if (this.config.id) document.getElementById(this.config.id).value = this.itemId;
@@ -79,13 +91,18 @@ export default class HandleData {
             if (data[dbKey] !== undefined) document.getElementById(htmlId).value = data[dbKey];
           }
         }
+        if (this.config.numericFields) {
+          for (const [dbKey, htmlId] of Object.entries(this.config.numericFields)) {
+            if (data[dbKey] !== undefined) document.getElementById(htmlId).value = data[dbKey];
+          }
+        }
         if (this.config.checkboxes) {
           for (const [dbKey, htmlId] of Object.entries(this.config.checkboxes)) {
             if (data[dbKey] !== undefined) document.getElementById(htmlId).checked = data[dbKey];
           }
         }
       } catch (error) {
-        return; 
+        return;
       }
     }
 

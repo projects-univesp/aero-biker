@@ -29,7 +29,7 @@ export class SubscriptionController {
   };
 
   updateSubscription = async (request: Request, response: Response) => {
-    const parsedSubscription = this.verifyData.verifySubscription(request.body);
+    const parsedSubscription = this.verifyData.verifySubscriptionPartial(request.body);
     const { id } = this.verifyData.verifyId(request.params.id);
     const subscription = await this.subscriptionService.update(id, parsedSubscription);
     return response.status(200).send(subscription);

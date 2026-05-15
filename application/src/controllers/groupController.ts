@@ -29,7 +29,7 @@ export class GroupController {
   };
 
   updateGroup = async (request: Request, response: Response) => {
-    const parsedGroup = this.verifyData.verifyGroup(request.body)
+    const parsedGroup = this.verifyData.verifyGroupPartial(request.body)
     const { id } = this.verifyData.verifyId(request.params.id);
     const group = await this.groupServices.update(id, parsedGroup);
     return response.status(200).send(group);

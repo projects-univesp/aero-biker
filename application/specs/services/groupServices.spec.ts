@@ -1,9 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { GroupServices } from "@services/groupService";
-import { Group } from "@models/group";
+import { GroupServices } from "../../src/services/groupService";
+import { Group } from "../../src/models/group";
+import { Student } from "../../src/models/student";
 
 vi.mock("@models/group");
+vi.mock("@models/student");
 
 describe("Group Services - Create", () => {
   let groupServices: GroupServices;
@@ -173,7 +175,25 @@ describe("Group Services - Update", () => {
     };
 
     vi.mocked(Group.findByPk).mockResolvedValue(fakeGroupInstance as any);
-    vi.mocked(Group.count).mockResolvedValue(1); 
+    vi.mocked(Group.count).mockResolvedValue(1);
+
+    await expect(groupServices.update(fakeId, updateData)).rejects.toThrow();
+  });
+
+  it("Must throw a 400 error if maxCapacity is below active students count", async () => {
+    const fakeId = "mock-uuid-123";
+    const updateData = {
+      maxCapacity: 3,
+    };
+
+    const fakeGroupInstance = {
+      id: fakeId,
+      name: "Turma de Ciclismo 01",
+      maxCapacity: 20,
+    };
+
+    vi.mocked(Group.findByPk).mockResolvedValue(fakeGroupInstance as any);
+    vi.mocked(Student.count).mockResolvedValue(10);
 
     await expect(groupServices.update(fakeId, updateData)).rejects.toThrow();
   });
@@ -206,6 +226,7 @@ describe("Group Services - Delete", () => {
     };
 
     vi.mocked(Group.findByPk).mockResolvedValue(fakeGroupInstance as any);
+    vi.mocked(Student.count).mockResolvedValue(0);
 
     const response = await groupServices.delete(fakeId);
 
@@ -214,6 +235,22 @@ describe("Group Services - Delete", () => {
     expect(fakeGroupInstance.update).toHaveBeenCalledWith({
       isActive: false,
     });
+  });
+
+  it("Must throw a 400 error if group has active students", async () => {
+    const fakeId = "mock-uuid-123";
+
+    const fakeGroupInstance = {
+      id: fakeId,
+      update: vi.fn(),
+    };
+
+    vi.mocked(Group.findByPk).mockResolvedValue(fakeGroupInstance as any);
+    vi.mocked(Student.count).mockResolvedValue(5);
+
+    await expect(groupServices.delete(fakeId)).rejects.toThrow();
+
+    expect(fakeGroupInstance.update).not.toHaveBeenCalled();
   });
 
   it("Must throw a 404 error if group is not found", async () => {

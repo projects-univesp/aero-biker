@@ -17,7 +17,11 @@
                 <button id="btn-inactive" data-filter="inactive" class="filter-btn px-4 py-2.5 rounded-xl text-sm font-medium capitalize transition-colors bg-white border border-gray-200 text-gray-600 hover:bg-gray-50">inativos</button>
             </div>
         </div>
-        {{> studentList }}
+        {{#if isEmpty}}
+            {{> emptyState }}
+        {{else}}
+            {{> studentList }}
+        {{/if}}
     </div>
 </div>
 

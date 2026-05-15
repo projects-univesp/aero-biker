@@ -29,7 +29,7 @@ export class PlanController {
   };
 
   updatePlan = async (request: Request, response: Response) => {
-    const parsedPlan = this.verifyData.verifyPlan(request.body);
+    const parsedPlan = this.verifyData.verifyPlanPartial(request.body);
     const { id } = this.verifyData.verifyId(request.params.id);
     const plan = await this.planService.update(id, parsedPlan);
     return response.status(200).send(plan);

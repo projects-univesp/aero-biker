@@ -28,7 +28,7 @@ export class StudentController {
   };
 
   updateStudent = async (request: Request, response: Response) => {
-    const parsedStudent = this.verifyData.verifyStudent(request.body);
+    const parsedStudent = this.verifyData.verifyStudentPartial(request.body);
     const { id } = this.verifyData.verifyId(request.params.id);
     const student = await this.studentServices.update(id, parsedStudent);
     return response.status(200).send(student);
