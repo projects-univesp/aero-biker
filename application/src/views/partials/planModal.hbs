@@ -8,8 +8,12 @@
 }}
     {{> input id="plan-name" label="Nome*" placeholder="Ex: Plano Mensal"}}
     {{> input id="plan-description" label="Descrição*" placeholder="Breve descrição do plano"}}
-    {{> input id="plan-price" label="Preço (R$)*" placeholder="Ex: 150.00"}}
-    {{> input id="plan-duration" label="Duração (meses)*" placeholder="Ex: 1"}}
+    {{> dropdown 
+        id="plan-duration" 
+        label="Modalidade*" 
+        tagData=durationMonths
+        tagCategory="Plano"
+    }}
     <label class="flex items-center gap-3 cursor-pointer">
       <input type="checkbox" id="plan-active" class="w-4 h-4 accent-green-500" checked>
       <span class="text-sm font-medium text-gray-700">Plano ativo</span>

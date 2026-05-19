@@ -19,6 +19,14 @@ export const planRoutes = Router()
     "/",
     renderApi("/api/plans", "pages/plans/index", "plans", {
       emptyMessage: "Nenhum plano cadastrado até o momento.",
-      category: "Plans.",
+      category: "Plans",
+      viewData: {
+        durationMonths: [
+          "Mensal",
+          "Trimestral",
+          "Semestral",
+          "Anual"
+        ],
+      },
     }),
   );

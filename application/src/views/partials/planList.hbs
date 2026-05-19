@@ -13,7 +13,7 @@
             </thead>
             <tbody class="divide-y divide-gray-50">
                 {{#each plans}}
-                <tr class="plan-row hover:bg-gray-50 transition-colors" data-status="{{#if this.isActive}}active{{else}}inactive{{/if}}">
+                <tr class="plan-row hover:bg-gray-50 transition-colors"  data-name="{{this.name}}" data-status="{{#if this.isActive}}active{{else}}inactive{{/if}}">
                     <td class="px-5 py-3.5">
                         <p class="font-medium text-gray-900 text-sm">{{this.name}}</p>
                     </td>
@@ -25,7 +25,7 @@
                     </td>
                     <td class="px-5 py-3.5 hidden md:table-cell">
                         <p class="text-sm text-gray-600">
-                            {{this.durationMonths}} {{#if (eq this.durationMonths 1)}}mês{{else}}meses{{/if}}
+                            {{this.durationMonths}} 
                         </p>
                     </td>
                     <td class="px-5 py-3.5 hidden md:table-cell">

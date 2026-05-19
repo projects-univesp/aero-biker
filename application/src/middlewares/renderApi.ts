@@ -4,6 +4,7 @@ import { env } from "@utils/env";
 type RenderApiOptions = {
   emptyMessage?: string;
   category?: string;
+  viewData?: Record<string, any>;
 };
 
 export const renderApi = (
@@ -48,6 +49,7 @@ export const renderApi = (
           options?.emptyMessage ?? "Nenhum dado encontrado.",
         category: 
           options?.category ?? "Nenhuma categoria encontrada.",
+        ...(options?.viewData ?? {}),
       });
     } catch (error) {
       console.error(

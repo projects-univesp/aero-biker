@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ).length;
 
   if (countersDisplay) {
-    countersDisplay.textContent = `${activeCount} ativos • ${rows.length} total`;
+    countersDisplay.textContent = `${activeCount} ativos • ${totalCount} total`;
   }
 
   function filterTable() {
