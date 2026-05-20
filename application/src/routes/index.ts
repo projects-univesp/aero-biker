@@ -3,7 +3,7 @@ import { apiStudentRoutes, studentRoutes } from "./studentRoutes";
 import { apiGroupRoutes, groupRoutes } from "./groupRoutes";
 import { apiPlanRoutes, planRoutes } from "./planRoutes";
 import { apiSubscriptionRoutes, subscriptionRoutes } from "./subscriptionRoutes";
-import { apiAdminRoutes } from "./adminRoutes";
+import { adminRoutes, apiAdminRoutes } from "./adminRoutes";
 import { apiAuthRoutes } from "./authRoutes";
 import { apiScheduleRoutes } from "./scheduleRoutes";
 
@@ -23,3 +23,4 @@ appRouter.use("/students", studentRoutes);
 appRouter.use("/groups", groupRoutes);
 appRouter.use("/plans", planRoutes);
 appRouter.use("/subscriptions", subscriptionRoutes);
+appRouter.use("/settings", adminRoutes);
