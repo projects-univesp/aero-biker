@@ -157,9 +157,9 @@ export class VerifyData {
   verifyAdmin(admin: AdminDTO) {
     const schema = z.object({
       name: z.string().max(50),
-      phone: z.string().min(10).max(15),
-      email: z.email().max(50),
-      password: z.string().min(6).max(25),
+      phone: z.string().min(10).max(15).optional(),
+      email: z.email().max(100),
+      password: z.string().min(6).max(72),
     });
 
     return schema.parse(admin);
@@ -170,8 +170,8 @@ export class VerifyData {
       .object({
         name: z.string().max(50),
         phone: z.string().min(10).max(15),
-        email: z.email().max(50),
-        password: z.string().min(6).max(25),
+        email: z.email().max(100),
+        password: z.string().min(6).max(72),
       })
       .partial();
 
@@ -188,8 +188,8 @@ export class VerifyData {
 
   verifyAuthRequest(user: { email: string; password: string }) {
     const schema = z.object({
-      email: z.email().max(50),
-      password: z.string().min(6).max(25),
+      email: z.email().max(100),
+      password: z.string().min(1).max(72),
     });
 
     return schema.parse(user);
@@ -197,7 +197,7 @@ export class VerifyData {
 
   verifyEmail(email: string) {
     const schema = z.object({
-      email: z.email().max(50),
+      email: z.email().max(100),
     });
 
     return schema.parse({ email });
@@ -206,9 +206,106 @@ export class VerifyData {
   verifyResetPassword(data: { code: string; email: string; password: string }) {
     const schema = z.object({
       code: z.string().max(6),
-      email: z.email().max(50),
-      password: z.string().min(6).max(25),
+      email: z.email().max(100),
+      password: z.string().min(6).max(72),
     });
+
+    return schema.parse(data);
+  }
+
+  verifySetup(data: {
+    name: string;
+    email: string;
+    password: string;
+    masterPassword: string;
+    confirmMasterPassword: string;
+  }) {
+    const masterPasswordSchema = z
+      .string()
+      .min(12, "Mínimo 12 caracteres")
+      .max(72)
+      .regex(/[A-Z]/, "Deve conter letra maiúscula")
+      .regex(/[a-z]/, "Deve conter letra minúscula")
+      .regex(/[0-9]/, "Deve conter número")
+      .regex(/[^A-Za-z0-9]/, "Deve conter caractere especial");
+
+    const schema = z
+      .object({
+        name: z.string().min(2).max(50),
+        email: z.email().max(100),
+        password: z.string().min(8).max(72),
+        masterPassword: masterPasswordSchema,
+        confirmMasterPassword: z.string(),
+      })
+      .refine((d) => d.masterPassword === d.confirmMasterPassword, {
+        message: "Senhas mestres não coincidem",
+        path: ["confirmMasterPassword"],
+      });
+
+    return schema.parse(data);
+  }
+
+  verifyRegister(data: {
+    name: string;
+    email: string;
+    password: string;
+    masterPassword: string;
+  }) {
+    const schema = z.object({
+      name: z.string().min(2).max(50),
+      email: z.email().max(100),
+      password: z.string().min(8).max(72),
+      masterPassword: z.string().min(1),
+    });
+
+    return schema.parse(data);
+  }
+
+  verifyResetWithMaster(data: {
+    email: string;
+    masterPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+  }) {
+    const schema = z
+      .object({
+        email: z.email().max(100),
+        masterPassword: z.string().min(1),
+        newPassword: z.string().min(8).max(72),
+        confirmNewPassword: z.string(),
+      })
+      .refine((d) => d.newPassword === d.confirmNewPassword, {
+        message: "Senhas não coincidem",
+        path: ["confirmNewPassword"],
+      });
+
+    return schema.parse(data);
+  }
+
+  verifyRecovery(data: {
+    recoveryKey: string;
+    newMasterPassword: string;
+    confirmNewMasterPassword: string;
+  }) {
+    const masterPasswordSchema = z
+      .string()
+      .min(12, "Mínimo 12 caracteres")
+      .max(72)
+      .regex(/[A-Z]/, "Deve conter letra maiúscula")
+      .regex(/[a-z]/, "Deve conter letra minúscula")
+      .regex(/[0-9]/, "Deve conter número")
+      .regex(/[^A-Za-z0-9]/, "Deve conter caractere especial");
+
+    const schema = z
+      .object({
+        recoveryKey: z.string().min(1),
+        newMasterPassword: masterPasswordSchema,
+        confirmNewMasterPassword: z.string(),
+      })
+      .refine((d) => d.newMasterPassword === d.confirmNewMasterPassword, {
+        message: "Senhas não coincidem",
+        path: ["confirmNewMasterPassword"],
+      });
 
     return schema.parse(data);
   }

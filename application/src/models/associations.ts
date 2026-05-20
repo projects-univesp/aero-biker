@@ -3,6 +3,7 @@ import { Group } from "./group";
 import { Subscription } from "./subscription";
 import { Plan } from "./plan";
 import { Schedule } from "./schedules";
+import "./systemConfig";
 
 Student.belongsTo(Group, {
   foreignKey: "groupId",

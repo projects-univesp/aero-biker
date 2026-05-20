@@ -21,6 +21,7 @@ const envSchema = z.object({
   SALT_RESULT: z.coerce.number().default(10),
   CORS_ORIGIN: z.string().default("http://localhost:5500"),
   VIEWS_PATH: z.enum(["views", "src/views"]).default("src/views"),
+  MASTER_RECOVERY_KEY: z.string().default(""),
 });
 
 const _env = envSchema.safeParse(process.env);
@@ -32,3 +33,17 @@ if (!_env.success) {
 }
 
 export const env = _env.data;
+
+// Startup security assertions — fail fast on critical misconfigurations
+const isProd = env.NODE_ENV === "production";
+
+if (!env.JWT_SECRET) {
+  if (isProd) throw new Error("❌ JWT_SECRET must be set in production");
+  console.warn("⚠️  JWT_SECRET is empty — using insecure default (dev only)");
+}
+
+if (!env.MASTER_RECOVERY_KEY) {
+  console.warn(
+    "⚠️  MASTER_RECOVERY_KEY is not set — master password recovery via recovery key is disabled",
+  );
+}

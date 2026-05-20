@@ -24,8 +24,6 @@ export class PlanService {
   getAll = async () => {
     const plans = await Plan.findAll();
 
-    if (plans.length === 0) throw logger.error("Plans not found", 404);
-
     return responseFormat({
       message: "Plans found successfully",
       statusCode: 200,

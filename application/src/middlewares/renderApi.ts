@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { env } from "@utils/env";
+import jwt from "jsonwebtoken";
 
 export const renderApi = (
   apiPath: string | ((req: Request) => string),
@@ -12,11 +13,16 @@ export const renderApi = (
         typeof apiPath === "function" ? apiPath(req) : apiPath;
       const url = `http://localhost:${env.PORT}${resolvedPath}`;
 
+      const internalToken = jwt.sign(
+        { id: "ssr-internal", name: "ssr", password: "" },
+        env.JWT_SECRET as string,
+        { expiresIn: 10 },
+      );
+
       const apiResponse = await fetch(url, {
-        method: req.method,
         headers: {
           "Content-Type": "application/json",
-          ...(req.headers as any),
+          Authorization: `Bearer ${internalToken}`,
         },
       });
 

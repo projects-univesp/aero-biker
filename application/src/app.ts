@@ -12,6 +12,9 @@ import { notFound } from "@middlewares/notFound";
 
 const app = express();
 
+// Trust a single proxy (nginx/caddy). Must come BEFORE rate limiters so req.ip is correct.
+app.set("trust proxy", 1);
+
 // HandleBars Config
 app.engine(
   ".hbs",
@@ -19,7 +22,22 @@ app.engine(
     defaultLayout: "main",
     extname: ".hbs",
     partialsDir: path.join(process.cwd(), env.VIEWS_PATH, "partials"),
-    helpers: { formatDate },
+    helpers: {
+      formatDate,
+      eq: (a: unknown, b: unknown) => a === b,
+      formatCurrency: (value: number) => {
+        if (value == null) return '';
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+      },
+      formatDateShort: (date: string | Date) => {
+        if (!date) return '';
+        return new Intl.DateTimeFormat('pt-BR').format(new Date(date));
+      },
+      substring: (str: string, start: number, end: number) => {
+        if (!str) return '';
+        return String(str).substring(start, end);
+      },
+    },
   }),
 );
 
