@@ -14,3 +14,13 @@ export const apiAdminRoutes = Router()
   .get("/:id", auth, tryCatch(admin.getAdmin))
   .patch("/:id", auth, tryCatch(admin.updateAdmin))
   .delete("/:id", auth, tryCatch(admin.deleteAdmin));
+
+export const adminRoutes = Router()
+  .get(
+    "/",
+    renderApi("/api/students", "pages/settings/index", "admin", {
+      emptyMessage: "Nenhum grupo cadastrado até o momento.",
+      category: "Admin.",
+    }),
+  );
+

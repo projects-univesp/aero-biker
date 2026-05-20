@@ -26,9 +26,8 @@ describe("Students Services - Create", () => {
       enrollment: "ACTIVE"
     };
 
-    vi.mocked(Student.count).mockResolvedValueOnce(0);
-    vi.mocked(Group.findByPk).mockResolvedValue({ id: studentData.groupId, maxCapacity: 20 } as any);
-    vi.mocked(Student.count).mockResolvedValueOnce(5);
+    vi.mocked(Student.count).mockResolvedValue(0);
+    vi.mocked(Group.findByPk).mockResolvedValue({ id: studentData.groupId, maxCapacity: 30 } as any);
 
     vi.mocked(Student.create).mockResolvedValue({
       id: "mock-uuid-123",
@@ -299,7 +298,7 @@ describe("Students Services - Delete", () => {
     };
 
     vi.mocked(Student.findByPk).mockResolvedValue(fakeStudentInstance as any);
-    vi.mocked(Subscription.update).mockResolvedValue([0] as any);
+    vi.mocked(Subscription.update).mockResolvedValue([1, []] as any);
 
     const response = await studentServices.delete(fakeId);
 
