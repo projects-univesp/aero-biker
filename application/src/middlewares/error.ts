@@ -21,7 +21,7 @@ export const errorHandler = (
 
   if (error instanceof Error) {
     response.status(status).json(
-      responseFormat({
+      responseFormat.send({
         statusCode: status,
         message: error.message,
         data: null,
@@ -31,7 +31,7 @@ export const errorHandler = (
   }
 
   response.status(500).json(
-    responseFormat({
+    responseFormat.send({
       message: error?.message || "Internal Server Error",
       statusCode: 500,
       data: null,

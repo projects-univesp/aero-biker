@@ -12,7 +12,7 @@ export const APP_CONFIG = Object.freeze({
             isActive: 'student-active'
         }
     },
-    
+
     GROUPS: {
         id: 'group-id',
         path: 'groups',
@@ -20,10 +20,50 @@ export const APP_CONFIG = Object.freeze({
         entityName: 'Turma',
         fields: {
             name: 'group-name',
-            schedule: 'group-schedule'
+            daysOfWeek: 'group-days',
+            time: 'group-time'
+        },
+        numericFields: {
+            maxCapacity: 'group-capacity'
         },
         checkboxes: {
             isActive: 'group-active'
+        }
+    },
+
+    PLANS: {
+        id: 'plan-id',
+        path: 'plans',
+        modalId: 'modal-plan',
+        entityName: 'Plano',
+        fields: {
+            name: 'plan-name',
+            description: 'plan-description'
+        },
+        numericFields: {
+            price: 'plan-price',
+            durationMonths: 'plan-duration'
+        },
+        checkboxes: {
+            isActive: 'plan-active'
+        }
+    },
+
+    SUBSCRIPTIONS: {
+        id: 'subscription-id',
+        path: 'subscriptions',
+        modalId: 'modal-subscription',
+        entityName: 'Assinatura',
+        fields: {
+            studentId: 'subscription-student',
+            planId: 'subscription-plan',
+            startDate: 'subscription-start-date',
+            renovationDate: 'subscription-renovation-date',
+            status: 'subscription-status',
+            paymentMethod: 'subscription-payment-method'
+        },
+        numericFields: {
+            subscriptionValue: 'subscription-value'
         }
     }
 });

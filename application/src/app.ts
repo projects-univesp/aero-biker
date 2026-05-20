@@ -7,7 +7,7 @@ import path from "path";
 import { logger } from "@utils/logger";
 import { sequelize } from "@config/database";
 import "@models/associations";
-import { formatDate } from "@utils/dateFormat";
+import { handlebarsHelpers } from "@utils/handlebarsHelpers";
 import { notFound } from "@middlewares/notFound";
 
 const app = express();
@@ -19,7 +19,7 @@ app.engine(
     defaultLayout: "main",
     extname: ".hbs",
     partialsDir: path.join(process.cwd(), env.VIEWS_PATH, "partials"),
-    helpers: { formatDate },
+    helpers: { ...handlebarsHelpers },
   }),
 );
 

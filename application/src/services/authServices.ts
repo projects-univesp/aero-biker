@@ -15,7 +15,7 @@ export class AuthServices {
     });
 
     if (existsAdmin === null)
-      throw logger.error("Email incorrect, please try again", 401);
+      responseFormat.error("Email incorrect, please try again", 401);
 
     const passwordMatch = await compareHashPasswords(
       admin.password!,
@@ -23,7 +23,7 @@ export class AuthServices {
     );
 
     if (!passwordMatch)
-      throw logger.error("Email or password incorrect, please try again", 401);
+      responseFormat.error("Email or password incorrect, please try again", 401);
 
     const token = jwt.sign(
       {
@@ -45,7 +45,7 @@ export class AuthServices {
       token,
     };
 
-    return responseFormat({
+    return responseFormat.send({
       data: payload,
       message: "Admin retrivied succesfully",
       statusCode: 200,

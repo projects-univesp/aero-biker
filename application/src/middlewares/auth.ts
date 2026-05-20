@@ -21,7 +21,7 @@ export const auth = (
 
   const data = { request, response, next };
   if (!authHeader) {
-    responseFormat({
+    responseFormat.send({
       message: "Token not provided",
       statusCode: 401,
       ...data,
@@ -33,7 +33,7 @@ export const auth = (
 
   jwt.verify(tokenWithoutBearer, env.JWT_SECRET as string, (err, decoded) => {
     if (err) {
-      responseFormat({
+      responseFormat.send({
         message: "Invalid token",
         statusCode: 401,
         ...data,

@@ -8,9 +8,19 @@ const group = new GroupController();
 
 // API ROUTES
 export const apiGroupRoutes = Router()
-  .use(auth)
+  //.use(auth)
   .post("/", tryCatch(group.createGroup))
   .get("/", tryCatch(group.getAllGroups))
   .get("/:id", tryCatch(group.getGroup))
   .patch("/:id", tryCatch(group.updateGroup))
   .delete("/:id", tryCatch(group.deleteGroup));
+
+// SSR ROUTES
+export const groupRoutes = Router()
+  .get(
+    "/",
+    renderApi("/api/groups", "pages/groups/index", "groups", {
+      emptyMessage: "Nenhum grupo cadastrado até o momento.",
+      category: "Groups.",
+    }),
+  );
