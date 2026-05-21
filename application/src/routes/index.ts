@@ -5,7 +5,7 @@ import { apiPlanRoutes, planRoutes } from "./planRoutes";
 import { apiSubscriptionRoutes, subscriptionRoutes } from "./subscriptionRoutes";
 import { adminRoutes, apiAdminRoutes } from "./adminRoutes";
 import { apiAuthRoutes } from "./authRoutes";
-import { apiScheduleRoutes } from "./scheduleRoutes";
+import { apiScheduleRoutes, scheduleRoutes } from "./scheduleRoutes";
 
 export const appRouter = Router();
 
@@ -24,3 +24,4 @@ appRouter.use("/groups", groupRoutes);
 appRouter.use("/plans", planRoutes);
 appRouter.use("/subscriptions", subscriptionRoutes);
 appRouter.use("/settings", adminRoutes);
+appRouter.use("/schedules", scheduleRoutes);

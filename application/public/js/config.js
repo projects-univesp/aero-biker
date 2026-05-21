@@ -65,6 +65,21 @@ export const APP_CONFIG = Object.freeze({
         numericFields: {
             subscriptionValue: 'subscription-value'
         }
+    },
+
+    SCHEDULES: {
+        id: 'schedule-id',
+        path: 'schedule',
+        modalId: 'modal-schedule',
+        entityName: 'Agendamento',
+        fields: {
+            startTime: 'schedule-start-time',
+            endTime: 'schedule-end-time',
+            groupId: 'schedule-group' 
+        },
+        numericFields: {
+            dayOfWeek: 'schedule-day'
+        }
     }
 });
 

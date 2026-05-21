@@ -27,7 +27,7 @@ export class ScheduleService {
       ],
     });
 
-    if (schedules.length === 0) responseFormat.error("Schedules not found", 404);
+   // if (schedules.length === 0) responseFormat.error("Schedules not found", 404);
 
     return responseFormat.send({
       message: "Schedules found successfully",
