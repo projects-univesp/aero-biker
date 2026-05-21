@@ -55,6 +55,18 @@
     required=true
   }}
 
+  {{> input
+    id="schedule-current-students"
+    label="Qtd. Alunos(as)"
+    placeholder="Ex.: 3"
+    required=true
+  }}
+
+  <label class="flex items-center gap-3 cursor-pointer">
+    <input type="checkbox" id="schedule-holiday" class="w-4 h-4 accent-green-500" unchecked>
+    <span class="text-sm font-medium text-gray-700">Feriado</span>
+  </label>
+
   <label class="flex items-center gap-3 cursor-pointer">
     <input type="checkbox" id="schedule-active" class="w-4 h-4 accent-green-500" checked>
     <span class="text-sm font-medium text-gray-700">Aula ativa</span>

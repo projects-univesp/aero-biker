@@ -44,7 +44,7 @@
 
       <div class="flex items-center gap-2">
         <div class="flex items-center gap-1 px-3 py-2 bg-green-50 rounded-xl text-sm text-green-700">
-          {{> icons/users class="w-4 h-4"}}
+         {{> icons/scheduleUsers class="w-4 h-4"}}
           {{this.currentStudents}}
         </div>
 
@@ -59,17 +59,7 @@
           onclick="handleDelete('{{this.id}}')"
           class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition"
         >
-          {{> icons/trash class="w-4 h-4"}}
+           {{> icons/trash class="w-4 h-4"}} 
         </button>
       </div>
-</div>
 
-  {{else}}
-
-    <div class="bg-white rounded-2xl p-8 text-center text-gray-500">
-      Nenhuma aula encontrada.
-    </div>
-
-  {{/each}}
-
-</div>
