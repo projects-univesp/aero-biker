@@ -68,19 +68,31 @@ export const APP_CONFIG = Object.freeze({
     },
 
     SCHEDULES: {
-        id: 'schedule-id',
-        path: 'schedule',
-        modalId: 'modal-schedule',
-        entityName: 'Agendamento',
-        fields: {
-            startTime: 'schedule-start-time',
-            endTime: 'schedule-end-time',
-            groupId: 'schedule-group' 
-        },
-        numericFields: {
-            dayOfWeek: 'schedule-day'
-        }
-    }
+      id: 'schedule-id',
+      path: 'schedules',
+      modalId: 'modal-schedule',
+      entityName: 'Agenda',
+      
+      fields: {
+        title: 'schedule-title',
+        category: 'schedule-category',  
+        level: 'schedule-level',   
+        description: 'schedule-description',   
+        startTime: 'schedule-start',    
+        endTime: 'schedule-end',   
+        groupId: 'schedule-group',
+      },
+    
+      numericFields: {
+        dayOfWeek: 'schedule-day',  
+        currentStudents: 'schedule-current-students',
+      },
+    
+      booleanFields: {
+        isHoliday: 'schedule-holiday',   
+        isActive: 'schedule-active',
+      }
+    },
 });
 
 window.APP_CONFIG = APP_CONFIG;

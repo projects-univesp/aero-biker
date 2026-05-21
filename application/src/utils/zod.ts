@@ -58,7 +58,15 @@ export class VerifyData {
 
   verifySchedule(schedule: ScheduleDTO) {
     const schema = z.object({
-      dayOfWeek: z.number().min(0).max(6),
+      title: z.string().min(3).max(100),
+      category: z.string().min(2).max(50),
+      level: z.enum([
+        "Iniciante",
+        "Intermediário",
+        "Avançado",
+      ]),
+      description: z.string().max(255).optional(),
+      dayOfWeek: z.number().min(1).max(7),
       startTime: z
         .string()
         .regex(
@@ -71,15 +79,26 @@ export class VerifyData {
           /^([01]\d|2[0-3]):([0-5]\d)$/,
           "Invalid end time format (HH:MM)",
         ),
+      currentStudents: z.number().int().min(0),
+      isHoliday: z.boolean(),
+      isActive: z.boolean(),
       groupId: z.string().uuid(),
     });
     return schema.parse(schedule);
   }
-
+  
   verifySchedulePartial(schedule: Partial<ScheduleDTO>) {
     const schema = z
       .object({
-        dayOfWeek: z.number().min(0).max(6),
+        title: z.string().min(3).max(100),
+        category: z.string().min(2).max(50),
+        level: z.enum([
+          "Iniciante",
+          "Intermediário",
+          "Avançado",
+        ]),
+        description: z.string().max(255).optional(),
+        dayOfWeek: z.number().min(1).max(7),
         startTime: z
           .string()
           .regex(
@@ -92,6 +111,9 @@ export class VerifyData {
             /^([01]\d|2[0-3]):([0-5]\d)$/,
             "Invalid end time format (HH:MM)",
           ),
+        currentStudents: z.number().int().min(0),
+        isHoliday: z.boolean(),
+        isActive: z.boolean(),
         groupId: z.string().uuid(),
       })
       .partial();

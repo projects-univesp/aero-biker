@@ -1,0 +1,63 @@
+{{#> modal
+  modalId="modal-schedule"
+  titleId="schedule-modal-title"
+  formId="schedule-form"
+  hiddenId="schedule-id"
+  configName="APP_CONFIG.SCHEDULES"
+  title="Nova Aula"
+}}
+
+  {{> input
+    id="schedule-title"
+    label="Título da Aula"
+    placeholder="Ex: ROCK HIIT"
+    required=true
+  }}
+
+  {{> input
+    id="schedule-category"
+    label="Categoria"
+    placeholder="Ex: HIIT"
+    required=true
+  }}
+
+  {{> input
+    id="schedule-level"
+    label="Nível"
+    placeholder="Avançado"
+    required=true
+  }}
+
+  {{> input
+    id="schedule-description"
+    label="Descrição"
+    placeholder="Descrição da aula"
+  }}
+
+  {{> input
+    id="schedule-day"
+    label="Dia da Semana"
+    placeholder="1-7"
+    required=true
+  }}
+
+  {{> input
+    id="schedule-start"
+    label="Horário Inicial"
+    placeholder="08:00"
+    required=true
+  }}
+
+  {{> input
+    id="schedule-end"
+    label="Horário Final"
+    placeholder="09:00"
+    required=true
+  }}
+
+  <label class="flex items-center gap-3 cursor-pointer">
+    <input type="checkbox" id="schedule-active" class="w-4 h-4 accent-green-500" checked>
+    <span class="text-sm font-medium text-gray-700">Aula ativa</span>
+  </label>
+
+{{/modal}}

@@ -1,7 +1,19 @@
 export interface ScheduleDTO {
-  id: string;
-  dayOfWeek: number; 
+  title: string;
+  category: string;
+  level:
+     | "Iniciante"
+     | "Intermediário"
+     | "Avançado";
+  description?: string;
+
+  dayOfWeek: number;
   startTime: string;
-  endTime: string;  
+  endTime: string;
+
+  currentStudents: number;
+  isHoliday: boolean;
+  isActive: boolean;
+
   groupId: string;
 }
