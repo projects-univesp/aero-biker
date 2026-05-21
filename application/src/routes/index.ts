@@ -14,7 +14,7 @@ appRouter.use("/api/admin", apiAdminRoutes);
 appRouter.use("/api/auth", apiAuthRoutes);
 appRouter.use("/api/students", apiStudentRoutes);
 appRouter.use("/api/groups", apiGroupRoutes);
-appRouter.use("/schedules", apiScheduleRoutes);
+appRouter.use("/api/schedules", apiScheduleRoutes);
 appRouter.use("/api/plans", apiPlanRoutes);
 appRouter.use("/api/subscriptions", apiSubscriptionRoutes);
 

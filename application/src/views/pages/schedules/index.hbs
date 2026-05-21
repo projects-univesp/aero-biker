@@ -1,77 +1,56 @@
 <script src="/js/schedule.js"></script>
 
-<p>Olá</p>
-{{!-- <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div><h1 class="text-2xl font-bold text-gray-900">Agenda de Aulas
-        </h1>
-        <p class="text-gray-500 text-sm mt-1">7 aulas em Fevereiro
-        </p>
-        </div>
-        <button class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg shadow-green-200"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus">
-            <path d="M5 12h14">
-        </path>
-        <path d="M12 5v14">
-        </path>
-        </svg> Nova Aula</button>
-    </div>
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center justify-between">
-        <button class="p-2 hover:bg-gray-100 rounded-xl text-gray-600 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left">
-                <path d="m15 18-6-6 6-6">
-                </path>
-            </svg>
+<div class="flex-1 overflow-y-auto p-4 lg:p-6">
+  <div class="space-y-6">
+
+    {{> top
+      tagName="Agenda de Aulas"
+      tagButton="Nova Aula"
+      tagId="schedule-counters"
+      action="handleOpen(null, APP_CONFIG.SCHEDULES)"
+    }}
+
+    <div class="flex flex-col sm:flex-row gap-3">
+
+      {{> search
+        tagId="search-input"
+        tagPlaceholder="Buscar aula..."
+      }}
+
+      <div class="flex gap-2">
+        <button
+          id="btn-all"
+          data-filter="all"
+          class="filter-btn px-4 py-2.5 rounded-xl text-sm font-medium bg-green-500 text-white"
+        >
+          todas
         </button>
-        <div class="text-center"><p class="font-bold text-gray-900 text-lg">Fevereiro
-        </p>
-        <p class="text-sm text-gray-400">2025
-        </p>
-        </div>
-        <button class="p-2 hover:bg-gray-100 rounded-xl text-gray-600 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right">
-                <path d="m9 18 6-6-6-6">
-                </path>
-            </svg>
+
+        <button
+          id="btn-active"
+          data-filter="active"
+          class="filter-btn px-4 py-2.5 rounded-xl text-sm font-medium bg-white border border-gray-200 text-gray-600"
+        >
+          ativas
         </button>
+
+        <button
+          id="btn-inactive"
+          data-filter="inactive"
+          class="filter-btn px-4 py-2.5 rounded-xl text-sm font-medium bg-white border border-gray-200 text-gray-600"
+        >
+          inativas
+        </button>
+      </div>
     </div>
-    <div class="space-y-3">
-    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden border-gray-100">
-    <div class="flex items-center gap-4 p-5">
-        <div class="w-12 h-12 rounded-xl flex items-center justify-center font-bold flex-shrink-0 bg-green-100 text-green-700">
-    <div class="text-center leading-none">
-    <p class="text-lg">3</p>
-      </div>
-     </div>
-    <div class="flex-1 min-w-0">
-    <div class="flex items-center gap-2 flex-wrap mb-1">
-    <span class="text-xs text-gray-400 font-medium">1ª aula</span>
-    <p class="font-semibold text-gray-900 text-sm">#461 ROCK HIIT</p>
-     </div>
-    <div class="flex items-center gap-2 flex-wrap">
-    <span class="text-xs px-2 py-0.5 rounded-full font-medium bg-red-100 text-red-700">Avançado</span>
-    <span class="text-xs text-gray-400">Hiit curto</span>
-      </div>
-     </div>
-     <div class="flex items-center gap-2 flex-shrink-0">
-         <button class="flex items-center gap-1.5 text-xs bg-green-50 text-green-700 hover:bg-green-100 px-3 py-1.5 rounded-lg border border-green-100 transition-colors font-medium">
-         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users">
-             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-             <circle cx="9" cy="7" r="4"></circle>
-             <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-         </svg>
-        <span>0</span>
-    </button>
-    <button class="p-1.5 text-gray-400 hover:text-green-500 hover:bg-green-50 rounded-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pen">
-            <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path>
-        </svg>
-    </button>
-    <button class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2 lucide-trash-2">
-            <path d="M3 6h18"></path>
-            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-            <line x1="10" x2="10" y1="11" y2="17"></line>
-            <line x1="14" x2="14" y1="11" y2="17"></line>
-        </svg>
-    </button> --}}
+
+    {{#if isEmpty}}
+      {{> emptyState }}
+    {{else}}
+      {{> scheduleList }}
+    {{/if}}
+
+  </div>
+</div>
+
+{{> scheduleModal }}
