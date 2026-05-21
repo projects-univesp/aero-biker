@@ -6,7 +6,9 @@ export const APP_CONFIG = Object.freeze({
         entityName: 'Aluno',
         fields: {
             name: 'student-name',
-            phone: 'student-phone'
+            phone: 'student-phone',
+            groupId: 'student-group',
+            enrollment: 'student-enrollment'
         },
         checkboxes: {
             isActive: 'student-active'

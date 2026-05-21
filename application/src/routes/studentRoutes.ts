@@ -15,12 +15,15 @@ export const apiStudentRoutes = Router()
   .patch("/:id", tryCatch(student.updateStudent))
   .delete("/:id", tryCatch(student.deleteStudent));
 
-export const studentRoutes = Router()
-  .get(
-    "/",
-    renderApi("/api/students", "pages/students/index", "students", {
+export const studentRoutes = Router().get(
+  "/",
+  renderApi(
+    ["/api/students", "/api/groups"],
+    "pages/students/index",
+    ["students", "groups"],
+    {
       emptyMessage: "Nenhum estudante cadastrado até o momento.",
       category: "Students.",
-    }),
-  );
-
+    },
+  ),
+);
