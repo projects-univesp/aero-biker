@@ -1,5 +1,5 @@
 import { openModal, closeModal } from "./modal.js";
-import { APP_CONFIG } from './config.js';
+import { APP_CONFIG } from "./config.js";
 
 export default class HandleData {
   constructor(event, config, itemId = null) {
@@ -8,11 +8,11 @@ export default class HandleData {
     this.itemId = itemId;
   }
 
-  async dialUp(method, path, id = '', payload = null) {
+  async dialUp(method, path, id = "", payload = null) {
     const url = id ? `/api/${path}/${id}` : `/api/${path}`;
     const options = {
       method: method,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     };
 
     if (payload) {
@@ -21,14 +21,13 @@ export default class HandleData {
 
     try {
       const response = await fetch(url, options);
-      
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Falha na requisição.');
+        throw new Error(errorData.message || "Falha na requisição.");
       }
 
-      return method === 'DELETE' ? true : await response.json();
-
+      return method === "DELETE" ? true : await response.json();
     } catch (error) {
       console.error(`[HandleData DialUp] Erro no ${method}:`, error);
       alert(`Erro: ${error.message}`);
@@ -47,13 +46,17 @@ export default class HandleData {
       }
     }
     if (this.config.numericFields) {
-      for (const [apiKey, elementId] of Object.entries(this.config.numericFields)) {
+      for (const [apiKey, elementId] of Object.entries(
+        this.config.numericFields,
+      )) {
         const el = document.getElementById(elementId);
-        if (el && el.value !== '') payload[apiKey] = parseFloat(el.value);
+        if (el && el.value !== "") payload[apiKey] = parseFloat(el.value);
       }
     }
     if (this.config.checkboxes) {
-      for (const [apiKey, elementId] of Object.entries(this.config.checkboxes)) {
+      for (const [apiKey, elementId] of Object.entries(
+        this.config.checkboxes,
+      )) {
         const el = document.getElementById(elementId);
         if (el) payload[apiKey] = el.checked;
       }
@@ -64,41 +67,65 @@ export default class HandleData {
   // (GET)
   async get() {
     if (this.config.id && document.getElementById(this.config.id)) {
-      document.getElementById(this.config.id).value = '';
+      document.getElementById(this.config.id).value = "";
     }
+
     if (this.config.fields) {
-      Object.values(this.config.fields).forEach(input => {
+      Object.values(this.config.fields).forEach((input) => {
         const el = document.getElementById(input);
-        if (el) el.value = '';
+        if (el) {
+          if (el.tagName === "SELECT") {
+            el.selectedIndex = 0;
+          } else {
+            el.value = "";
+          }
+        }
       });
     }
+
     if (this.config.numericFields) {
-      Object.values(this.config.numericFields).forEach(input => {
+      Object.values(this.config.numericFields).forEach((input) => {
         const el = document.getElementById(input);
-        if (el) el.value = '';
+        if (el) {
+          if (el.tagName === "SELECT") {
+            el.selectedIndex = 0;
+          } else {
+            el.value = "";
+          }
+        }
       });
     }
 
     if (this.itemId) {
-      if (this.config.id) document.getElementById(this.config.id).value = this.itemId;
-
+      if (this.config.id)
+        document.getElementById(this.config.id).value = this.itemId;
       try {
-        const result = await this.dialUp('GET', this.config.path, this.itemId);
+        const result = await this.dialUp("GET", this.config.path, this.itemId);
         const data = result.data;
-
+        // O resto da função get() para carregar dados de edição continua exatamente igual...
         if (this.config.fields) {
           for (const [dbKey, htmlId] of Object.entries(this.config.fields)) {
-            if (data[dbKey] !== undefined) document.getElementById(htmlId).value = data[dbKey];
+            if (data[dbKey] !== undefined && document.getElementById(htmlId)) {
+              document.getElementById(htmlId).value = data[dbKey];
+            }
           }
         }
         if (this.config.numericFields) {
-          for (const [dbKey, htmlId] of Object.entries(this.config.numericFields)) {
-            if (data[dbKey] !== undefined) document.getElementById(htmlId).value = data[dbKey];
+          for (const [dbKey, htmlId] of Object.entries(
+            this.config.numericFields,
+          )) {
+            if (data[dbKey] !== undefined && document.getElementById(htmlId)) {
+              document.getElementById(htmlId).value = data[dbKey];
+            }
           }
         }
         if (this.config.checkboxes) {
-          for (const [dbKey, htmlId] of Object.entries(this.config.checkboxes)) {
-            if (data[dbKey] !== undefined) document.getElementById(htmlId).checked = data[dbKey];
+          for (const [dbKey, htmlId] of Object.entries(
+            this.config.checkboxes,
+          )) {
+            if (data[dbKey] !== undefined && document.getElementById(htmlId)) {
+              document.getElementById(htmlId).checked = data[dbKey];
+            }
           }
         }
       } catch (error) {
@@ -106,7 +133,7 @@ export default class HandleData {
       }
     }
 
-    if (this.config.modalId && typeof openModal === 'function') {
+    if (this.config.modalId && typeof openModal === "function") {
       openModal(this.config.modalId);
     }
   }
@@ -115,7 +142,7 @@ export default class HandleData {
   async create() {
     const payload = this._buildPayload();
     try {
-      await this.dialUp('POST', this.config.path, '', payload);
+      await this.dialUp("POST", this.config.path, "", payload);
       this._onSuccess();
     } catch (error) {}
   }
@@ -124,16 +151,34 @@ export default class HandleData {
   async update(id) {
     const payload = this._buildPayload();
     try {
-      await this.dialUp('PATCH', this.config.path, id, payload);
+      await this.dialUp("PATCH", this.config.path, id, payload);
       this._onSuccess();
     } catch (error) {}
   }
 
   submit() {
     if (this.event) this.event.preventDefault();
-    
+
+    const prefix = this.config.id ? this.config.id.split("-")[0] : "";
+    const formElement = document.getElementById(`${prefix}-form`);
+
+    if (formElement && !formElement.checkValidity()) {
+      formElement.reportValidity();
+      return;
+    }
+
+    const payload = this._buildPayload();
+
+    const hasEmptyFields = Object.values(payload).some((val) => val === "");
+    if (hasEmptyFields) {
+      alert(
+        "Por favor, preencha todos os campos e selecione opções válidas nas listas suspensas (Dropdowns).",
+      );
+      return;
+    }
+
     const idElement = document.getElementById(this.config.id);
-    const id = idElement ? idElement.value : '';
+    const id = idElement ? idElement.value : "";
 
     if (id) {
       this.update(id);
@@ -145,13 +190,13 @@ export default class HandleData {
   // (DELETE)
   async delete() {
     try {
-      await this.dialUp('DELETE', this.config.path, this.itemId);
+      await this.dialUp("DELETE", this.config.path, this.itemId);
       window.location.reload();
     } catch (error) {}
   }
   // Helper on success case
   _onSuccess() {
-    if (this.config.modalId && typeof closeModal === 'function') {
+    if (this.config.modalId && typeof closeModal === "function") {
       closeModal(this.config.modalId);
     }
     window.location.reload();
