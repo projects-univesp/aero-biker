@@ -24,11 +24,6 @@ export const handlebarsHelpers = {
     }).format(Number(value));
   },
 
-  substring: (str: string, start: number, end: number) => {
-    if (!str) return "";
-    return str.substring(start, end);
-  },
-
   formatDate: () => {
     const date = new Date();
     const formmatter = new Intl.DateTimeFormat("pt-BR", {

@@ -115,13 +115,10 @@ describe("Group Services - GetAll", () => {
     expect(response.message).toBe("Groups found successfully");
   });
 
-  it("Must return 200 with empty array when no groups exist", async () => {
+  it("Must throw a 404 error if groups are not found", async () => {
     vi.mocked(Group.findAll).mockResolvedValue([] as any);
 
-    const response = await groupServices.getAll();
-
-    expect(response.statusCode).toBe(200);
-    expect(response.data).toEqual([]);
+    await expect(groupServices.getAll()).rejects.toThrow();
   });
 });
 

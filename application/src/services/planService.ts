@@ -74,6 +74,8 @@ export class PlanService {
       ],
     });
 
+    if (plans.length === 0) return responseFormat.error("Plans not found", 404);
+
     return responseFormat.send({
       message: "Plans found successfully",
       statusCode: 200,
