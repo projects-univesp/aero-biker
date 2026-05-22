@@ -1,7 +1,7 @@
-import { Academy } from "@models/academy";
+import { AdminDTO } from "@dtos/admin";
 import { Admin } from "@models/admin";
+import { compareHashPasswords } from "@utils/encrypt";
 import { env } from "@utils/env";
-import { compareHashPasswords, generateHashPassword } from "@utils/encrypt";
 import { logger } from "@utils/logger";
 import { responseFormat } from "@utils/responseFormat";
 import jwt from "jsonwebtoken";
@@ -51,12 +51,6 @@ export class AuthServices {
       message: "Sistema configurado com sucesso",
       data: { token },
     });
-  };
-
-  login = async (credentials: { email: string; password: string }) => {
-    const GENERIC_ERROR = "Email ou senha incorretos";
-
-    const admin = await Admin.findOne({ where: { email: credentials.email, isActive: true } });
 
     if (!admin) {
       await generateHashPassword("dummy_bcrypt_delay_constant");
@@ -74,9 +68,9 @@ export class AuthServices {
     logger.info(`Login: admin ${admin.id} authenticated`);
 
     return responseFormat.send({
+      data: payload,
+      message: "Admin retrivied succesfully",
       statusCode: 200,
-      message: "Login realizado com sucesso",
-      data: { token, admin: { id: admin.id, name: admin.name, email: admin.email, role: admin.role } },
     });
   };
 

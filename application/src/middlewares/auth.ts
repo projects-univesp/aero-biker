@@ -12,44 +12,32 @@ declare global {
   }
 }
 
-function extractToken(request: Request): string | undefined {
-  const authHeader = request.headers.authorization;
-  if (authHeader?.startsWith("Bearer ")) {
-    return authHeader.split(" ")[1];
-  }
-
-  const cookieHeader = request.headers.cookie;
-  if (cookieHeader) {
-    const match = cookieHeader
-      .split(";")
-      .find((c) => c.trim().startsWith("aero_session="));
-    if (match) {
-      return decodeURIComponent(match.trim().substring("aero_session=".length));
-    }
-  }
-
-  return undefined;
-}
-
 export const auth = (
   request: Request,
   response: Response,
   next: NextFunction,
 ) => {
-  const token = extractToken(request);
+  const authHeader = request.headers.authorization;
 
-  if (!token) {
-    response
-      .status(401)
-      .json(responseFormat.send({ message: "Token not provided", statusCode: 401 }));
+  const data = { request, response, next };
+  if (!authHeader) {
+    responseFormat.send({
+      message: "Token not provided",
+      statusCode: 401,
+      ...data,
+    });
     return;
   }
 
-  jwt.verify(token, env.JWT_SECRET as string, (err, decoded) => {
+  const tokenWithoutBearer = authHeader.split(" ")[1];
+
+  jwt.verify(tokenWithoutBearer, env.JWT_SECRET as string, (err, decoded) => {
     if (err) {
-      response
-        .status(401)
-        .json(responseFormat.send({ message: "Invalid token", statusCode: 401 }));
+      responseFormat.send({
+        message: "Invalid token",
+        statusCode: 401,
+        ...data,
+      });
       return;
     }
     request.user = decoded as IToken;

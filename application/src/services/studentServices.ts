@@ -46,6 +46,8 @@ export class StudentServices {
 
   getAll = async () => {
     const students = await Student.findAll();
+    if (students.length === 0) responseFormat.error("Students not found", 404);
+
     return responseFormat.send({
       message: "Students found successfully",
       statusCode: 200,
