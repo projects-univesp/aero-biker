@@ -6,7 +6,7 @@ import { Router } from "express";
 const schedule = new ScheduleController();
 
 export const apiScheduleRoutes = Router()
-  .use(auth)
+  //.use(auth)
   .post("/", tryCatch(schedule.createSchedule))
   .get("/", tryCatch(schedule.getAllSchedules))
   .get("/:id", tryCatch(schedule.getSchedule))

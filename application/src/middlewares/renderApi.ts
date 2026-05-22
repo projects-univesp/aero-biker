@@ -1,15 +1,23 @@
 import type { NextFunction, Request, Response } from "express";
 import { env } from "@utils/env";
 
+type RenderApiOptions = {
+  emptyMessage?: string;
+  category?: string;
+  viewData?: Record<string, unknown>;
+};
+
 export const renderApi = (
   apiPath: string | ((req: Request) => string),
   viewPath: string,
   dataKey: string,
+  options?: RenderApiOptions,
 ) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const resolvedPath =
         typeof apiPath === "function" ? apiPath(req) : apiPath;
+
       const url = `http://localhost:${env.PORT}${resolvedPath}`;
 
       const apiResponse = await fetch(url, {
@@ -28,8 +36,17 @@ export const renderApi = (
       }
 
       const result = await apiResponse.json();
+      const data = result.data ?? [];
 
-      return res.render(viewPath, { [dataKey]: result.data });
+      const isEmpty = Array.isArray(data) ? data.length === 0 : !data;
+
+      return res.render(viewPath, {
+        [dataKey]: data,
+        isEmpty,
+        emptyMessage: options?.emptyMessage ?? "Nenhum dado encontrado.",
+        category: options?.category ?? "Nenhuma categoria encontrada.",
+        ...(options?.viewData ?? {}),
+      });
     } catch (error) {
       return next(error);
     }

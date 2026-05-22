@@ -35,7 +35,7 @@ export class AuthServices {
 
   getSetupStatus = async () => {
     const setupCompleted = await this.isSetupComplete();
-    return responseFormat({ statusCode: 200, message: "Status retrieved", data: { setupCompleted } });
+    return responseFormat.send({ statusCode: 200, message: "Status retrieved", data: { setupCompleted } });
   };
 
   setup = async (data: {
@@ -58,7 +58,7 @@ export class AuthServices {
 
     const token = signToken(admin);
 
-    return responseFormat({
+    return responseFormat.send({
       statusCode: 201,
       message: "Sistema configurado com sucesso",
       data: { token },
@@ -85,7 +85,7 @@ export class AuthServices {
     const token = signToken(admin);
     logger.info(`Login: admin ${admin.id} authenticated`);
 
-    return responseFormat({
+    return responseFormat.send({
       statusCode: 200,
       message: "Login realizado com sucesso",
       data: { token, admin: { id: admin.id, name: admin.name, email: admin.email, role: admin.role } },
@@ -97,7 +97,7 @@ export class AuthServices {
 
     // Always return 200 to prevent user enumeration
     if (!admin) {
-      return responseFormat({ statusCode: 200, message: "Se o email existir, você receberá um link de recuperação" });
+      return responseFormat.send({ statusCode: 200, message: "Se o email existir, você receberá um link de recuperação" });
     }
 
     const token = await this.tokenService.create(admin.id);
@@ -107,7 +107,7 @@ export class AuthServices {
 
     logger.info(`ForgotPassword: reset link sent to admin ${admin.id}`);
 
-    return responseFormat({ statusCode: 200, message: "Se o email existir, você receberá um link de recuperação" });
+    return responseFormat.send({ statusCode: 200, message: "Se o email existir, você receberá um link de recuperação" });
   };
 
   resetPassword = async (token: string, newPassword: string) => {
@@ -123,6 +123,6 @@ export class AuthServices {
 
     logger.info(`ResetPassword: password updated for admin ${admin.id}`);
 
-    return responseFormat({ statusCode: 200, message: "Senha redefinida com sucesso" });
+    return responseFormat.send({ statusCode: 200, message: "Senha redefinida com sucesso" });
   };
 }

@@ -1,0 +1,29 @@
+<div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+
+  <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+    <span class="text-green-500">
+      {{> icons/clock}}
+    </span>
+
+    Próximas Renovações
+  </h2>
+
+  <div class="space-y-3 mt-6">
+
+    {{#if upcomingRenewals.length}}
+
+      {{#each upcomingRenewals}}
+        {{> dashboard/renewalItem}}
+      {{/each}}
+
+    {{else}}
+
+      <p class="text-sm text-gray-400">
+        Nenhuma renovação pendente
+      </p>
+
+    {{/if}}
+
+  </div>
+
+</div>

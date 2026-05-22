@@ -1,6 +1,6 @@
 import { AdminDTO } from "@dtos/admin";
 import { GroupDTO } from "@dtos/group";
-import { PlanDTO } from "@dtos/plan";
+import { PlanDTO, PLANS } from "@dtos/plan";
 import { ScheduleDTO } from "@dtos/schedule";
 import { StudentDTO } from "@dtos/student";
 import { SubscriptionDTO } from "@dtos/subscription";
@@ -70,7 +70,7 @@ export class VerifyData {
       name: z.string().min(1),
       description: z.string().min(1),
       price: z.number().positive(),
-      durationMonths: z.number().int().positive(),
+      durationMonths: z.enum(PLANS),
       isActive: z.boolean(),
     }).parse(plan);
   }
@@ -80,7 +80,7 @@ export class VerifyData {
       name: z.string().min(1),
       description: z.string().min(1),
       price: z.number().positive(),
-      durationMonths: z.number().int().positive(),
+      durationMonths: z.enum(PLANS),
       isActive: z.boolean(),
     }).partial().parse(plan);
   }

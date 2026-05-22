@@ -41,7 +41,7 @@ export const auth = (
   if (!token) {
     response
       .status(401)
-      .json(responseFormat({ message: "Token not provided", statusCode: 401 }));
+      .json(responseFormat.send({ message: "Token not provided", statusCode: 401 }));
     return;
   }
 
@@ -49,7 +49,7 @@ export const auth = (
     if (err) {
       response
         .status(401)
-        .json(responseFormat({ message: "Invalid token", statusCode: 401 }));
+        .json(responseFormat.send({ message: "Invalid token", statusCode: 401 }));
       return;
     }
     request.user = decoded as IToken;

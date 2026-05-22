@@ -19,7 +19,7 @@ function safeAdmin(admin: Admin) {
 export class ConfigService {
   getAcademy = async () => {
     const academy = await Academy.findOne();
-    return responseFormat({ statusCode: 200, message: "Academy retrieved", data: academy });
+    return responseFormat.send({ statusCode: 200, message: "Academy retrieved", data: academy });
   };
 
   updateAcademy = async (data: { name?: string; cnpj?: string; phone?: string; address?: string }) => {
@@ -28,7 +28,7 @@ export class ConfigService {
 
     await academy.update(data);
 
-    return responseFormat({ statusCode: 200, message: "Academia atualizada com sucesso", data: academy });
+    return responseFormat.send({ statusCode: 200, message: "Academia atualizada com sucesso", data: academy });
   };
 
   listAdmins = async () => {
@@ -36,7 +36,7 @@ export class ConfigService {
       attributes: ["id", "name", "email", "role", "isActive", "phone", "createdAt"],
       order: [["createdAt", "ASC"]],
     });
-    return responseFormat({ statusCode: 200, message: "Admins retrieved", data: admins });
+    return responseFormat.send({ statusCode: 200, message: "Admins retrieved", data: admins });
   };
 
   createAdmin = async (data: { name: string; email: string; password: string; role?: "ADMIN" | "USER" }) => {
@@ -54,7 +54,7 @@ export class ConfigService {
 
     logger.info(`ConfigService: admin ${admin.id} created`);
 
-    return responseFormat({ statusCode: 201, message: "Usuário criado com sucesso", data: safeAdmin(admin) });
+    return responseFormat.send({ statusCode: 201, message: "Usuário criado com sucesso", data: safeAdmin(admin) });
   };
 
   changePassword = async (adminId: string, currentPassword: string, newPassword: string) => {
@@ -69,7 +69,7 @@ export class ConfigService {
 
     logger.info(`ConfigService: password changed for admin ${admin.id}`);
 
-    return responseFormat({ statusCode: 200, message: "Senha alterada com sucesso" });
+    return responseFormat.send({ statusCode: 200, message: "Senha alterada com sucesso" });
   };
 
   deactivateAdmin = async (targetId: string, requesterId: string) => {
@@ -83,7 +83,7 @@ export class ConfigService {
 
     logger.info(`ConfigService: admin ${targetId} deactivated by ${requesterId}`);
 
-    return responseFormat({ statusCode: 200, message: "Usuário desativado com sucesso" });
+    return responseFormat.send({ statusCode: 200, message: "Usuário desativado com sucesso" });
   };
 
   reactivateAdmin = async (targetId: string) => {
@@ -92,6 +92,6 @@ export class ConfigService {
 
     await admin.update({ isActive: true });
 
-    return responseFormat({ statusCode: 200, message: "Usuário reativado com sucesso" });
+    return responseFormat.send({ statusCode: 200, message: "Usuário reativado com sucesso" });
   };
 }

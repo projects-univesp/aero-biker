@@ -1,30 +1,80 @@
+import { sequelize } from "@config/database";
 import { Plan } from "@models/plan";
+import { PlanModality } from "@models/planModality";
+import { Subscription } from "@models/subscription";
 import { PlanDTO } from "@dtos/plan";
 import { logger } from "@utils/logger";
 import { responseFormat } from "@utils/responseFormat";
-import { Subscription } from "@models/subscription";
 
 export class PlanService {
   create = async (planData: Partial<PlanDTO>) => {
-    const existingPlan = await Plan.count({
-      where: { name: planData.name },
-    });
+    // Inicia a transação para garantir que Plano e Preços sejam criados juntos
+    const transaction = await sequelize.transaction();
 
-    if (existingPlan > 0) throw logger.error("Plan Already exists", 409);
+    try {
+      const existingPlan = await Plan.count({
+        where: { name: planData.name },
+        transaction,
+      });
 
-    const createdPlan = await Plan.create(planData);
+      if (existingPlan > 0) {
+        await transaction.rollback();
+        return responseFormat.error("Plan Already exists", 409);
+      }
 
-    return responseFormat({
-      message: "Plan created succesfully",
-      statusCode: 201,
-      data: createdPlan,
-    });
+      // 1. Cria a entidade raiz (Plan)
+      const createdPlan = await Plan.create(
+        {
+          name: planData.name,
+          description: planData.description,
+          isActive: planData.isActive ?? true,
+        },
+        { transaction }
+      );
+
+      // 2. Cria as modalidades de preço associadas
+      if (planData.prices && planData.prices.length > 0) {
+        const pricesToCreate = planData.prices.map((price) => ({
+          ...price,
+          planId: createdPlan.id,
+        }));
+        
+        await PlanModality.bulkCreate(pricesToCreate, { transaction });
+      }
+
+      await transaction.commit();
+
+      // Busca o plano recém-criado com os preços incluídos para retornar na resposta
+      const planWithPrices = await Plan.findByPk(createdPlan.id, {
+        include: [{ model: PlanModality, as: "prices" }]
+      });
+
+      return responseFormat.send({
+        message: "Plan created successfully",
+        statusCode: 201,
+        data: planWithPrices,
+      });
+    } catch (error) {
+      await transaction.rollback();
+      logger.error(`${error}`);
+      return responseFormat.error("Internal server error during plan creation", 500);
+    }
   };
 
   getAll = async () => {
-    const plans = await Plan.findAll();
+    // Retorna todos os planos incluindo as suas modalidades de preço
+    const plans = await Plan.findAll({
+      include: [
+        {
+          model: PlanModality,
+          as: "prices",
+          where: { isActive: true }, // Opcional: trazer apenas modalidades ativas
+          required: false, // LEFT JOIN: traz o plano mesmo se não tiver preços ativos
+        },
+      ],
+    });
 
-    return responseFormat({
+    return responseFormat.send({
       message: "Plans found successfully",
       statusCode: 200,
       data: plans,
@@ -32,11 +82,13 @@ export class PlanService {
   };
 
   get = async (id: string) => {
-    const plan = await Plan.findByPk(id);
+    const plan = await Plan.findByPk(id, {
+      include: [{ model: PlanModality, as: "prices" }],
+    });
 
-    if (plan === null) throw logger.error("Plan not found", 404);
+    if (plan === null) return responseFormat.error("Plan not found", 404);
 
-    return responseFormat({
+    return responseFormat.send({
       message: "Plan found successfully",
       statusCode: 200,
       data: plan,
@@ -44,47 +96,101 @@ export class PlanService {
   };
 
   update = async (id: string, planData: Partial<PlanDTO>) => {
-    const plan = await Plan.findByPk(id);
+    const transaction = await sequelize.transaction();
 
-    if (plan === null) throw logger.error("Plan not found", 404);
+    try {
+      const plan = await Plan.findByPk(id, { transaction });
 
-    if (planData.name && planData.name !== plan.name) {
-      const existingPlan = await Plan.count({
-        where: { name: planData.name },
+      if (plan === null) {
+        await transaction.rollback();
+        return responseFormat.error("Plan not found", 404);
+      }
+
+      if (planData.name && planData.name !== plan.name) {
+        const existingPlan = await Plan.count({
+          where: { name: planData.name },
+          transaction,
+        });
+
+        if (existingPlan > 0) {
+          await transaction.rollback();
+          return responseFormat.error("Plan Already exists", 409);
+        }
+      }
+
+      // Atualiza os dados base do Plano
+      await plan.update(
+        {
+          name: planData.name,
+          description: planData.description,
+          isActive: planData.isActive,
+        },
+        { transaction }
+      );
+
+      // Estratégia de atualização de preços: 
+      // Para não corromper o histórico de assinaturas antigas, desativamos os preços antigos e criamos os novos.
+      if (planData.prices && planData.prices.length > 0) {
+        await PlanModality.update(
+          { isActive: false },
+          { where: { planId: id }, transaction }
+        );
+
+        const newPrices = planData.prices.map((price) => ({
+          ...price,
+          planId: id,
+        }));
+        await PlanModality.bulkCreate(newPrices, { transaction });
+      }
+
+      await transaction.commit();
+
+      const updatedPlan = await Plan.findByPk(id, {
+        include: [{ model: PlanModality, as: "prices" }],
       });
 
-      if (existingPlan > 0) throw logger.error("Plan Already exists", 409);
+      return responseFormat.send({
+        message: "Plan updated successfully",
+        statusCode: 200,
+        data: updatedPlan,
+      });
+    } catch (error) {
+      await transaction.rollback();
+      logger.error(`${error}`);
+      return responseFormat.error("Internal server error during plan update", 500);
     }
-
-    const updatedPlan = await plan.update(planData);
-
-    return responseFormat({
-      message: "Plan updated succesfully",
-      statusCode: 200,
-      data: updatedPlan,
-    });
   };
 
   delete = async (id: string) => {
     const plan = await Plan.findByPk(id);
 
-    if (plan === null) throw logger.error("Plan not found", 404);
+    if (plan === null) return responseFormat.error("Plan not found", 404);
 
+    // Agora validamos as assinaturas ativas cruzando com a nova model PlanModality
     const activeSubscriptions = await Subscription.count({
-      where: { planId: id, status: "ACTIVE" },
+      include: [
+        {
+          model: PlanModality,
+          as: "llanModality", // Utilizando o alias definido nas associações
+          where: { planId: id },
+        },
+      ],
+      where: { status: "ACTIVE" }, // Ajuste para o status real que utiliza
     });
 
     if (activeSubscriptions > 0) {
-      throw logger.error(
+      return responseFormat.error(
         "Cannot deactivate a plan with active subscriptions",
-        400,
+        400
       );
     }
 
+    // Desativa o plano e, opcionalmente, todos os seus preços
     await plan.update({ isActive: false });
+    await PlanModality.update({ isActive: false }, { where: { planId: id } });
 
-    return responseFormat({
-      message: "Plan deactivated succesfully",
+    return responseFormat.send({
+      message: "Plan deactivated successfully",
       statusCode: 200,
     });
   };

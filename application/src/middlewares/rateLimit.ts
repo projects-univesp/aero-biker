@@ -24,7 +24,7 @@ function makeRateLimiter(maxAttempts: number, windowMs: number) {
       const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
       res.setHeader("Retry-After", retryAfter);
       res.status(429).json(
-        responseFormat({
+        responseFormat.send({
           statusCode: 429,
           message:
             "Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.",

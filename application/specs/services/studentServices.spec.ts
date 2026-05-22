@@ -26,9 +26,8 @@ describe("Students Services - Create", () => {
       enrollment: "ACTIVE"
     };
 
-    vi.mocked(Student.count).mockResolvedValueOnce(0);
-    vi.mocked(Group.findByPk).mockResolvedValue({ id: studentData.groupId, maxCapacity: 20 } as any);
-    vi.mocked(Student.count).mockResolvedValueOnce(5);
+    vi.mocked(Student.count).mockResolvedValue(0);
+    vi.mocked(Group.findByPk).mockResolvedValue({ id: studentData.groupId, maxCapacity: 30 } as any);
 
     vi.mocked(Student.create).mockResolvedValue({
       id: "mock-uuid-123",
@@ -154,10 +153,13 @@ describe("Students Services - GetAll", () => {
     expect(response.message).toBe("Students found successfully");
   });
 
-  it("Must throw a 404 error if student is not found", async () => {
+  it("Must return 200 with empty array when no students exist", async () => {
     vi.mocked(Student.findAll).mockResolvedValue([]);
 
-    await expect(studentServices.getAll()).rejects.toThrow();
+    const response = await studentServices.getAll();
+
+    expect(response.statusCode).toBe(200);
+    expect(response.data).toEqual([]);
   });
 });
 
@@ -299,7 +301,7 @@ describe("Students Services - Delete", () => {
     };
 
     vi.mocked(Student.findByPk).mockResolvedValue(fakeStudentInstance as any);
-    vi.mocked(Subscription.update).mockResolvedValue([0] as any);
+    vi.mocked(Subscription.update).mockResolvedValue([1, []] as any);
 
     const response = await studentServices.delete(fakeId);
 

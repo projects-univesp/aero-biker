@@ -26,7 +26,7 @@ export const errorHandler = (
   const zodMessage = extractZodMessage(error);
   if (zodMessage) {
     response.status(400).json(
-      responseFormat({ statusCode: 400, message: zodMessage, data: null }),
+      responseFormat.send({ statusCode: 400, message: zodMessage, data: null }),
     );
     return;
   }
@@ -37,7 +37,7 @@ export const errorHandler = (
 
   if (error instanceof Error) {
     response.status(status).json(
-      responseFormat({
+      responseFormat.send({
         statusCode: status,
         message: error.message,
         data: null,
@@ -47,7 +47,7 @@ export const errorHandler = (
   }
 
   response.status(500).json(
-    responseFormat({
+    responseFormat.send({
       message: error?.message || "Internal Server Error",
       statusCode: 500,
       data: null,

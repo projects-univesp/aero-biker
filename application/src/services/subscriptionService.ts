@@ -12,17 +12,17 @@ export class SubscriptionService {
     });
 
     if (existingSubscription > 0)
-      throw logger.error("Subscription already active", 409);
+      responseFormat.error("Subscription already active", 409);
 
     const student = await Student.findByPk(subscriptionData.studentId);
-    if (!student || !student.isActive) throw logger.error("Student not found", 404);
+    if (!student || !student.isActive) responseFormat.error("Student not found", 404);
 
     const plan = await Plan.findByPk(subscriptionData.planId);
-    if (!plan  || !plan.isActive) throw logger.error("Plan not found", 404);
+    if (!plan  || !plan.isActive) responseFormat.error("Plan not found", 404);
 
     const createdSubscription = await Subscription.create(subscriptionData);
 
-    return responseFormat({
+    return responseFormat.send({
       message: "Subscription created succesfully",
       statusCode: 201,
       data: createdSubscription,
@@ -32,7 +32,7 @@ export class SubscriptionService {
   getAll = async () => {
     const subscriptions = await Subscription.findAll();
 
-    return responseFormat({
+    return responseFormat.send({
       message: "Subscriptions found successfully",
       statusCode: 200,
       data: subscriptions,
@@ -43,9 +43,9 @@ export class SubscriptionService {
     const subscription = await Subscription.findByPk(id);
 
     if (subscription === null)
-      throw logger.error("Subscription not found", 404);
+      responseFormat.error("Subscription not found", 404);
 
-    return responseFormat({
+    return responseFormat.send({
       message: "Subscription found successfully",
       statusCode: 200,
       data: subscription,
@@ -56,21 +56,21 @@ export class SubscriptionService {
     const subscription = await Subscription.findByPk(id);
 
     if (subscription === null)
-      throw logger.error("Subscription not found", 404);
+      responseFormat.error("Subscription not found", 404);
 
     if (subscriptionData.studentId) {
       const student = await Student.findByPk(subscriptionData.studentId);
-      if (!student || !student.isActive) throw logger.error("Student not found", 404);
+      if (!student || !student.isActive) responseFormat.error("Student not found", 404);
     }
 
     if (subscriptionData.planId) {
       const plan = await Plan.findByPk(subscriptionData.planId);
-      if (!plan || !plan.isActive) throw logger.error("Plan not found", 404);
+      if (!plan || !plan.isActive) responseFormat.error("Plan not found", 404);
     }
 
     const updatedSubscription = await subscription.update(subscriptionData);
 
-    return responseFormat({
+    return responseFormat.send({
       message: "Subscription updated succesfully",
       statusCode: 200,
       data: updatedSubscription,
@@ -81,11 +81,11 @@ export class SubscriptionService {
     const subscription = await Subscription.findByPk(id);
 
     if (subscription === null)
-      throw logger.error("Subscription not found", 404);
+      responseFormat.error("Subscription not found", 404);
 
     await subscription.update({ status: "CANCELLED" });
 
-    return responseFormat({
+    return responseFormat.send({
       message: "Subscription cancelled succesfully",
       statusCode: 200,
     });

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { AdminServices } from "../../src/services/adminServices";
+import { AdminServices } from "@services/adminServices";
 import { Admin } from "../../src/models/admin";
 import { generateHashPassword, compareHashPasswords } from "../../src/utils/encrypt";
 
@@ -102,6 +102,22 @@ describe("Admin Services - Update", () => {
     await expect(adminServices.update("mock-uuid-123", { phone: "11888888888" })).rejects.toThrow();
   });
 
+  it("Must throw 400 if new password provided without old password", async () => {
+    const fakeId = "mock-uuid-123";
+
+    const fakeAdminInstance = {
+      id: fakeId,
+      phone: "11999999999",
+      email: "admin@studio.com",
+      password: "hashed-old",
+    };
+
+    vi.mocked(Admin.findByPk).mockResolvedValue(fakeAdminInstance as any);
+
+    await expect(adminServices.update(fakeId, { password: "novaSenha" })).rejects.toThrow();
+    expect(compareHashPasswords).not.toHaveBeenCalled();
+  });
+
   it("Must update password successfully when old password is correct", async () => {
     const fakeId = "mock-uuid-123";
 
@@ -144,6 +160,7 @@ describe("Admin Services - Update", () => {
     await expect(
       adminServices.update("mock-uuid-123", { password: "nova", oldPassword: "errada" }),
     ).rejects.toThrow();
+    expect(generateHashPassword).not.toHaveBeenCalled();
   });
 
   it("Must throw 404 if admin is not found", async () => {

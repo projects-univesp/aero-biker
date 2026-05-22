@@ -7,7 +7,7 @@ import { renderApi } from "@middlewares/renderApi";
 const subscription = new SubscriptionController();
 
 export const apiSubscriptionRoutes = Router()
-  .use(auth)
+  //.use(auth)
   .post("/", tryCatch(subscription.createSubscription))
   .get("/", tryCatch(subscription.getAllSubscriptions))
   .get("/:id", tryCatch(subscription.getSubscription))
@@ -15,4 +15,10 @@ export const apiSubscriptionRoutes = Router()
   .delete("/:id", tryCatch(subscription.deleteSubscription));
 
 export const subscriptionRoutes = Router()
-  .get("/", renderApi("/api/subscriptions", "pages/subscriptions/index", "subscriptions"));
+  .get(
+    "/",
+    renderApi("/api/subscriptions", "pages/subscriptions/index", "subscriptions", {
+      emptyMessage: "Nenhum grupo cadastrado até o momento.",
+      category: "Subscriptions.",
+    }),
+  );

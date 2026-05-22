@@ -6,6 +6,7 @@ import {
 import { Router } from "express";
 import { apiAuthRoutes } from "./authRoutes";
 import { apiConfigRoutes } from "./configRoutes";
+import { apiDashboardRoutes, dashboardRoutes } from "./dashboardRoutes";
 import { apiGroupRoutes, groupRoutes } from "./groupRoutes";
 import { apiPlanRoutes, planRoutes } from "./planRoutes";
 import { apiScheduleRoutes } from "./scheduleRoutes";
@@ -18,9 +19,10 @@ export const appRouter = Router();
 // API
 appRouter.use("/api/auth", apiAuthRoutes);
 appRouter.use("/api/config", apiConfigRoutes);
+appRouter.use("/api/dashboard", apiDashboardRoutes);
 appRouter.use("/api/students", apiStudentRoutes);
 appRouter.use("/api/groups", apiGroupRoutes);
-appRouter.use("/schedules", apiScheduleRoutes);
+appRouter.use("/api/schedules", apiScheduleRoutes);
 appRouter.use("/api/plans", apiPlanRoutes);
 appRouter.use("/api/subscriptions", apiSubscriptionRoutes);
 
@@ -40,9 +42,10 @@ appRouter.get("/reset-password", requireSetupComplete, (req, res) => {
 });
 
 // ROOT
-appRouter.get("/", requireAuth, (req, res) => res.redirect("/students"));
+appRouter.get("/", requireAuth, (req, res) => res.redirect("/dashboard"));
 
 // FRONT (protected)
+appRouter.use("/dashboard", requireAuth, dashboardRoutes);
 appRouter.use("/students", requireAuth, studentRoutes);
 appRouter.use("/groups", requireAuth, groupRoutes);
 appRouter.use("/plans", requireAuth, planRoutes);

@@ -85,7 +85,7 @@ export const requireSetupComplete = async (req: Request, res: Response, next: Ne
 export const requireRole = (...roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role ?? "")) {
-      res.status(403).json(responseFormat({ statusCode: 403, message: "Acesso não autorizado" }));
+      res.status(403).json(responseFormat.send({ statusCode: 403, message: "Acesso não autorizado" }));
       return;
     }
     next();
