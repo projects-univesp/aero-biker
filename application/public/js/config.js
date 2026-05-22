@@ -40,7 +40,8 @@ export const APP_CONFIG = Object.freeze({
         entityName: 'Plano',
         fields: {
             name: 'plan-name',
-            description: 'plan-description'
+            description: 'plan-description',
+            durationMonths: 'plan-duration'
         },
         numericFields: {
             price: 'plan-price', 
