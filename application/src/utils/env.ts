@@ -15,9 +15,13 @@ const envSchema = z.object({
   SALT_RESULT: z.coerce.number().default(10),
   CORS_ORIGIN: z.string().default("http://localhost:5500"),
   VIEWS_PATH: z.enum(["views", "src/views"]).default("src/views"),
-  APP_URL: z.string().url().default("http://localhost:3333"),
-  RESEND_API_KEY: z.string().default(""),
-  RESEND_FROM: z.string().default("AEROBIC BIKER <noreply@aerobicbiker.com.br>"),
+  APP_URL: z.url().default("http://localhost:3333"),
+  MAIL_HOST: z.string(),
+  MAIL_PORT: z.coerce.number().default(587),
+  MAIL_USER: z.string(),
+  MAIL_PASS: z.string(),
+  MAIL_FROM: z.string().default("AEROBIC BIKER <noreply@aerobicbiker.com.br>"),
+  MAIL_SECURE: z.string().transform((val) => val === 'true').default(false)
 });
 
 const _env = envSchema.safeParse(process.env);
@@ -34,9 +38,4 @@ const isProd = env.NODE_ENV === "production";
 if (!env.JWT_SECRET) {
   if (isProd) throw new Error("❌ JWT_SECRET must be set in production");
   console.warn("⚠️  JWT_SECRET is empty — using insecure default (dev only)");
-}
-
-if (!env.RESEND_API_KEY) {
-  if (isProd) throw new Error("❌ RESEND_API_KEY must be set in production");
-  console.warn("⚠️  RESEND_API_KEY is not set — password recovery emails will fail");
 }
