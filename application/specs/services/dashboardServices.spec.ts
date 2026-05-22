@@ -4,11 +4,12 @@ import { DashboardService } from "../../src/services/dashboardService";
 import { Student } from "../../src/models/student";
 import { Group } from "../../src/models/group";
 import { Plan } from "../../src/models/plan";
-
+import { Subscription } from "../../src/models/subscription";
 
 vi.mock("@models/student");
 vi.mock("@models/group");
 vi.mock("@models/plan");
+vi.mock("@models/subscription");
 
 
 describe("Dashboard Services - Get Dashboard", () => {
@@ -23,6 +24,7 @@ describe("Dashboard Services - Get Dashboard", () => {
     vi.mocked(Student.count).mockResolvedValue(10);
     vi.mocked(Group.count).mockResolvedValue(3);
     vi.mocked(Plan.count).mockResolvedValue(4);
+    vi.mocked(Subscription.count).mockResolvedValue(8);
 
     const response = await dashboardService.getDashboard();
 
@@ -32,19 +34,21 @@ describe("Dashboard Services - Get Dashboard", () => {
     expect(response.data.totalStudents).toBe(10);
     expect(response.data.totalGroups).toBe(3);
     expect(response.data.totalPlans).toBe(4);
-    expect(response.data.totalPayments).toBe(8);
+    expect(response.data.totalSubscriptions).toBe(8);
   });
 
   it("Must call all required models", async () => {
     vi.mocked(Student.count).mockResolvedValue(10);
     vi.mocked(Group.count).mockResolvedValue(3);
     vi.mocked(Plan.count).mockResolvedValue(4);
+    vi.mocked(Subscription.count).mockResolvedValue(8);
 
     await dashboardService.getDashboard();
 
     expect(Student.count).toHaveBeenCalled();
     expect(Group.count).toHaveBeenCalled();
     expect(Plan.count).toHaveBeenCalled();
+    expect(Subscription.count).toHaveBeenCalled();
   });
 
   it("Must throw an error if dashboard data cannot be loaded", async () => {

@@ -32,9 +32,6 @@ export class SubscriptionService {
   getAll = async () => {
     const subscriptions = await Subscription.findAll();
 
-    if (subscriptions.length === 0)
-      responseFormat.error("Subscriptions not found", 404);
-
     return responseFormat.send({
       message: "Subscriptions found successfully",
       statusCode: 200,

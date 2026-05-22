@@ -2,9 +2,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { PlanService } from "../../src/services/planService";
 import { Plan } from "../../src/models/plan";
+import { PlanModality } from "../../src/models/planModality";
 import { Subscription } from "../../src/models/subscription";
 
 vi.mock("@models/plan");
+vi.mock("@models/planModality");
 vi.mock("@models/subscription");
 
 describe("Plan Services - Create", () => {
@@ -33,8 +35,8 @@ describe("Plan Services - Create", () => {
     const response = await planService.create(planData);
 
     expect(response.statusCode).toBe(201);
-    expect(response.message).toBe("Plan created succesfully");
-    expect(response.data.id).toBe("mock-uuid-123");
+    expect(response.message).toBe("Plan created successfully");
+    expect(Plan.findByPk).toHaveBeenCalled();
   });
 
   it("Must give a conflict error due same plan registered", async () => {
@@ -87,7 +89,7 @@ describe("Plan Services - Get", () => {
 
     await expect(planService.get(fakeId)).rejects.toThrow();
 
-    expect(Plan.findByPk).toHaveBeenCalledWith(fakeId);
+    expect(Plan.findByPk).toHaveBeenCalledWith(fakeId, expect.any(Object));
   });
 });
 
@@ -118,10 +120,13 @@ describe("Plan Services - GetAll", () => {
     expect(response.message).toBe("Plans found successfully");
   });
 
-  it("Must throw a 404 error if plans are not found", async () => {
+  it("Must return 200 with empty array when no plans exist", async () => {
     vi.mocked(Plan.findAll).mockResolvedValue([]);
 
-    await expect(planService.getAll()).rejects.toThrow();
+    const response = await planService.getAll();
+
+    expect(response.statusCode).toBe(200);
+    expect(response.data).toEqual([]);
   });
 });
 
@@ -154,8 +159,11 @@ describe("Plan Services - Update", () => {
     const response = await planService.update(fakeId, updateData);
 
     expect(response.statusCode).toBe(200);
-    expect(response.message).toBe("Plan updated succesfully");
-    expect(fakePlanInstance.update).toHaveBeenCalledWith(updateData);
+    expect(response.message).toBe("Plan updated successfully");
+    expect(fakePlanInstance.update).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "Plano Atualizado" }),
+      expect.objectContaining({ transaction: expect.anything() }),
+    );
   });
 
   it("Must throw a 409 error if plan already exists", async () => {
@@ -204,14 +212,13 @@ describe("Plan Services - Delete", () => {
 
     vi.mocked(Plan.findByPk).mockResolvedValue(fakePlanInstance as any);
     vi.mocked(Subscription.count).mockResolvedValue(0);
+    vi.mocked(PlanModality.update).mockResolvedValue([1, []]);
 
     const response = await planService.delete(fakeId);
 
     expect(response.statusCode).toBe(200);
-    expect(response.message).toBe("Plan deactivated succesfully");
-    expect(fakePlanInstance.update).toHaveBeenCalledWith({
-      isActive: false,
-    });
+    expect(response.message).toBe("Plan deactivated successfully");
+    expect(fakePlanInstance.update).toHaveBeenCalledWith({ isActive: false });
   });
 
   it("Must throw a 400 error if plan has active subscriptions", async () => {
