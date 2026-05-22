@@ -10,7 +10,7 @@ export class Schedule extends Model {
   declare level: string;
   declare description: string;
 
-  declare dayOfWeek: number;
+  declare date: string;
   declare startTime: string;
   declare endTime: string;
 
@@ -40,11 +40,7 @@ Schedule.init(
     },
 
     level: {
-      type: DataTypes.ENUM(
-        "Iniciante",
-        "Intermediário",
-        "Avançado",
-      ),
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
 
@@ -53,8 +49,8 @@ Schedule.init(
       allowNull: true,
     },
 
-    dayOfWeek: {
-      type: DataTypes.INTEGER,
+    date: {
+      type: DataTypes.DATE,
       allowNull: false,
     },
 

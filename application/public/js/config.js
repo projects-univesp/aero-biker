@@ -84,7 +84,7 @@ export const APP_CONFIG = Object.freeze({
       },
     
       numericFields: {
-        dayOfWeek: 'schedule-day',
+        date: 'schedule-date',
         currentStudents: 'schedule-current-students',
       },
     

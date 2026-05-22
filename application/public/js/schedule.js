@@ -28,7 +28,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentFilter = "all";
 
-  let currentDate = new Date();
+  let currentDate;
+  
+  const firstRow = document.querySelector(".schedule-row");
+  
+  if (firstRow) {
+  
+    const firstDate =
+      firstRow.getAttribute("data-date");
+  
+    currentDate = firstDate
+      ? new Date(firstDate)
+      : new Date();
+  
+  } else {
+  
+    currentDate = new Date();
+  }
 
   const totalCount = rows.length;
 
@@ -83,14 +99,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const status =
         row.getAttribute("data-status");
 
-      // IMPORTANTE:
-      // cada row precisa possuir:
-      // data-date="2025-02-15"
-
       const rowDate =
         row.getAttribute("data-date");
 
-      let matchesMonth = true;
+      if (!rowDate) {
+        row.style.display = "none";
+        return;
+      }
+      
+      const scheduleDate = new Date(rowDate);
+
+      if (isNaN(scheduleDate.getTime())) {
+        row.style.display = "none";
+        return;
+      }
+
+      const matchesMonth =
+        scheduleDate.getMonth() === currentMonth &&
+        scheduleDate.getFullYear() === currentYear;
 
       if (rowDate) {
 

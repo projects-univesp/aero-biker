@@ -22,7 +22,7 @@ export class ScheduleService {
     const schedules = await Schedule.findAll({
       include: [{ model: Group, as: "group", attributes: ["name", "maxCapacity"] }],
       order: [
-        ["dayOfWeek", "ASC"],
+        ["date", "ASC"],
         ["startTime", "ASC"],
       ],
     });

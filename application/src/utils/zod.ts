@@ -66,7 +66,7 @@ export class VerifyData {
         "Avançado",
       ]),
       description: z.string().max(255).optional(),
-      dayOfWeek: z.number().min(1).max(7),
+      date: z.string().date(),
       startTime: z
         .string()
         .regex(
@@ -98,7 +98,7 @@ export class VerifyData {
           "Avançado",
         ]),
         description: z.string().max(255).optional(),
-        dayOfWeek: z.number().min(1).max(7),
+        date: z.string().date(),
         startTime: z
           .string()
           .regex(
