@@ -7,7 +7,7 @@ const dashboard = new DashboardController();
 
 export const apiDashboardRoutes = Router()
   //.use(auth)
-  .post("/", tryCatch(dashboard.getDashboard));
+  .get("/", tryCatch(dashboard.getDashboard));
 
 export const dashboardRoutes = Router()
   .get(

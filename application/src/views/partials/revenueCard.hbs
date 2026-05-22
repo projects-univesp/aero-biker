@@ -1,0 +1,33 @@
+<div
+  class="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg shadow-green-200"
+>
+  <div class="flex items-center justify-between">
+
+    <div>
+      <p class="text-green-100 text-sm">
+        Recebido em {{month}}
+      </p>
+
+      <p class="text-4xl font-bold mt-1">
+        R$ {{amount}}
+      </p>
+
+      <div class="flex gap-3 mt-3 text-xs">
+          <span class="text-green-100 flex items-center gap-1">
+            {{> icons/check}}
+            {{paid}} pagos
+          </span>
+
+        <span class="text-green-200 flex items-center gap-1">
+          {{> icons/clock}}
+          {{pending}} pendentes
+        </span>
+      </div>
+    </div>
+
+    <div class="text-green-200">
+      {{> icons/dollar-sign}}
+    </div>
+
+  </div>
+</div>
