@@ -1,8 +1,22 @@
 import type { IToken } from "@dtos/auth";
-import { SystemConfig } from "@models/systemConfig";
+import { Admin } from "@models/admin";
+import { responseFormat } from "@utils/responseFormat";
 import { env } from "@utils/env";
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+
+let _setupComplete: boolean | null = null;
+
+export function resetSetupCache(): void {
+  _setupComplete = null;
+}
+
+async function isSetupComplete(): Promise<boolean> {
+  if (_setupComplete === true) return true;
+  const count = await Admin.count();
+  if (count > 0) _setupComplete = true;
+  return count > 0;
+}
 
 function getSessionToken(req: Request): string | undefined {
   const cookieHeader = req.headers.cookie;
@@ -14,15 +28,10 @@ function getSessionToken(req: Request): string | undefined {
   return decodeURIComponent(match.trim().substring("aero_session=".length));
 }
 
-export const requireAuth = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const config = await SystemConfig.findOne();
-
-    if (!config?.setupCompleted) {
+    const setupDone = await isSetupComplete();
+    if (!setupDone) {
       res.redirect("/setup");
       return;
     }
@@ -36,12 +45,7 @@ export const requireAuth = async (
     try {
       const decoded = jwt.verify(token, env.JWT_SECRET as string) as IToken;
       req.user = decoded;
-      res.locals.currentUser = {
-        id: decoded.id,
-        name: decoded.name,
-        email: decoded.email,
-        role: decoded.role,
-      };
+      res.locals.currentUser = { id: decoded.id, name: decoded.name, email: decoded.email, role: decoded.role };
       next();
     } catch {
       res.clearCookie("aero_session");
@@ -52,14 +56,10 @@ export const requireAuth = async (
   }
 };
 
-export const requireSetupIncomplete = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const requireSetupIncomplete = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const config = await SystemConfig.findOne();
-    if (config?.setupCompleted) {
+    const setupDone = await isSetupComplete();
+    if (setupDone) {
       res.redirect("/login");
       return;
     }
@@ -69,14 +69,10 @@ export const requireSetupIncomplete = async (
   }
 };
 
-export const requireSetupComplete = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const requireSetupComplete = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const config = await SystemConfig.findOne();
-    if (!config?.setupCompleted) {
+    const setupDone = await isSetupComplete();
+    if (!setupDone) {
       res.redirect("/setup");
       return;
     }
@@ -84,4 +80,14 @@ export const requireSetupComplete = async (
   } catch {
     next();
   }
+};
+
+export const requireRole = (...roles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user || !roles.includes(req.user.role ?? "")) {
+      res.status(403).json(responseFormat({ statusCode: 403, message: "Acesso não autorizado" }));
+      return;
+    }
+    next();
+  };
 };

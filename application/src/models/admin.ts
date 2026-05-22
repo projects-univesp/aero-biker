@@ -4,8 +4,6 @@ import { DataTypes, Model } from "sequelize";
 
 export class Admin extends Model {
   declare id: UUID;
-  declare code: string | null;
-  declare expiresAt: Date | null;
   declare isActive: boolean;
   declare name: string;
   declare phone: string | null;
@@ -20,16 +18,6 @@ Admin.init(
       type: DataTypes.UUID,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
-    },
-    code: {
-      type: DataTypes.STRING(6),
-      allowNull: true,
-      defaultValue: null,
-    },
-    expiresAt: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null,
     },
     isActive: {
       type: DataTypes.BOOLEAN,

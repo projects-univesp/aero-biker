@@ -5,11 +5,12 @@ import {
   requireAuth,
   requireSetupComplete,
   requireSetupIncomplete,
+  resetSetupCache,
 } from "../../src/middlewares/requireAuth";
-import { SystemConfig } from "../../src/models/systemConfig";
+import { Admin } from "../../src/models/admin";
 import jwt from "jsonwebtoken";
 
-vi.mock("@models/systemConfig");
+vi.mock("@models/admin");
 vi.mock("jsonwebtoken");
 
 const mockEnv = vi.hoisted(() => ({ JWT_SECRET: "test-secret-key", NODE_ENV: "test" }));
@@ -19,21 +20,16 @@ vi.mock("@utils/logger", () => ({
 }));
 
 function makeReq(cookie?: string): Partial<Request> {
-  return {
-    headers: { cookie },
-    user: undefined,
-  };
+  return { headers: { cookie }, user: undefined };
 }
 
-function makeRes(): {
-  redirect: ReturnType<typeof vi.fn>;
-  clearCookie: ReturnType<typeof vi.fn>;
-  locals: Record<string, unknown>;
-} {
+function makeRes() {
   return {
     redirect: vi.fn(),
     clearCookie: vi.fn(),
-    locals: {},
+    locals: {} as Record<string, unknown>,
+    status: vi.fn().mockReturnThis(),
+    json: vi.fn(),
   };
 }
 
@@ -46,20 +42,14 @@ describe("requireAuth", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    resetSetupCache();
     next = vi.fn();
   });
 
   it("Must call next() when setup is complete and token is valid", async () => {
-    const fakeDecoded = {
-      id: "user-123",
-      name: "Jorge",
-      email: "jorge@studio.com",
-      role: "ADMIN",
-    };
+    const fakeDecoded = { id: "user-123", name: "Jorge", email: "jorge@studio.com", role: "ADMIN" };
 
-    vi.mocked(SystemConfig.findOne).mockResolvedValue({
-      setupCompleted: true,
-    } as any);
+    vi.mocked(Admin.count).mockResolvedValue(1);
     vi.mocked(jwt.verify).mockReturnValue(fakeDecoded as any);
 
     const req = makeReq("aero_session=valid-token");
@@ -72,16 +62,9 @@ describe("requireAuth", () => {
   });
 
   it("Must set res.locals.currentUser with decoded token data", async () => {
-    const fakeDecoded = {
-      id: "user-123",
-      name: "Jorge",
-      email: "jorge@studio.com",
-      role: "OWNER",
-    };
+    const fakeDecoded = { id: "user-123", name: "Jorge", email: "jorge@studio.com", role: "OWNER" };
 
-    vi.mocked(SystemConfig.findOne).mockResolvedValue({
-      setupCompleted: true,
-    } as any);
+    vi.mocked(Admin.count).mockResolvedValue(1);
     vi.mocked(jwt.verify).mockReturnValue(fakeDecoded as any);
 
     const req = makeReq("aero_session=valid-token");
@@ -98,12 +81,8 @@ describe("requireAuth", () => {
   });
 
   it("Must redirect to /login when token is invalid", async () => {
-    vi.mocked(SystemConfig.findOne).mockResolvedValue({
-      setupCompleted: true,
-    } as any);
-    vi.mocked(jwt.verify).mockImplementation(() => {
-      throw new Error("jwt malformed");
-    });
+    vi.mocked(Admin.count).mockResolvedValue(1);
+    vi.mocked(jwt.verify).mockImplementation(() => { throw new Error("jwt malformed"); });
 
     const req = makeReq("aero_session=invalid-token");
     const res = makeRes();
@@ -115,9 +94,7 @@ describe("requireAuth", () => {
   });
 
   it("Must redirect to /login when no cookie is present", async () => {
-    vi.mocked(SystemConfig.findOne).mockResolvedValue({
-      setupCompleted: true,
-    } as any);
+    vi.mocked(Admin.count).mockResolvedValue(1);
 
     const req = makeReq(undefined);
     const res = makeRes();
@@ -128,8 +105,8 @@ describe("requireAuth", () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it("Must redirect to /setup when system is not configured yet", async () => {
-    vi.mocked(SystemConfig.findOne).mockResolvedValue(null);
+  it("Must redirect to /setup when no admins exist yet", async () => {
+    vi.mocked(Admin.count).mockResolvedValue(0);
 
     const req = makeReq("aero_session=any-token");
     const res = makeRes();
@@ -150,38 +127,29 @@ describe("requireSetupIncomplete", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    resetSetupCache();
     next = vi.fn();
   });
 
   it("Must redirect to /login when setup is already complete", async () => {
-    vi.mocked(SystemConfig.findOne).mockResolvedValue({
-      setupCompleted: true,
-    } as any);
+    vi.mocked(Admin.count).mockResolvedValue(1);
 
     const req = makeReq();
     const res = makeRes();
 
-    await requireSetupIncomplete(
-      req as Request,
-      res as unknown as Response,
-      next as NextFunction,
-    );
+    await requireSetupIncomplete(req as Request, res as unknown as Response, next as NextFunction);
 
     expect(res.redirect).toHaveBeenCalledWith("/login");
     expect(next).not.toHaveBeenCalled();
   });
 
   it("Must call next() when setup is not yet complete", async () => {
-    vi.mocked(SystemConfig.findOne).mockResolvedValue(null);
+    vi.mocked(Admin.count).mockResolvedValue(0);
 
     const req = makeReq();
     const res = makeRes();
 
-    await requireSetupIncomplete(
-      req as Request,
-      res as unknown as Response,
-      next as NextFunction,
-    );
+    await requireSetupIncomplete(req as Request, res as unknown as Response, next as NextFunction);
 
     expect(next).toHaveBeenCalledOnce();
     expect(res.redirect).not.toHaveBeenCalled();
@@ -197,38 +165,29 @@ describe("requireSetupComplete", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    resetSetupCache();
     next = vi.fn();
   });
 
   it("Must call next() when setup is complete", async () => {
-    vi.mocked(SystemConfig.findOne).mockResolvedValue({
-      setupCompleted: true,
-    } as any);
+    vi.mocked(Admin.count).mockResolvedValue(1);
 
     const req = makeReq();
     const res = makeRes();
 
-    await requireSetupComplete(
-      req as Request,
-      res as unknown as Response,
-      next as NextFunction,
-    );
+    await requireSetupComplete(req as Request, res as unknown as Response, next as NextFunction);
 
     expect(next).toHaveBeenCalledOnce();
     expect(res.redirect).not.toHaveBeenCalled();
   });
 
   it("Must redirect to /setup when system is not configured yet", async () => {
-    vi.mocked(SystemConfig.findOne).mockResolvedValue(null);
+    vi.mocked(Admin.count).mockResolvedValue(0);
 
     const req = makeReq();
     const res = makeRes();
 
-    await requireSetupComplete(
-      req as Request,
-      res as unknown as Response,
-      next as NextFunction,
-    );
+    await requireSetupComplete(req as Request, res as unknown as Response, next as NextFunction);
 
     expect(res.redirect).toHaveBeenCalledWith("/setup");
     expect(next).not.toHaveBeenCalled();

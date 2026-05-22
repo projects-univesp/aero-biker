@@ -37,6 +37,10 @@ app.engine(
         if (!str) return '';
         return String(str).substring(start, end);
       },
+      roleLabel: (role: string) => {
+        const labels: Record<string, string> = { OWNER: "Proprietário", ADMIN: "Administrador", USER: "Usuário" };
+        return labels[role] ?? role;
+      },
     },
   }),
 );

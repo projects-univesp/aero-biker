@@ -4,22 +4,20 @@ import {
   requireSetupIncomplete,
 } from "@middlewares/requireAuth";
 import { Router } from "express";
-import { apiAdminRoutes } from "./adminRoutes";
 import { apiAuthRoutes } from "./authRoutes";
+import { apiConfigRoutes } from "./configRoutes";
 import { apiGroupRoutes, groupRoutes } from "./groupRoutes";
 import { apiPlanRoutes, planRoutes } from "./planRoutes";
 import { apiScheduleRoutes } from "./scheduleRoutes";
 import { apiStudentRoutes, studentRoutes } from "./studentRoutes";
-import {
-  apiSubscriptionRoutes,
-  subscriptionRoutes,
-} from "./subscriptionRoutes";
+import { apiSubscriptionRoutes, subscriptionRoutes } from "./subscriptionRoutes";
+import { configPageRoutes } from "./configPageRoutes";
 
 export const appRouter = Router();
 
 // API
-appRouter.use("/api/admin", apiAdminRoutes);
 appRouter.use("/api/auth", apiAuthRoutes);
+appRouter.use("/api/config", apiConfigRoutes);
 appRouter.use("/api/students", apiStudentRoutes);
 appRouter.use("/api/groups", apiGroupRoutes);
 appRouter.use("/schedules", apiScheduleRoutes);
@@ -33,18 +31,20 @@ appRouter.get("/setup", requireSetupIncomplete, (req, res) =>
 appRouter.get("/login", requireSetupComplete, (req, res) =>
   res.render("pages/auth/login", { layout: "auth" }),
 );
-appRouter.get("/register", requireSetupComplete, (req, res) =>
-  res.render("pages/auth/register", { layout: "auth" }),
-);
 appRouter.get("/forgot-password", requireSetupComplete, (req, res) =>
   res.render("pages/auth/forgot-password", { layout: "auth" }),
 );
+appRouter.get("/reset-password", requireSetupComplete, (req, res) => {
+  const token = req.query.token as string | undefined;
+  res.render("pages/auth/reset-password", { layout: "auth", token: token ?? "" });
+});
 
-// ROOT — redirect to appropriate page
+// ROOT
 appRouter.get("/", requireAuth, (req, res) => res.redirect("/students"));
 
-// FRONT (protected with session auth)
+// FRONT (protected)
 appRouter.use("/students", requireAuth, studentRoutes);
 appRouter.use("/groups", requireAuth, groupRoutes);
 appRouter.use("/plans", requireAuth, planRoutes);
 appRouter.use("/subscriptions", requireAuth, subscriptionRoutes);
+appRouter.use("/config", requireAuth, configPageRoutes);

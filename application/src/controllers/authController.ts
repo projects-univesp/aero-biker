@@ -1,5 +1,5 @@
-import { AuthServices } from "@services/authServices";
 import { clearRateLimit } from "@middlewares/rateLimit";
+import { AuthServices } from "@services/authServices";
 import { env } from "@utils/env";
 import { VerifyData } from "@utils/zod";
 import type { Request, Response } from "express";
@@ -17,6 +17,10 @@ function setCookieOptions() {
   };
 }
 
+function getBaseUrl(): string {
+  return env.APP_URL;
+}
+
 export class AuthController {
   private readonly data: VerifyData;
   private readonly authServices: AuthServices;
@@ -26,56 +30,40 @@ export class AuthController {
     this.authServices = new AuthServices();
   }
 
-  getSetupStatus = async (request: Request, response: Response) => {
+  getSetupStatus = async (req: Request, res: Response) => {
     const result = await this.authServices.getSetupStatus();
-    return response.status(200).json(result);
+    return res.status(200).json(result);
   };
 
-  emailLogin = async (request: Request, response: Response) => {
-    const credentials = this.data.verifyAuthRequest(request.body);
-    const result = await this.authServices.emailLogin(credentials);
-
-    clearRateLimit(request);
-    response.cookie(COOKIE_NAME, result.data.token, setCookieOptions());
-
-    return response.status(200).json({
-      ...result,
-      data: { admin: result.data.admin },
-    });
-  };
-
-  setup = async (request: Request, response: Response) => {
-    const parsed = this.data.verifySetup(request.body);
+  setup = async (req: Request, res: Response) => {
+    const parsed = this.data.verifySetup(req.body);
     const result = await this.authServices.setup(parsed);
-
-    response.cookie(COOKIE_NAME, result.data.token, setCookieOptions());
-
-    return response.status(201).json({
-      ...result,
-      data: { message: "Sistema configurado com sucesso" },
-    });
+    res.cookie(COOKIE_NAME, result.data.token, setCookieOptions());
+    return res.status(201).json({ ...result, data: { message: "Sistema configurado com sucesso" } });
   };
 
-  register = async (request: Request, response: Response) => {
-    const parsed = this.data.verifyRegister(request.body);
-    const result = await this.authServices.register(parsed);
-    return response.status(201).json(result);
+  login = async (req: Request, res: Response) => {
+    const credentials = this.data.verifyAuthRequest(req.body);
+    const result = await this.authServices.login(credentials);
+    clearRateLimit(req);
+    res.cookie(COOKIE_NAME, result.data.token, setCookieOptions());
+    return res.status(200).json({ ...result, data: { admin: result.data.admin } });
   };
 
-  resetPasswordWithMaster = async (request: Request, response: Response) => {
-    const parsed = this.data.verifyResetWithMaster(request.body);
-    const result = await this.authServices.resetPasswordWithMaster(parsed);
-    return response.status(200).json(result);
+  forgotPassword = async (req: Request, res: Response) => {
+    const { email } = this.data.verifyEmail(req.body);
+    const result = await this.authServices.forgotPassword(email, getBaseUrl());
+    return res.status(200).json(result);
   };
 
-  resetMasterPassword = async (request: Request, response: Response) => {
-    const parsed = this.data.verifyRecovery(request.body);
-    const result = await this.authServices.resetMasterPassword(parsed);
-    return response.status(200).json(result);
+  resetPassword = async (req: Request, res: Response) => {
+    const parsed = this.data.verifyResetPassword(req.body);
+    const result = await this.authServices.resetPassword(parsed.token, parsed.password);
+    return res.status(200).json(result);
   };
 
-  logout = async (request: Request, response: Response) => {
-    response.clearCookie(COOKIE_NAME, { path: "/" });
-    return response.redirect("/login");
+  logout = async (_req: Request, res: Response) => {
+    res.clearCookie(COOKIE_NAME, { path: "/" });
+    return res.redirect("/login");
   };
 }
