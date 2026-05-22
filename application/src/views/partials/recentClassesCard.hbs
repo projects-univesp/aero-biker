@@ -1,0 +1,29 @@
+<div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+
+  <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+    <span class="text-green-500">
+      {{> icons/clock}}
+    </span>
+
+    Aulas Recentes
+  </h2>
+
+  <div class="space-y-3 mt-6">
+
+    {{#if recentClasses.length}}
+
+      {{#each recentClasses}}
+        {{> dashboard/recentClassItem}}
+      {{/each}}
+
+    {{else}}
+
+      <p class="text-sm text-gray-400">
+        Nenhuma aula recente encontrada.
+      </p>
+
+    {{/if}}
+
+  </div>
+
+</div>
