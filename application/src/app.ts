@@ -12,6 +12,9 @@ import { notFound } from "@middlewares/notFound";
 
 const app = express();
 
+// Trust a single proxy (nginx/caddy). Must come BEFORE rate limiters so req.ip is correct.
+app.set("trust proxy", 1);
+
 // HandleBars Config
 app.engine(
   ".hbs",
@@ -19,7 +22,13 @@ app.engine(
     defaultLayout: "main",
     extname: ".hbs",
     partialsDir: path.join(process.cwd(), env.VIEWS_PATH, "partials"),
-    helpers: { ...handlebarsHelpers },
+    helpers: {
+      ...handlebarsHelpers,
+      roleLabel: (role: string) => {
+        const labels: Record<string, string> = { OWNER: "Proprietário", ADMIN: "Administrador", USER: "Usuário" };
+        return labels[role] ?? role;
+      },
+    },
   }),
 );
 

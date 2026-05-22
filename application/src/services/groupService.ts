@@ -25,8 +25,6 @@ export class GroupServices {
   getAll = async () => {
     const groups = await Group.findAll();
 
-    if (groups.length === 0) responseFormat.error("Groups not found", 404);
-
     return responseFormat.send({
       message: "Groups found successfully",
       statusCode: 200,

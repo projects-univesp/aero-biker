@@ -1,6 +1,5 @@
-import { Student } from "./student";
+import { Admin } from "./admin";
 import { Group } from "./group";
-import { Subscription } from "./subscription";
 import { Plan } from "./plan";
 import { Schedule } from "./schedules";
 import { Student } from "./student";

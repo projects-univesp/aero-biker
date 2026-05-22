@@ -4,13 +4,12 @@ import { DataTypes, Model } from "sequelize";
 
 export class Admin extends Model {
   declare id: UUID;
-  declare code: string | null;
-  declare expiresAt: Date | null;
   declare isActive: boolean;
   declare name: string;
-  declare phone: string;
+  declare phone: string | null;
   declare email: string;
   declare password: string;
+  declare role: "OWNER" | "ADMIN" | "USER";
 }
 
 Admin.init(
@@ -19,16 +18,6 @@ Admin.init(
       type: DataTypes.UUID,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
-    },
-    code: {
-      type: DataTypes.STRING(6),
-      allowNull: true,
-      defaultValue: null
-    },
-    expiresAt: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: null
     },
     isActive: {
       type: DataTypes.BOOLEAN,
@@ -40,15 +29,22 @@ Admin.init(
     },
     phone: {
       type: DataTypes.STRING(25),
-      allowNull: false,
+      allowNull: true,
+      defaultValue: null,
     },
     email: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING(100),
       allowNull: false,
+      unique: true,
     },
     password: {
-      type: DataTypes.STRING(25),
+      type: DataTypes.STRING(255),
       allowNull: false,
+    },
+    role: {
+      type: DataTypes.ENUM("OWNER", "ADMIN", "USER"),
+      allowNull: false,
+      defaultValue: "USER",
     },
   },
   {
