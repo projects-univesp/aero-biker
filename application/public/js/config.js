@@ -72,25 +72,32 @@ export const APP_CONFIG = Object.freeze({
       path: 'schedules',
       modalId: 'modal-schedule',
       entityName: 'Agenda',
-      
+    
       fields: {
         title: 'schedule-title',
-        category: 'schedule-category',  
-        level: 'schedule-level',   
-        description: 'schedule-description',   
-        startTime: 'schedule-start',    
-        endTime: 'schedule-end',   
+        category: 'schedule-category',
+        level: 'schedule-level',
+        description: 'schedule-description',
+        startTime: 'schedule-start',
+        endTime: 'schedule-end',
         groupId: 'schedule-group',
       },
     
       numericFields: {
-        dayOfWeek: 'schedule-day',  
+        dayOfWeek: 'schedule-day',
         currentStudents: 'schedule-current-students',
       },
     
       booleanFields: {
-        isHoliday: 'schedule-holiday',   
+        isHoliday: 'schedule-holiday',
         isActive: 'schedule-active',
+      },
+    
+      monthControls: {
+        prevBtn: 'prevMonthBtn',
+        nextBtn: 'nextMonthBtn',
+        currentMonthLabel: 'currentMonthLabel',
+        currentYearLabel: 'currentYearLabel'
       }
     },
 });

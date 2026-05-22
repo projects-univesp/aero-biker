@@ -10,8 +10,7 @@
       action="handleOpen(null, APP_CONFIG.SCHEDULES)"
     }}
 
-    <div class="flex flex-col sm:flex-row gap-3">
-
+    <div class="flex flex-col sm:flex-row gap-3"> 
       {{> search
         tagId="search-input"
         tagPlaceholder="Buscar aula..."
@@ -47,9 +46,10 @@
     </div>
 
     {{#if isEmpty}}
-      {{> emptyState }}
+        {{> emptyState }}
     {{else}}
-      {{> scheduleList }}
+        {{> scheduleCard}}
+        {{> scheduleList }}
     {{/if}}
 
   </div>
