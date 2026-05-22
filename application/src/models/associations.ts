@@ -2,67 +2,26 @@ import { Student } from "./student";
 import { Group } from "./group";
 import { Subscription } from "./subscription";
 import { Plan } from "./plan";
-import { PlanModality } from "./planModality";
 import { Schedule } from "./schedules";
+import { Student } from "./student";
+import { Subscription } from "./subscription";
+import { PasswordReset } from "./passwordReset";
+import "./academy";
 
-// ==========================================
-// Associações: Student <-> Group
-// ==========================================
-Student.belongsTo(Group, {
-  foreignKey: "groupId",
-  as: "group",
-});
+// Student <-> Group
+Student.belongsTo(Group, { foreignKey: "groupId", as: "group" });
+Group.hasMany(Student, { foreignKey: "groupId", as: "students" });
 
-Group.hasMany(Student, {
-  foreignKey: "groupId",
-  as: "students",
-});
+// Group <-> Schedule
+Group.hasMany(Schedule, { foreignKey: "groupId", as: "schedules" });
+Schedule.belongsTo(Group, { foreignKey: "groupId", as: "group" });
 
-// ==========================================
-// Associações: Group <-> Schedule
-// ==========================================
-Group.hasMany(Schedule, { 
-  foreignKey: "groupId", 
-  as: "schedules" 
-});
+// Subscription <-> Student / Plan
+Subscription.belongsTo(Student, { foreignKey: "studentId", as: "student" });
+Student.hasMany(Subscription, { foreignKey: "studentId", as: "subscriptions" });
+Subscription.belongsTo(Plan, { foreignKey: "planId", as: "plan" });
+Plan.hasMany(Subscription, { foreignKey: "planId", as: "subscriptions" });
 
-Schedule.belongsTo(Group, { 
-  foreignKey: "groupId", 
-  as: "group" 
-});
-
-// ==========================================
-// Associações: Plan <-> PlanModality
-// ==========================================
-Plan.hasMany(PlanModality, { 
-  foreignKey: "planId", 
-  as: "prices" 
-});
-
-PlanModality.belongsTo(Plan, { 
-  foreignKey: "planId", 
-  as: "plan" 
-});
-
-// ==========================================
-// Associações: Subscription (Assinatura)
-// ==========================================
-Subscription.belongsTo(Student, { 
-  foreignKey: "studentId", 
-  as: "student" 
-});
-
-Student.hasMany(Subscription, { 
-  foreignKey: "studentId", 
-  as: "subscriptions" 
-});
-
-Subscription.belongsTo(PlanModality, { 
-  foreignKey: "planModalityId", 
-  as: "planModality" 
-});
-
-PlanModality.hasMany(Subscription, { 
-  foreignKey: "planModalityId", 
-  as: "subscriptions" 
-});
+// Admin <-> PasswordReset
+Admin.hasMany(PasswordReset, { foreignKey: "adminId", as: "passwordResets" });
+PasswordReset.belongsTo(Admin, { foreignKey: "adminId", as: "admin" });
