@@ -153,10 +153,13 @@ describe("Students Services - GetAll", () => {
     expect(response.message).toBe("Students found successfully");
   });
 
-  it("Must throw a 404 error if student is not found", async () => {
+  it("Must return 200 with empty array when no students exist", async () => {
     vi.mocked(Student.findAll).mockResolvedValue([]);
 
-    await expect(studentServices.getAll()).rejects.toThrow();
+    const response = await studentServices.getAll();
+
+    expect(response.statusCode).toBe(200);
+    expect(response.data).toEqual([]);
   });
 });
 
