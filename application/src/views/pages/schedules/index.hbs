@@ -1,0 +1,17 @@
+<script src="/js/schedule.js"></script>
+
+<div class="flex-1 overflow-y-auto p-4 lg:p-6">
+    <div class="space-y-6">
+        {{> top tagName="Agenda de Aulas" tagButton="Nova Aula" tagId="schedule-counters" action="handleOpen(null, APP_CONFIG.SCHEDULES)"}}
+    </div>
+
+    {{#if isEmpty}}
+        <div class="mt-6">
+            {{> emptyState}}
+        </div>
+    {{else}}
+        {{> scheduleList}}
+    {{/if}}
+</div>
+
+{{> scheduleModal}}

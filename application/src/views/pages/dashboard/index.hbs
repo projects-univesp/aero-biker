@@ -4,54 +4,154 @@
     <div class="space-y-6">
         {{> top tagName="Dashboard" tagId="dashboard-subtitle" }}
     </div>
-    
+
+    {{! Stat cards }}
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mt-6">
       {{> dashCard
         title="Alunos Ativos"
         value=dashboard.totalStudents
         icon="icons/users"
+        color="bg-blue-50 text-blue-600"
       }}
-    
+
       {{> dashCard
         title="Turmas"
         value=dashboard.totalClasses
         icon="icons/bike"
+        color="bg-green-50 text-green-600"
       }}
-    
+
       {{> dashCard
         title="Aulas Cadastradas"
         value=dashboard.totalLessons
         icon="icons/calendar"
+        color="bg-purple-50 text-purple-600"
       }}
 
       {{> dashCard
         title="Planos Ativos"
         value=dashboard.totalPlans
         icon="icons/cred-card"
+        color="bg-orange-50 text-orange-600"
       }}
     </div>
-    
+
+    {{! Revenue row }}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
       {{> revenueCard
-        month="Maio"
-        amount="0,00"
-        paid=0
-        pending=0
+        month=dashboard.currentMonth
+        amount=dashboard.receivedAmount
+        paid=dashboard.paidCount
+        pending=dashboard.pendingCount
       }}
-    
+
       {{> estimateCard
-        estimate="678,33"
-      }} 
+        estimate=dashboard.estimatedRevenue
+      }}
     </div>
-    
+
+    {{! Charts row }}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-base font-semibold text-gray-900 mb-4">Alunos por Turma</h2>
+        <div class="relative h-52" id="studentsPerGroupWrap">
+          <canvas id="studentsPerGroupChart"></canvas>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-base font-semibold text-gray-900 mb-4">Distribuição de Planos</h2>
+        <div class="relative h-52" id="planDistributionWrap">
+          <canvas id="planDistributionChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    {{! Recent activity row }}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
       {{> recentClassesCard
         recentClasses=dashboard.recentClasses
       }}
-    
+
       {{> renewalsCard
         upcomingRenewals=dashboard.upcomingRenewals
       }}
     </div>
-    
+
 </div>
+
+<script>
+(function () {
+  var studentsData = {{{toJSON dashboard.studentsPerGroup}}};
+  var plansData    = {{{toJSON dashboard.planDistribution}}};
+
+  // Bar chart — Alunos por Turma
+  var barCanvas = document.getElementById('studentsPerGroupChart');
+  var barWrap   = document.getElementById('studentsPerGroupWrap');
+  if (barCanvas && studentsData.length > 0) {
+    new Chart(barCanvas, {
+      type: 'bar',
+      data: {
+        labels: studentsData.map(function(d){ return d.label; }),
+        datasets: [{
+          data: studentsData.map(function(d){ return d.count; }),
+          backgroundColor: 'rgba(59, 130, 246, 0.75)',
+          borderColor: 'rgba(59, 130, 246, 1)',
+          borderWidth: 1,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, font: { size: 11 } },
+            grid: { color: 'rgba(0,0,0,0.05)' }
+          },
+          x: {
+            ticks: { maxRotation: 45, font: { size: 9 } },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+  } else if (barWrap) {
+    barWrap.innerHTML = '<p class="text-sm text-gray-400 text-center pt-10">Nenhuma turma ativa encontrada.</p>';
+  }
+
+  // Pie chart — Distribuição de Planos
+  var pieCanvas = document.getElementById('planDistributionChart');
+  var pieWrap   = document.getElementById('planDistributionWrap');
+  if (pieCanvas && plansData.length > 0) {
+    new Chart(pieCanvas, {
+      type: 'doughnut',
+      data: {
+        labels: plansData.map(function(d){ return d.label; }),
+        datasets: [{
+          data: plansData.map(function(d){ return d.count; }),
+          backgroundColor: ['#3b82f6', '#f97316', '#f59e0b', '#8b5cf6', '#22c55e', '#ec4899'],
+          borderWidth: 2,
+          borderColor: '#fff',
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { size: 11 }, padding: 12 }
+          }
+        }
+      }
+    });
+  } else if (pieWrap) {
+    pieWrap.innerHTML = '<p class="text-sm text-gray-400 text-center pt-10">Nenhum plano com assinatura ativa.</p>';
+  }
+})();
+</script>
