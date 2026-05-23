@@ -5,16 +5,16 @@
       class="schedule-row bg-white rounded-2xl border-gray-100 p-0.5 flex items-center justify-between shadow-md transition"
       data-name="{{this.title}}"
       data-status="{{#if this.isActive}}active{{else}}inactive{{/if}}"
-      data-date="{{this.date}}"
+      data-date="{{this.dayAndMonth}}"
     >
 
       <div class="flex items-center gap-1">
         <div class="ml-2 w-14 h-14 rounded-2xl bg-green-100 flex flex-col items-center justify-center shrink-0">
             <span class="text-green-700 text-lg font-bold">
-              {{formatDay this.date}}
+              {{formatDay this.dayAndMonth}}
             </span>
             <span class="text-green-600 text-xs font-medium uppercase">
-              {{formatMonthShort this.date}}
+              {{formatMonthShort this.dayAndMonth}}
             </span>
         </div>
 

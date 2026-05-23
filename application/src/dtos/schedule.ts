@@ -1,11 +1,12 @@
 export const LEVELS = ["Iniciante", "Intermediário", "Avançado"] as const;
 export type LevelCategory = typeof LEVELS[number];
+
 export interface ScheduleDTO {
   title: string;
   category: string;
   level:number;
   description?: string;
-  date: string;
+  dayAndMonth: string;
   startTime: string;
   endTime: string;
   currentStudents: number;

@@ -82,63 +82,60 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function filterTable() {
-
+  
+    const rows =
+      document.querySelectorAll(".schedule-row");
+  
     const searchTerm =
       searchInput?.value.toLowerCase() || "";
-
-    const currentMonth = currentDate.getMonth();
-
-    const currentYear = currentDate.getFullYear();
-
+  
+    const currentMonth =
+      currentDate.getMonth();
+  
+    const currentYear =
+      currentDate.getFullYear();
+  
     rows.forEach((row) => {
-
+  
       const name =
         (row.getAttribute("data-name") || "")
           .toLowerCase();
-
+  
       const status =
         row.getAttribute("data-status");
-
+  
       const rowDate =
         row.getAttribute("data-date");
-
+  
       if (!rowDate) {
         row.style.display = "none";
         return;
       }
-      
-      const scheduleDate = new Date(rowDate);
-
-      if (isNaN(scheduleDate.getTime())) {
-        row.style.display = "none";
-        return;
-      }
-
+  
+      // Parse seguro YYYY-MM-DD
+  
+      const [year, month, day] =
+        rowDate.split("-").map(Number);
+  
+      const scheduleDate =
+        new Date(year, month - 1, day);
+  
       const matchesMonth =
         scheduleDate.getMonth() === currentMonth &&
         scheduleDate.getFullYear() === currentYear;
-
-      if (rowDate) {
-
-        const scheduleDate = new Date(rowDate);
-
-        matchesMonth =
-          scheduleDate.getMonth() === currentMonth &&
-          scheduleDate.getFullYear() === currentYear;
-      }
-
+  
       const matchesSearch =
         name.includes(searchTerm);
-
+  
       const matchesFilter =
         currentFilter === "all" ||
         status === currentFilter;
-
+  
       const shouldShow =
         matchesSearch &&
         matchesFilter &&
         matchesMonth;
-
+  
       row.style.display =
         shouldShow ? "" : "none";
     });

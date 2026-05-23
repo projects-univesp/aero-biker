@@ -49,7 +49,7 @@ Schedule.init(
       allowNull: true,
     },
 
-    date: {
+    dayAndMonth: {
       type: DataTypes.DATE,
       allowNull: false,
     },

@@ -22,12 +22,12 @@ export class ScheduleService {
     const schedules = await Schedule.findAll({
       include: [{ model: Group, as: "group", attributes: ["name", "maxCapacity"] }],
       order: [
-        ["date", "ASC"],
+        ["dayAndMonth", "ASC"],
         ["startTime", "ASC"],
       ],
     });
 
-   // if (schedules.length === 0) responseFormat.error("Schedules not found", 404);
+    if (schedules.length === 0) responseFormat.error("Schedules not found", 404);
 
     return responseFormat.send({
       message: "Schedules found successfully",
