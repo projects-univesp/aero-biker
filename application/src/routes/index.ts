@@ -4,6 +4,7 @@ import {
   requireSetupIncomplete,
 } from "@middlewares/requireAuth";
 import { Router } from "express";
+import { apiAdminRoutes } from "./adminRoutes";
 import { apiAuthRoutes } from "./authRoutes";
 import { apiConfigRoutes } from "./configRoutes";
 import { apiDashboardRoutes, dashboardRoutes } from "./dashboardRoutes";
@@ -18,6 +19,7 @@ export const appRouter = Router();
 
 // API
 appRouter.use("/api/auth", apiAuthRoutes);
+appRouter.use("/api/admins", apiAdminRoutes);
 appRouter.use("/api/config", apiConfigRoutes);
 appRouter.use("/api/dashboard", apiDashboardRoutes);
 appRouter.use("/api/students", apiStudentRoutes);

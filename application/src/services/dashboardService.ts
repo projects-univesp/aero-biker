@@ -37,6 +37,10 @@ export class DashboardService {
         activeGroups,
         activePlans,
         activeSubscriptions,
+        totalClasses: totalGroups,
+        totalLessons: 0,
+        recentClasses: [],
+        upcomingRenewals: [],
       },
     });
   };
