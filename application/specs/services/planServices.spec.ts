@@ -1,12 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-
-import { PlanService } from "../../src/services/planService";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Plan } from "../../src/models/plan";
-import { PlanModality } from "../../src/models/planModality";
 import { Subscription } from "../../src/models/subscription";
+import { PlanService } from "../../src/services/planService";
 
 vi.mock("@models/plan");
-vi.mock("@models/planModality");
 vi.mock("@models/subscription");
 
 describe("Plan Services - Create", () => {
@@ -22,7 +19,7 @@ describe("Plan Services - Create", () => {
       name: "Plano Básico",
       description: "Teste",
       price: 100,
-      durationMonths: 1,
+      durationMonths: "Mensal" as const,
     };
 
     vi.mocked(Plan.count).mockResolvedValue(0);
@@ -49,7 +46,7 @@ describe("Plan Services - Create", () => {
       name: "Plano Pro",
       description: "Teste",
       price: 200,
-      durationMonths: 2,
+      durationMonths: "Trimestral" as const,
     };
 
     vi.mocked(Plan.count).mockResolvedValue(1);
@@ -94,7 +91,7 @@ describe("Plan Services - Get", () => {
 
     await expect(planService.get(fakeId)).rejects.toThrow();
 
-    expect(Plan.findByPk).toHaveBeenCalledWith(fakeId, expect.any(Object));
+    expect(Plan.findByPk).toHaveBeenCalledWith(fakeId);
   });
 });
 
@@ -129,6 +126,7 @@ describe("Plan Services - GetAll", () => {
     vi.mocked(Plan.findAll).mockResolvedValue([]);
 
     const response = await planService.getAll();
+
     expect(response.statusCode).toBe(200);
     expect(response.data).toEqual([]);
   });
@@ -166,7 +164,6 @@ describe("Plan Services - Update", () => {
     expect(response.message).toBe("Plan updated successfully");
     expect(fakePlanInstance.update).toHaveBeenCalledWith(
       expect.objectContaining(updateData),
-      expect.any(Object),
     );
   });
 
@@ -216,15 +213,12 @@ describe("Plan Services - Delete", () => {
 
     vi.mocked(Plan.findByPk).mockResolvedValue(fakePlanInstance as any);
     vi.mocked(Subscription.count).mockResolvedValue(0);
-    vi.mocked(PlanModality.update).mockResolvedValue([1, []] as any);
 
     const response = await planService.delete(fakeId);
 
     expect(response.statusCode).toBe(200);
     expect(response.message).toBe("Plan deactivated successfully");
-    expect(fakePlanInstance.update).toHaveBeenCalledWith({
-      isActive: false,
-    });
+    expect(fakePlanInstance.update).toHaveBeenCalledWith({ isActive: false });
   });
 
   it("Must throw a 400 error if plan has active subscriptions", async () => {

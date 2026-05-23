@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const firstDate = firstRow.getAttribute("data-date");
     if (firstDate) {
       const dateOnly = firstDate.split("T")[0];
-      currentDate = new Date(dateOnly + "T00:00:00");
+      currentDate = new Date(`${dateOnly}T00:00:00`);
     } else {
       currentDate = new Date();
     }
@@ -247,7 +247,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const studentsEl = document.getElementById("schedule-current-students");
     if (
       studentsEl &&
-      (studentsEl.value === "" || isNaN(Number(studentsEl.value)))
+      (studentsEl.value === "" || Number.isNaN(Number(studentsEl.value)))
     ) {
       studentsEl.value = "0";
     }

@@ -68,16 +68,30 @@ export default class HandleData {
     if (this.config.id && document.getElementById(this.config.id)) {
       document.getElementById(this.config.id).value = "";
     }
+
     if (this.config.fields) {
       Object.values(this.config.fields).forEach((input) => {
         const el = document.getElementById(input);
-        if (el) el.value = "";
+        if (el) {
+          if (el.tagName === "SELECT") {
+            el.selectedIndex = 0;
+          } else {
+            el.value = "";
+          }
+        }
       });
     }
+
     if (this.config.numericFields) {
       Object.values(this.config.numericFields).forEach((input) => {
         const el = document.getElementById(input);
-        if (el) el.value = "";
+        if (el) {
+          if (el.tagName === "SELECT") {
+            el.selectedIndex = 0;
+          } else {
+            el.value = "";
+          }
+        }
       });
     }
 
@@ -88,27 +102,29 @@ export default class HandleData {
       try {
         const result = await this.dialUp("GET", this.config.path, this.itemId);
         const data = result.data;
-
         if (this.config.fields) {
           for (const [dbKey, htmlId] of Object.entries(this.config.fields)) {
-            if (data[dbKey] !== undefined)
+            if (data[dbKey] !== undefined && document.getElementById(htmlId)) {
               document.getElementById(htmlId).value = data[dbKey];
+            }
           }
         }
         if (this.config.numericFields) {
           for (const [dbKey, htmlId] of Object.entries(
             this.config.numericFields,
           )) {
-            if (data[dbKey] !== undefined)
+            if (data[dbKey] !== undefined && document.getElementById(htmlId)) {
               document.getElementById(htmlId).value = data[dbKey];
+            }
           }
         }
         if (this.config.checkboxes) {
           for (const [dbKey, htmlId] of Object.entries(
             this.config.checkboxes,
           )) {
-            if (data[dbKey] !== undefined)
+            if (data[dbKey] !== undefined && document.getElementById(htmlId)) {
               document.getElementById(htmlId).checked = data[dbKey];
+            }
           }
         }
       } catch (_error) {
@@ -141,6 +157,14 @@ export default class HandleData {
 
   submit() {
     if (this.event) this.event.preventDefault();
+
+    const prefix = this.config.id ? this.config.id.split("-")[0] : "";
+    const formElement = document.getElementById(`${prefix}-form`);
+
+    if (formElement && !formElement.checkValidity()) {
+      formElement.reportValidity();
+      return;
+    }
 
     const idElement = document.getElementById(this.config.id);
     const id = idElement ? idElement.value : "";

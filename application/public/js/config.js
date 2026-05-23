@@ -46,6 +46,9 @@ export const APP_CONFIG = Object.freeze({
     numericFields: {
       price: "plan-price",
     },
+    enumFields: {
+      durationMonths: ["Mensal", "Trimestral", "Semestral", "Anual"],
+    },
     checkboxes: {
       isActive: "plan-active",
     },

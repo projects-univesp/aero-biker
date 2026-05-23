@@ -6,8 +6,8 @@
     configName="APP_CONFIG.PLANS"
     title="Novo Plano"
 }}
-    {{> input id="plan-name" label="Nome*" placeholder="Ex: Plano Mensal"}}
-    {{> input id="plan-description" label="Descrição*" placeholder="Breve descrição do plano"}}
+    {{> input id="plan-name" label="Nome*" placeholder="Ex: Plano Mensal" required=true}}
+    {{> input id="plan-description" label="Descrição*" placeholder="Breve descrição do plano" required=true}}
     {{> dropdown
         id="plan-duration"
         label="Modalidade*"
@@ -16,10 +16,10 @@
     }}
     <div>
       <label class="text-sm font-medium text-gray-700 block mb-1.5">Preço (R$)*</label>
-      <input type="number" id="plan-price" min="0" step="0.01" placeholder="Ex: 89.90"
+      <input type="number" id="plan-price" min="0" step="0.01" placeholder="Ex: 89.90" required
         class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
     </div>
-    <label class="flex items-center gap-3 cursor-pointer">
+    <label class="flex items-center gap-3 cursor-pointer mt-2">
       <input type="checkbox" id="plan-active" class="w-4 h-4 accent-green-500" checked>
       <span class="text-sm font-medium text-gray-700">Plano ativo</span>
     </label>

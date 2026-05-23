@@ -5,7 +5,7 @@
                 <tr>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Nome</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Descrição</th>
-                    <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Preço</th>
+                    <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Preço</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Duração</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Status</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
@@ -13,20 +13,23 @@
             </thead>
             <tbody class="divide-y divide-gray-50">
                 {{#each plans}}
-                <tr class="plan-row hover:bg-gray-50 transition-colors"  data-name="{{this.name}}" data-status="{{#if this.isActive}}active{{else}}inactive{{/if}}">
+                <tr class="plan-row hover:bg-gray-50 transition-colors"  
+                    data-name="{{this.name}}" 
+                    data-status="{{#if this.isActive}}active{{else}}inactive{{/if}}"
+                    data-duration="{{this.durationMonths}}"
+                    data-price="{{this.price}}">
+                    
                     <td class="px-5 py-3.5">
                         <p class="font-medium text-gray-900 text-sm">{{this.name}}</p>
                     </td>
                     <td class="px-5 py-3.5 hidden md:table-cell">
                         <p class="text-sm text-gray-500 max-w-xs truncate">{{this.description}}</p>
                     </td>
-                    <td class="px-5 py-3.5 hidden sm:table-cell">
-                        <p class="font-medium text-sm text-gray-900">{{formatCurrency this.prices.[0].price}}</p>
+                    <td class="px-5 py-3.5">
+                        <p class="font-medium text-sm text-gray-900">{{formatCurrency this.price}}</p>
                     </td>
                     <td class="px-5 py-3.5 hidden md:table-cell">
-                        <p class="text-sm text-gray-600">
-                            {{this.prices.[0].durationMonths}}
-                        </p>
+                        <p class="text-sm text-gray-600">{{this.durationMonths}}</p>
                     </td>
                     <td class="px-5 py-3.5 hidden md:table-cell">
                         {{#if this.isActive}}

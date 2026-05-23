@@ -1,9 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-
-import { StudentServices } from "../../src/services/studentServices";
-import { Student } from "../../src/models/student";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Group } from "../../src/models/group";
+import { Student } from "../../src/models/student";
 import { Subscription } from "../../src/models/subscription";
+import { StudentServices } from "../../src/services/studentServices";
 
 vi.mock("@models/student");
 vi.mock("@models/group");
@@ -170,6 +169,7 @@ describe("Students Services - GetAll", () => {
     vi.mocked(Student.findAll).mockResolvedValue([]);
 
     const response = await studentServices.getAll();
+
     expect(response.statusCode).toBe(200);
     expect(response.data).toEqual([]);
   });

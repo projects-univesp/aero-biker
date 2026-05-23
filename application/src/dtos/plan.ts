@@ -1,21 +1,11 @@
-// application/src/dtos/plan.ts
+export const PLANS = ["Mensal", "Trimestral", "Semestral", "Anual"] as const;
 
-export enum PLANS {
-  MONTHLY = "Mensal",
-  QUATERLY = "Trimestral",
-  SEMESTER = "Semestral",
-  YEARLY = "Anual",
-}
-
-export interface PlanModalityDTO {
-  price: number;
-  durationMonths: PLANS;
-  isActive?: boolean;
-}
+export type PlanDuration = (typeof PLANS)[number];
 
 export interface PlanDTO {
   name: string;
   description: string;
+  price: number;
+  durationMonths: PlanDuration;
   isActive: boolean;
-  prices: PlanModalityDTO[];
 }

@@ -88,6 +88,11 @@ export const handlebarsHelpers = {
     return String(time).substring(0, 5);
   },
 
+  substring: (str: string, start: number, end: number) => {
+    if (!str) return "";
+    return str.substring(start, end);
+  },
+
   formatDate: () => {
     const date = new Date();
 

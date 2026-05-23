@@ -1,4 +1,4 @@
-import { StudentDTO } from "@dtos/student";
+import type { StudentDTO } from "@dtos/student";
 import { Group } from "@models/group";
 import { Student } from "@models/student";
 import { Subscription } from "@models/subscription";
@@ -128,21 +128,18 @@ export class StudentServices {
     const student = await Student.findByPk(id);
     if (student === null) responseFormat.error("Student not found", 404);
 
-    const linkedSubscriptions = await Subscription.count({
-      where: { studentId: id },
+    await (student as NonNullable<typeof student>).update({
+      isActive: false,
+      enrollment: "INACTIVE",
     });
 
-    if (linkedSubscriptions > 0) {
-      responseFormat.error(
-        "Cannot delete a student that has subscriptions linked to them",
-        400,
-      );
-    }
-
-    await student.destroy();
+    await Subscription.update(
+      { status: "INACTIVE" },
+      { where: { studentId: id } },
+    );
 
     return responseFormat.send({
-      message: "Student deleted successfully",
+      message: "Student deactivated succesfully",
       statusCode: 200,
     });
   };

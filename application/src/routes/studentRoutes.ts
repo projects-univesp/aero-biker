@@ -1,7 +1,6 @@
 import { StudentController } from "@controllers/studentController";
 import { auth } from "@middlewares/auth";
 import { renderApi } from "@middlewares/renderApi";
-import { renderPage } from "@middlewares/renderPage";
 import { tryCatch } from "@middlewares/tryCatch";
 import { Router } from "express";
 
@@ -18,8 +17,13 @@ export const apiStudentRoutes = Router()
 
 export const studentRoutes = Router().get(
   "/",
-  renderApi("/api/students", "pages/students/index", "students", {
-    emptyMessage: "Nenhum estudante cadastrado até o momento.",
-    category: "Students.",
-  }),
+  renderApi(
+    ["/api/students", "/api/groups"],
+    "pages/students/index",
+    ["students", "groups"],
+    {
+      emptyMessage: "Nenhum estudante cadastrado até o momento.",
+      category: "Students.",
+    },
+  ),
 );

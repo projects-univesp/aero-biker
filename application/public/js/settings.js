@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       DURATIONS.forEach((key) => {
         const el = document.getElementById(`settings-price-${key}`);
         const val = parseFloat(el?.value || "");
-        if (isNaN(val) || val <= 0) {
+        if (Number.isNaN(val) || val <= 0) {
           valid = false;
         } else {
           prices[key] = val;
@@ -113,7 +113,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (saveCredBtn) {
     saveCredBtn.addEventListener("click", async () => {
       const name = document.getElementById("settings-username")?.value?.trim();
-      const oldPassword = document.getElementById("settings-old-password")?.value;
+      const oldPassword = document.getElementById(
+        "settings-old-password",
+      )?.value;
       const newPassword = document.getElementById("settings-password")?.value;
 
       if (!name && !newPassword) {
@@ -133,7 +135,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const body = {};
       if (name) body.name = name;
-      if (newPassword) { body.newPassword = newPassword; body.oldPassword = oldPassword; }
+      if (newPassword) {
+        body.newPassword = newPassword;
+        body.oldPassword = oldPassword;
+      }
 
       saveCredBtn.disabled = true;
       const originalHTML = saveCredBtn.innerHTML;
@@ -147,10 +152,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         if (res.ok) {
-          document.getElementById("settings-old-password").value = "";
-          document.getElementById("settings-password").value = "";
+          const oldPassEl = document.getElementById("settings-old-password");
+          const newPassEl = document.getElementById("settings-password");
+          if (oldPassEl) oldPassEl.value = "";
+          if (newPassEl) newPassEl.value = "";
           saveCredBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Salvo!`;
-          setTimeout(() => { saveCredBtn.innerHTML = originalHTML; saveCredBtn.disabled = false; }, 2000);
+          setTimeout(() => {
+            saveCredBtn.innerHTML = originalHTML;
+            saveCredBtn.disabled = false;
+          }, 2000);
         } else {
           const err = await res.json().catch(() => ({}));
           throw new Error(err.message || "Erro ao salvar");
