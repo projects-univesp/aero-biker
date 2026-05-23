@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { appRouter } from "@routes/index";
 import { env } from "@utils/env";
 import { engine } from "express-handlebars";
@@ -7,7 +8,7 @@ import path from "path";
 import { logger } from "@utils/logger";
 import { sequelize } from "@config/database";
 import "@models/associations";
-import { handlebarsHelpers } from "@utils/handlebarsHelpers";
+import { handlebarsHelpers, ifCond } from "@utils/handlebarsHelpers";
 import { notFound } from "@middlewares/notFound";
 
 const app = express();
@@ -24,6 +25,7 @@ app.engine(
     partialsDir: path.join(process.cwd(), env.VIEWS_PATH, "partials"),
     helpers: {
       ...handlebarsHelpers,
+      ifCond,
       roleLabel: (role: string) => {
         const labels: Record<string, string> = { OWNER: "Proprietário", ADMIN: "Administrador", USER: "Usuário" };
         return labels[role] ?? role;
@@ -37,6 +39,7 @@ app.set("views", path.join(process.cwd(), env.VIEWS_PATH));
 app.use(express.static(path.join(process.cwd(), "public")));
 
 // Middlewares
+app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(appRouter);

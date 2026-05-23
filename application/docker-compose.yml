@@ -48,10 +48,12 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
       SALT_RESULT: ${SALT_RESULT}
-      VIEWS_PATH: ${VIEWS_PATH}
+      VIEWS_PATH: views
       MAIL_HOST: ${MAIL_HOST}
       MAIL_USER: ${MAIL_USER}
       MAIL_PASS: ${MAIL_PASS}
+    ports:
+      - "3333:3333"
     depends_on:
       db:
         condition: service_healthy

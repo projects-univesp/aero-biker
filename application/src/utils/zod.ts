@@ -6,6 +6,24 @@ import { StudentDTO } from "@dtos/student";
 import { SubscriptionDTO } from "@dtos/subscription";
 import { z } from "zod";
 
+z.setErrorMap((issue) => {
+  if (issue.code === "invalid_type" && issue.input === undefined) {
+    return { message: "Este campo é obrigatório." };
+  }
+  if (issue.code === "invalid_format" && issue.format === "email") {
+    return { message: "Digite um e-mail válido." };
+  }
+  if (issue.code === "too_small" && issue.origin === "string") {
+    const min = Number(issue.minimum);
+    return { message: `Deve conter pelo menos ${min} caractere${min !== 1 ? "s" : ""}.` };
+  }
+  if (issue.code === "too_big" && issue.origin === "string") {
+    const max = Number(issue.maximum);
+    return { message: `Deve conter no máximo ${max} caractere${max !== 1 ? "s" : ""}.` };
+  }
+  return null;
+});
+
 export class VerifyData {
   verifyStudent(student: StudentDTO) {
     return z.object({
