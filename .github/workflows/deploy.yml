@@ -37,6 +37,9 @@ jobs:
       DEV_DB_PASSWORD:  ${{ secrets.DEV_DB_PASSWORD }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       VIEWS_PATH: ${{ secrets.VIEWS_PATH }}
+      MAIL_HOST: ${{ secrets.MAIL_HOST }}
+      MAIL_USER: ${{ secrets.MAIL_USER }}
+      MAIL_PASS: ${{ secrets.MAIL_PASS }}
 
     steps:
       - name: Code Checkout
