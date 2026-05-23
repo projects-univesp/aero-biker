@@ -56,6 +56,21 @@ export const APP_CONFIG = Object.freeze({
         }
     },
 
+    SCHEDULES: {
+        id: 'schedule-id',
+        path: 'schedules',
+        modalId: 'modal-schedule',
+        entityName: 'Aula',
+        fields: {
+            groupId: 'schedule-group',
+            startTime: 'schedule-start',
+            endTime: 'schedule-end'
+        },
+        numericFields: {
+            dayOfWeek: 'schedule-day'
+        }
+    },
+
     SUBSCRIPTIONS: {
         id: 'subscription-id',
         path: 'subscriptions',

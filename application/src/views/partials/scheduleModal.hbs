@@ -1,0 +1,36 @@
+{{#> modal
+    modalId="modal-schedule"
+    titleId="schedule-modal-title"
+    formId="schedule-form"
+    hiddenId="schedule-id"
+    configName="APP_CONFIG.SCHEDULES"
+    title="Nova Aula"
+}}
+    <div>
+        <label class="text-sm font-medium text-gray-700 block mb-1.5">Turma*</label>
+        <select id="schedule-group" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+            <option value="">Selecione uma turma</option>
+        </select>
+    </div>
+    <div>
+        <label class="text-sm font-medium text-gray-700 block mb-1.5">Dia da semana*</label>
+        <select id="schedule-day" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+            <option value="">Selecione o dia</option>
+            <option value="0">Domingo</option>
+            <option value="1">Segunda-feira</option>
+            <option value="2">Terça-feira</option>
+            <option value="3">Quarta-feira</option>
+            <option value="4">Quinta-feira</option>
+            <option value="5">Sexta-feira</option>
+            <option value="6">Sábado</option>
+        </select>
+    </div>
+    <div>
+        <label class="text-sm font-medium text-gray-700 block mb-1.5">Horário início*</label>
+        <input type="time" id="schedule-start" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
+    </div>
+    <div>
+        <label class="text-sm font-medium text-gray-700 block mb-1.5">Horário fim*</label>
+        <input type="time" id="schedule-end" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
+    </div>
+{{/modal}}
