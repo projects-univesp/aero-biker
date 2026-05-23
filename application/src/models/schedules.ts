@@ -4,20 +4,9 @@ import { DataTypes, Model } from "sequelize";
 
 export class Schedule extends Model {
   declare id: UUID;
-
-  declare title: string;
-  declare category: string;
-  declare level: string;
-  declare description: string;
-
-  declare dayAndMonth: string;
+  declare dayOfWeek: number;
   declare startTime: string;
   declare endTime: string;
-
-  declare currentStudents: number;
-  declare isHoliday: boolean;
-  declare isActive: boolean;
-
   declare groupId: UUID;
 }
 
@@ -28,57 +17,18 @@ Schedule.init(
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
     },
-
-    title: {
-      type: DataTypes.STRING,
+    dayOfWeek: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
-
-    category: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-
-    level: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-
-    description: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-
-    dayAndMonth: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-
     startTime: {
       type: DataTypes.TIME,
       allowNull: false,
     },
-
     endTime: {
       type: DataTypes.TIME,
       allowNull: false,
     },
-
-    currentStudents: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-    },
-
-    isHoliday: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-
     groupId: {
       type: DataTypes.UUID,
       references: {

@@ -1,6 +1,7 @@
 import { StudentController } from "@controllers/studentController";
 import { auth } from "@middlewares/auth";
 import { renderApi } from "@middlewares/renderApi";
+import { renderPage } from "@middlewares/renderPage";
 import { tryCatch } from "@middlewares/tryCatch";
 import { Router } from "express";
 
@@ -12,7 +13,6 @@ export const apiStudentRoutes = Router()
   .get("/", tryCatch(student.getAllStudents))
   .get("/:id", tryCatch(student.getStudent))
   .patch("/:id", tryCatch(student.updateStudent))
-  .patch("/:id/toggle", tryCatch(student.toggleStudent))
   .delete("/:id", tryCatch(student.deleteStudent));
 
 export const studentRoutes = Router().get(

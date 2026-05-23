@@ -1,6 +1,6 @@
+import { Request, Response } from "express";
 import { PlanService } from "@services/planService";
 import { VerifyData } from "@utils/zod";
-import type { Request, Response } from "express";
 
 export class PlanController {
   private readonly planService: PlanService;
@@ -12,14 +12,8 @@ export class PlanController {
   }
 
   createPlan = async (request: Request, response: Response) => {
-    const { price, durationMonths, ...base } = this.verifyData.verifyPlan(
-      request.body,
-    );
-    const plan = await this.planService.create({
-      ...base,
-      price,
-      durationMonths,
-    });
+    const parsedPlan = this.verifyData.verifyPlan(request.body);
+    const plan = await this.planService.create(parsedPlan);
     return response.status(201).send(plan);
   };
 
@@ -35,19 +29,9 @@ export class PlanController {
   };
 
   updatePlan = async (request: Request, response: Response) => {
-    const { price, durationMonths, ...base } =
-      this.verifyData.verifyPlanPartial(request.body);
+    const parsedPlan = this.verifyData.verifyPlanPartial(request.body);
     const { id } = this.verifyData.verifyId(request.params.id);
-    const planData: Record<string, unknown> = { ...base };
-    if (price !== undefined) planData.price = price;
-    if (durationMonths !== undefined) planData.durationMonths = durationMonths;
-    const plan = await this.planService.update(id, planData);
-    return response.status(200).send(plan);
-  };
-
-  togglePlan = async (request: Request, response: Response) => {
-    const { id } = this.verifyData.verifyId(request.params.id);
-    const plan = await this.planService.toggleActive(id);
+    const plan = await this.planService.update(id, parsedPlan);
     return response.status(200).send(plan);
   };
 

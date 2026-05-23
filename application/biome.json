@@ -6,8 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false,
-    "ignore": ["public/css/tailwindcss/dist.css"]
+    "ignoreUnknown": false
   },
   "formatter": {
     "enabled": true,

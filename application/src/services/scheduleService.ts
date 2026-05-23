@@ -18,16 +18,16 @@ export class ScheduleService {
     });
   };
 
-  getAll = async () => {
+  getAll = async () => { 
     const schedules = await Schedule.findAll({
-      include: [
-        { model: Group, as: "group", attributes: ["name", "maxCapacity"] },
-      ],
+      include: [{ model: Group, as: "group", attributes: ["name", "maxCapacity"] }],
       order: [
-        ["dayAndMonth", "ASC"],
+        ["dayOfWeek", "ASC"],
         ["startTime", "ASC"],
       ],
     });
+
+    if (schedules.length === 0) responseFormat.error("Schedules not found", 404);
 
     return responseFormat.send({
       message: "Schedules found successfully",
@@ -72,7 +72,7 @@ export class ScheduleService {
     const schedule = await Schedule.findByPk(id);
     if (schedule === null) responseFormat.error("Schedule not found", 404);
 
-    await schedule.destroy();
+    await schedule.destroy(); 
 
     return responseFormat.send({
       message: "Schedule deleted successfully",

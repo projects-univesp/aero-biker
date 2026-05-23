@@ -1,6 +1,6 @@
-import type { PlanDTO } from "@dtos/plan";
 import { Plan } from "@models/plan";
 import { Subscription } from "@models/subscription";
+import { PlanDTO } from "@dtos/plan";
 import { logger } from "@utils/logger";
 import { responseFormat } from "@utils/responseFormat";
 
@@ -15,6 +15,7 @@ export class PlanService {
         return responseFormat.error("Plan Already exists", 409);
       }
 
+      // Salva diretamente na tabela Plan com os dados validados pelo Zod
       const createdPlan = await Plan.create({
         name: planData.name,
         description: planData.description,
@@ -30,10 +31,7 @@ export class PlanService {
       });
     } catch (error) {
       logger.error(`${error}`);
-      return responseFormat.error(
-        "Internal server error during plan creation",
-        500,
-      );
+      return responseFormat.error("Internal server error during plan creation", 500);
     }
   };
 
@@ -48,10 +46,7 @@ export class PlanService {
       });
     } catch (error) {
       logger.error(`${error}`);
-      return responseFormat.error(
-        "Internal server error during plan retrieval",
-        500,
-      );
+      return responseFormat.error("Internal server error during plan retrieval", 500);
     }
   };
 
@@ -68,10 +63,7 @@ export class PlanService {
       });
     } catch (error) {
       logger.error(`${error}`);
-      return responseFormat.error(
-        "Internal server error during plan retrieval",
-        500,
-      );
+      return responseFormat.error("Internal server error during plan retrieval", 500);
     }
   };
 
@@ -93,6 +85,7 @@ export class PlanService {
         }
       }
 
+      // Atualiza os dados planos sem precisar de bulkCreate em tabelas filhas
       await plan.update({
         name: planData.name,
         description: planData.description,
@@ -108,26 +101,8 @@ export class PlanService {
       });
     } catch (error) {
       logger.error(`${error}`);
-      return responseFormat.error(
-        "Internal server error during plan update",
-        500,
-      );
+      return responseFormat.error("Internal server error during plan update", 500);
     }
-  };
-
-  toggleActive = async (id: string) => {
-    const plan = await Plan.findByPk(id);
-    if (plan === null) return responseFormat.error("Plan not found", 404);
-
-    const newStatus = !plan.isActive;
-    await plan.update({ isActive: newStatus });
-
-    return responseFormat.send({
-      message: newStatus
-        ? "Plan activated successfully"
-        : "Plan deactivated successfully",
-      statusCode: 200,
-    });
   };
 
   delete = async (id: string) => {
@@ -136,17 +111,18 @@ export class PlanService {
 
       if (plan === null) return responseFormat.error("Plan not found", 404);
 
+      // Busca diretamente pelo planId na tabela de assinaturas ativas
       const activeSubscriptions = await Subscription.count({
-        where: {
+        where: { 
           planId: id,
-          status: "ACTIVE",
+          status: "ACTIVE" 
         },
       });
 
       if (activeSubscriptions > 0) {
         return responseFormat.error(
           "Cannot deactivate a plan with active subscriptions",
-          400,
+          400
         );
       }
 
@@ -158,10 +134,7 @@ export class PlanService {
       });
     } catch (error) {
       logger.error(`${error}`);
-      return responseFormat.error(
-        "Internal server error during plan deletion",
-        500,
-      );
+      return responseFormat.error("Internal server error during plan deletion", 500);
     }
   };
 }

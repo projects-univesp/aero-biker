@@ -34,12 +34,6 @@ export class StudentController {
     return response.status(200).send(student);
   };
 
-  toggleStudent = async (request: Request, response: Response) => {
-    const { id } = this.verifyData.verifyId(request.params.id);
-    const student = await this.studentServices.toggleActive(id);
-    return response.status(200).send(student);
-  };
-
   deleteStudent = async (request: Request, response: Response) => {
     const { id } = this.verifyData.verifyId(request.params.id);
     const student = await this.studentServices.delete(id);

@@ -1,8 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Group } from "../../src/models/group";
-import { Student } from "../../src/models/student";
-import { Subscription } from "../../src/models/subscription";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
 import { StudentServices } from "../../src/services/studentServices";
+import { Student } from "../../src/models/student";
+import { Group } from "../../src/models/group";
+import { Subscription } from "../../src/models/subscription";
 
 vi.mock("@models/student");
 vi.mock("@models/group");
@@ -22,14 +23,11 @@ describe("Students Services - Create", () => {
       phone: "551983267343",
       isActive: true,
       groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
-      enrollment: "ACTIVE",
+      enrollment: "ACTIVE"
     };
 
     vi.mocked(Student.count).mockResolvedValue(0);
-    vi.mocked(Group.findByPk).mockResolvedValue({
-      id: studentData.groupId,
-      maxCapacity: 30,
-    } as any);
+    vi.mocked(Group.findByPk).mockResolvedValue({ id: studentData.groupId, maxCapacity: 30 } as any);
 
     vi.mocked(Student.create).mockResolvedValue({
       id: "mock-uuid-123",
@@ -49,7 +47,7 @@ describe("Students Services - Create", () => {
       phone: "5517980367429",
       isActive: true,
       groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
-      enrollment: "ACTIVE",
+      enrollment: "ACTIVE"
     };
 
     vi.mocked(Student.count).mockResolvedValue(1);
@@ -65,7 +63,7 @@ describe("Students Services - Create", () => {
       phone: "5511988880000",
       isActive: true,
       groupId: "non-existent-group",
-      enrollment: "ACTIVE",
+      enrollment: "ACTIVE"
     };
 
     vi.mocked(Student.count).mockResolvedValueOnce(0);
@@ -82,14 +80,11 @@ describe("Students Services - Create", () => {
       phone: "5511988880001",
       isActive: true,
       groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
-      enrollment: "ACTIVE",
+      enrollment: "ACTIVE"
     };
 
     vi.mocked(Student.count).mockResolvedValueOnce(0);
-    vi.mocked(Group.findByPk).mockResolvedValue({
-      id: studentData.groupId,
-      maxCapacity: 10,
-    } as any);
+    vi.mocked(Group.findByPk).mockResolvedValue({ id: studentData.groupId, maxCapacity: 10 } as any);
     vi.mocked(Student.count).mockResolvedValueOnce(10);
 
     await expect(studentServices.create(studentData)).rejects.toThrow();
@@ -114,7 +109,7 @@ describe("Students Services - Get", () => {
       phone: "11999999999",
       isActive: true,
       groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
-      enrollment: "ACTIVE",
+      enrollment: "ACTIVE"
     };
 
     vi.mocked(Student.findByPk).mockResolvedValue(fakeStudent as any);
@@ -146,14 +141,7 @@ describe("Students Services - GetAll", () => {
   });
 
   const mockStudents = [
-    {
-      id: "123",
-      name: "Saymon",
-      phone: "11999999999",
-      isActive: true,
-      groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
-      enrollment: "ACTIVE",
-    },
+    { id: "123", name: "Saymon", phone: "11999999999", isActive: true, groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26", enrollment: "ACTIVE" },
   ];
 
   it("Must get student information sucessfully", async () => {
@@ -165,7 +153,7 @@ describe("Students Services - GetAll", () => {
     expect(response.message).toBe("Students found successfully");
   });
 
-  it("Must return empty list when no students are found", async () => {
+  it("Must return 200 with empty array when no students exist", async () => {
     vi.mocked(Student.findAll).mockResolvedValue([]);
 
     const response = await studentServices.getAll();
@@ -190,7 +178,7 @@ describe("Students Services - Update", () => {
       phone: "11888888888",
       isActive: true,
       groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
-      enrollment: "ACTIVE",
+      enrollment: "ACTIVE"
     };
 
     const fakeStudentInstance = {
@@ -206,7 +194,7 @@ describe("Students Services - Update", () => {
         phone: updateData.phone,
         isActive: true,
         groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
-        enrollment: "ACTIVE",
+        enrollment: "ACTIVE"
       }),
     };
 
@@ -227,7 +215,7 @@ describe("Students Services - Update", () => {
       phone: "11888888888",
       isActive: true,
       groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
-      enrollment: "ACTIVE",
+      enrollment: "ACTIVE"
     };
 
     const fakeStudentInstance = {
@@ -236,13 +224,11 @@ describe("Students Services - Update", () => {
       phone: "11999999999",
       isActive: true,
       groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
-      enrollment: "ACTIVE",
+      enrollment: "ACTIVE"
     };
 
     vi.mocked(Student.findByPk).mockResolvedValue(fakeStudentInstance as any);
-    vi.mocked(Student.findOne).mockResolvedValue({
-      id: "outro-cara-uuid",
-    } as any);
+    vi.mocked(Student.findOne).mockResolvedValue({ id: "outro-cara-uuid" } as any);
 
     await expect(studentServices.update(fakeId, updateData)).rejects.toThrow();
   });
@@ -254,7 +240,7 @@ describe("Students Services - Update", () => {
       phone: "11999999999",
       isActive: true,
       groupId: "new-group-uuid",
-      enrollment: "ACTIVE",
+      enrollment: "ACTIVE"
     };
 
     const fakeStudentInstance = {
@@ -271,10 +257,7 @@ describe("Students Services - Update", () => {
     };
 
     vi.mocked(Student.findByPk).mockResolvedValue(fakeStudentInstance as any);
-    vi.mocked(Group.findByPk).mockResolvedValue({
-      id: "new-group-uuid",
-      maxCapacity: 20,
-    } as any);
+    vi.mocked(Group.findByPk).mockResolvedValue({ id: "new-group-uuid", maxCapacity: 20 } as any);
     vi.mocked(Student.count).mockResolvedValue(5);
 
     const response = await studentServices.update(fakeId, updateData);
@@ -295,7 +278,7 @@ describe("Students Services - Update", () => {
         phone: "11999999999",
         isActive: true,
         groupId: "8b3ef1fb-f0d2-4660-a44b-b51e1502ae26",
-        enrollment: "ACTIVE",
+        enrollment: "ACTIVE"
       }),
     ).rejects.toThrow();
   });

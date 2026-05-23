@@ -23,9 +23,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }).format(value);
   };
 
+  // Função que varre a tabela e calcula os totais dinâmicos
   function calculateCardTotals() {
     const summaryCards = document.querySelectorAll(".plan-summary-card");
 
+    // Nosso dicionário mapeando cada modalidade para as suas classes de cor no Tailwind
     const colorMap = {
       Mensal: ["bg-blue-100", "text-blue-700"],
       Trimestral: ["bg-green-100", "text-green-700"],
@@ -52,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
         (sum, row) => sum + parseFloat(row.getAttribute("data-price") || 0),
         0,
       );
-      const activeModCount = modRows.filter(
+      const activeCount = modRows.filter(
         (row) => row.getAttribute("data-status") === "active",
       ).length;
 
@@ -61,21 +63,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (valueEl) valueEl.textContent = formatBRL(totalSum);
       if (countEl)
-        countEl.textContent = `${activeModCount} ativos • ${modRows.length} total`;
+        countEl.textContent = `${activeCount} ativos • ${modRows.length} total`;
     });
   }
 
   function filterTable() {
-    const searchTerm = searchInput?.value.toLowerCase() || "";
+    const searchTerm = searchInput.value.toLowerCase();
 
     rows.forEach((row) => {
-      const name = (row.getAttribute("data-name") || "").toLowerCase();
+      const name = row.getAttribute("data-name").toLowerCase();
       const status = row.getAttribute("data-status");
 
       const matchesSearch = name.includes(searchTerm);
       const matchesFilter = currentFilter === "all" || status === currentFilter;
 
-      row.style.display = matchesSearch && matchesFilter ? "" : "none";
+      if (matchesSearch && matchesFilter) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
     });
   }
 
@@ -98,134 +104,6 @@ document.addEventListener("DOMContentLoaded", () => {
       filterTable();
     });
   });
-
-  // Toggle plan active/inactive
-  window.handleTogglePlan = async (id) => {
-    try {
-      const res = await fetch(`/api/plans/${id}/toggle`, { method: "PATCH" });
-      if (res.ok) {
-        window.location.reload();
-      } else {
-        const body = await res.json().catch(() => ({}));
-        alert(body.message || "Não foi possível alterar o status do plano.");
-      }
-    } catch (e) {
-      console.error("[Plan] Erro ao alterar status:", e);
-      alert("Erro de conexão. Tente novamente.");
-    }
-  };
-
-  // Auto-fill price from settings when duration changes
-  const durationEl = document.getElementById("plan-duration");
-  if (durationEl) {
-    durationEl.addEventListener("change", async () => {
-      const duration = durationEl.value;
-      if (!duration) return;
-      try {
-        const res = await fetch("/api/settings/plan-prices");
-        if (res.ok) {
-          const { data } = await res.json();
-          const priceEl = document.getElementById("plan-price");
-          if (priceEl && data[duration] != null) {
-            priceEl.value = Number(data[duration]).toFixed(2);
-          }
-        }
-      } catch (e) {
-        console.error("[Plan] Falha ao buscar preço sugerido:", e);
-      }
-    });
-  }
-
-  // ─── handleOpen override ───────────────────────────────────────────────────
-  // The plan API returns { name, description, isActive, price, durationMonths }.
-  // This override ensures the form is populated correctly for editing.
-  const origHandleOpen = window.handleOpen;
-  window.handleOpen = (id, config) => {
-    if (config !== window.APP_CONFIG?.PLANS) {
-      return typeof origHandleOpen === "function"
-        ? origHandleOpen(id, config)
-        : undefined;
-    }
-
-    // Reset all fields
-    const idEl = document.getElementById(config.id);
-    if (idEl) idEl.value = "";
-    Object.values(config.fields).forEach((htmlId) => {
-      const el = document.getElementById(htmlId);
-      if (el) el.value = "";
-    });
-    const priceEl = document.getElementById("plan-price");
-    if (priceEl) priceEl.value = "";
-    const activeEl = document.getElementById("plan-active");
-    if (activeEl) activeEl.checked = true;
-
-    if (!id) {
-      window.openModal(config.modalId);
-      return;
-    }
-
-    fetch(`/api/${config.path}/${id}`)
-      .then((r) => {
-        if (!r.ok) throw new Error("Falha ao buscar dados do plano.");
-        return r.json();
-      })
-      .then(({ data }) => {
-        if (idEl) idEl.value = data.id || "";
-
-        const nameEl = document.getElementById("plan-name");
-        if (nameEl) nameEl.value = data.name || "";
-
-        const descEl = document.getElementById("plan-description");
-        if (descEl) descEl.value = data.description || "";
-
-        if (activeEl) activeEl.checked = data.isActive !== false;
-        if (priceEl) priceEl.value = data.price ?? "";
-
-        const durEl = document.getElementById("plan-duration");
-        if (durEl) durEl.value = data.durationMonths || "";
-
-        window.openModal(config.modalId);
-      })
-      .catch((err) => {
-        console.error("[Plan] Erro ao carregar plano:", err);
-        alert(`Erro: ${err.message}`);
-      });
-  };
-
-  // ─── handleSubmit override ─────────────────────────────────────────────────
-  const origHandleSubmit = window.handleSubmit;
-  window.handleSubmit = (event, config) => {
-    if (config !== window.APP_CONFIG?.PLANS) {
-      return typeof origHandleSubmit === "function"
-        ? origHandleSubmit(event, config)
-        : undefined;
-    }
-
-    const dur = document.getElementById("plan-duration");
-    if (!dur?.value) {
-      event.preventDefault();
-      alert("Selecione a modalidade do plano.");
-      return;
-    }
-
-    const price = parseFloat(
-      document.getElementById("plan-price")?.value || "",
-    );
-    if (Number.isNaN(price) || price <= 0) {
-      event.preventDefault();
-      alert("Informe um preço válido e positivo.");
-      return;
-    }
-
-    const desc = document.getElementById("plan-description")?.value?.trim();
-    if (!desc) {
-      event.preventDefault();
-      alert("A descrição do plano é obrigatória.");
-      return;
-    }
-
-    if (typeof origHandleSubmit === "function") origHandleSubmit(event, config);
-  };
 
   calculateCardTotals();
 });
