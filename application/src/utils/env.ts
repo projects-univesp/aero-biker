@@ -20,7 +20,7 @@ const envSchema = z.object({
   MAIL_PORT: z.coerce.number().default(587),
   MAIL_USER: z.string(),
   MAIL_PASS: z.string(),
-  MAIL_FROM: z.string().default("AEROBIC BIKER <noreply@aerobicbiker.com.br>"),
+  MAIL_FROM: z.string().default("Noreply <noreply@athena-devs.dev>"),
   MAIL_SECURE: z.string().transform((val) => val === 'true').default(false)
 });
 
