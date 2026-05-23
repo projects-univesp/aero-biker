@@ -19,7 +19,6 @@ services:
       POSTGRES_PASSWORD: ${DEV_DB_PASSWORD}
     networks:
       - node-app
-      - global-network
     volumes:
       - database-data:/var/lib/postgresql/data
     healthcheck:
