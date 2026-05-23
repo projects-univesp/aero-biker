@@ -19,8 +19,6 @@ services:
       POSTGRES_PASSWORD: ${DEV_DB_PASSWORD}
     networks:
       - node-app
-    ports:
-      - "5434:5432"
     volumes:
       - database-data:/var/lib/postgresql/data
     healthcheck:
@@ -49,9 +47,6 @@ services:
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
       SALT_RESULT: ${SALT_RESULT}
       VIEWS_PATH: ${VIEWS_PATH}
-      MAIL_HOST: ${MAIL_HOST}
-      MAIL_USER: ${MAIL_USER}
-      MAIL_PASS: ${MAIL_PASS}
     depends_on:
       db:
         condition: service_healthy

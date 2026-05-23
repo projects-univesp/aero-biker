@@ -1,12 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-
-import { PlanService } from "../../src/services/planService";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Plan } from "../../src/models/plan";
-import { PlanModality } from "../../src/models/planModality";
 import { Subscription } from "../../src/models/subscription";
+import { PlanService } from "../../src/services/planService";
 
 vi.mock("@models/plan");
-vi.mock("@models/planModality");
 vi.mock("@models/subscription");
 
 describe("Plan Services - Create", () => {
@@ -22,7 +19,7 @@ describe("Plan Services - Create", () => {
       name: "Plano Básico",
       description: "Teste",
       price: 100,
-      durationMonths: 1,
+      durationMonths: "Mensal" as const,
     };
 
     vi.mocked(Plan.count).mockResolvedValue(0);
@@ -32,11 +29,16 @@ describe("Plan Services - Create", () => {
       ...planData,
     } as any);
 
+    vi.mocked(Plan.findByPk).mockResolvedValue({
+      id: "mock-uuid-123",
+      ...planData,
+    } as any);
+
     const response = await planService.create(planData);
 
     expect(response.statusCode).toBe(201);
     expect(response.message).toBe("Plan created successfully");
-    expect(Plan.findByPk).toHaveBeenCalled();
+    expect(response.data.id).toBe("mock-uuid-123");
   });
 
   it("Must give a conflict error due same plan registered", async () => {
@@ -44,7 +46,7 @@ describe("Plan Services - Create", () => {
       name: "Plano Pro",
       description: "Teste",
       price: 200,
-      durationMonths: 2,
+      durationMonths: "Trimestral" as const,
     };
 
     vi.mocked(Plan.count).mockResolvedValue(1);
@@ -89,7 +91,7 @@ describe("Plan Services - Get", () => {
 
     await expect(planService.get(fakeId)).rejects.toThrow();
 
-    expect(Plan.findByPk).toHaveBeenCalledWith(fakeId, expect.any(Object));
+    expect(Plan.findByPk).toHaveBeenCalledWith(fakeId);
   });
 });
 
@@ -120,7 +122,7 @@ describe("Plan Services - GetAll", () => {
     expect(response.message).toBe("Plans found successfully");
   });
 
-  it("Must return 200 with empty array when no plans exist", async () => {
+  it("Must return empty list when no plans are found", async () => {
     vi.mocked(Plan.findAll).mockResolvedValue([]);
 
     const response = await planService.getAll();
@@ -161,8 +163,7 @@ describe("Plan Services - Update", () => {
     expect(response.statusCode).toBe(200);
     expect(response.message).toBe("Plan updated successfully");
     expect(fakePlanInstance.update).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "Plano Atualizado" }),
-      expect.objectContaining({ transaction: expect.anything() }),
+      expect.objectContaining(updateData),
     );
   });
 
@@ -189,7 +190,7 @@ describe("Plan Services - Update", () => {
     vi.mocked(Plan.findByPk).mockResolvedValue(null);
 
     await expect(
-      planService.update(fakeId, { name: "Teste" })
+      planService.update(fakeId, { name: "Teste" }),
     ).rejects.toThrow();
   });
 });
@@ -212,7 +213,6 @@ describe("Plan Services - Delete", () => {
 
     vi.mocked(Plan.findByPk).mockResolvedValue(fakePlanInstance as any);
     vi.mocked(Subscription.count).mockResolvedValue(0);
-    vi.mocked(PlanModality.update).mockResolvedValue([1, []]);
 
     const response = await planService.delete(fakeId);
 

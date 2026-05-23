@@ -200,13 +200,10 @@ describe("Subscription Services - GetAll", () => {
     expect(response.message).toBe("Subscriptions found successfully");
   });
 
-  it("Must return 200 with empty array when no subscriptions exist", async () => {
+  it("Must throw a 404 error if subscriptions are not found", async () => {
     vi.mocked(Subscription.findAll).mockResolvedValue([]);
 
-    const response = await subscriptionService.getAll();
-
-    expect(response.statusCode).toBe(200);
-    expect(response.data).toEqual([]);
+    await expect(subscriptionService.getAll()).rejects.toThrow();
   });
 });
 

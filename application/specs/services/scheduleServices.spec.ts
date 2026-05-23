@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-
 import { ScheduleService } from "../../src/services/scheduleService";
 import { Schedule } from "../../src/models/schedules";
 import { Group } from "../../src/models/group";
@@ -18,12 +17,14 @@ describe("Schedule Services - Create", () => {
   it("Must create a schedule successfully", async () => {
     const scheduleData = {
       groupId: "mock-group-uuid",
-      dayOfWeek: 1,
+      dayAndMonth: "2026-05-22",
       startTime: "08:00",
       endTime: "09:00",
     };
 
-    vi.mocked(Group.findByPk).mockResolvedValue({ id: "mock-group-uuid" } as any);
+    vi.mocked(Group.findByPk).mockResolvedValue({
+      id: "mock-group-uuid",
+    } as any);
 
     vi.mocked(Schedule.create).mockResolvedValue({
       id: "mock-uuid-123",
@@ -40,7 +41,7 @@ describe("Schedule Services - Create", () => {
   it("Must throw a 404 error if group is not found", async () => {
     const scheduleData = {
       groupId: "non-existent-group",
-      dayOfWeek: 2,
+      dayAndMonth: "2026-05-23",
       startTime: "10:00",
       endTime: "11:00",
     };
@@ -63,10 +64,11 @@ describe("Schedule Services - Get", () => {
 
   it("Must get schedule information successfully", async () => {
     const fakeId = "mock-uuid-123";
+
     const fakeSchedule = {
       id: fakeId,
       groupId: "mock-group-uuid",
-      dayOfWeek: 1,
+      dayAndMonth: "2026-05-22",
       startTime: "08:00",
       endTime: "09:00",
     };
@@ -100,7 +102,13 @@ describe("Schedule Services - GetAll", () => {
   });
 
   const mockSchedules = [
-    { id: "mock-uuid-123", groupId: "mock-group-uuid", dayOfWeek: 1, startTime: "08:00", endTime: "09:00" },
+    {
+      id: "mock-uuid-123",
+      groupId: "mock-group-uuid",
+      dayAndMonth: "2026-05-22",
+      startTime: "08:00",
+      endTime: "09:00",
+    },
   ];
 
   it("Must get schedules information successfully", async () => {
@@ -112,10 +120,12 @@ describe("Schedule Services - GetAll", () => {
     expect(response.message).toBe("Schedules found successfully");
   });
 
-  it("Must throw a 404 error if schedules are not found", async () => {
+  it("Must return empty list when no schedules are found", async () => {
     vi.mocked(Schedule.findAll).mockResolvedValue([]);
 
-    await expect(scheduleService.getAll()).rejects.toThrow();
+    const response = await scheduleService.getAll();
+    expect(response.statusCode).toBe(200);
+    expect(response.data).toEqual([]);
   });
 });
 
@@ -129,19 +139,21 @@ describe("Schedule Services - Update", () => {
 
   it("Must update a schedule successfully", async () => {
     const fakeId = "mock-uuid-123";
+
     const updateData = {
       startTime: "09:00",
       endTime: "10:00",
+      dayAndMonth: "2026-05-25",
     };
 
     const fakeScheduleInstance = {
       id: fakeId,
-      dayOfWeek: 1,
+      dayAndMonth: "2026-05-22",
       startTime: "08:00",
       endTime: "09:00",
+
       update: vi.fn().mockResolvedValue({
         id: fakeId,
-        dayOfWeek: 1,
         ...updateData,
       }),
     };
@@ -152,11 +164,13 @@ describe("Schedule Services - Update", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.message).toBe("Schedule updated successfully");
+
     expect(fakeScheduleInstance.update).toHaveBeenCalledWith(updateData);
   });
 
   it("Must throw a 404 error if group is not found when updating groupId", async () => {
     const fakeId = "mock-uuid-123";
+
     const updateData = {
       groupId: "non-existent-group",
     };
@@ -164,10 +178,12 @@ describe("Schedule Services - Update", () => {
     const fakeScheduleInstance = {
       id: fakeId,
       groupId: "mock-group-uuid",
+
       update: vi.fn(),
     };
 
     vi.mocked(Schedule.findByPk).mockResolvedValue(fakeScheduleInstance as any);
+
     vi.mocked(Group.findByPk).mockResolvedValue(null);
 
     await expect(scheduleService.update(fakeId, updateData)).rejects.toThrow();
@@ -181,7 +197,9 @@ describe("Schedule Services - Update", () => {
     vi.mocked(Schedule.findByPk).mockResolvedValue(null);
 
     await expect(
-      scheduleService.update(fakeId, { startTime: "10:00" })
+      scheduleService.update(fakeId, {
+        startTime: "10:00",
+      }),
     ).rejects.toThrow();
   });
 });
@@ -199,6 +217,7 @@ describe("Schedule Services - Delete", () => {
 
     const fakeScheduleInstance = {
       id: fakeId,
+
       destroy: vi.fn().mockResolvedValue(undefined),
     };
 
@@ -208,6 +227,7 @@ describe("Schedule Services - Delete", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.message).toBe("Schedule deleted successfully");
+
     expect(fakeScheduleInstance.destroy).toHaveBeenCalled();
   });
 

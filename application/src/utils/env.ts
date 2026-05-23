@@ -2,7 +2,9 @@ import "dotenv/config";
 import { z } from "zod";
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
   PORT: z.coerce.number().default(3333),
   DATABASE_URL: z.string().default(""),
   DB_HOST: z.string().default(""),
@@ -16,12 +18,15 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default("http://localhost:5500"),
   VIEWS_PATH: z.enum(["views", "src/views"]).default("src/views"),
   APP_URL: z.url().default("http://localhost:3333"),
-  MAIL_HOST: z.string(),
+  MAIL_HOST: z.string().default(""),
   MAIL_PORT: z.coerce.number().default(587),
-  MAIL_USER: z.string(),
-  MAIL_PASS: z.string(),
+  MAIL_USER: z.string().default(""),
+  MAIL_PASS: z.string().default(""),
   MAIL_FROM: z.string().default("Noreply <noreply@athena-devs.dev>"),
-  MAIL_SECURE: z.string().transform((val) => val === 'true').default(false)
+  MAIL_SECURE: z
+    .string()
+    .transform((val) => val === "true")
+    .default(false),
 });
 
 const _env = envSchema.safeParse(process.env);

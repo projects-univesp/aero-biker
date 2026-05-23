@@ -7,27 +7,32 @@
     title="Novo Aluno"
 }}
     {{> input id="student-name" label="Nome*" placeholder="Nome completo" required=true}}
-    {{> input id="student-phone" label="Telefone / WhatsApp" placeholder="(00) 00000-0000" required=true}}
 
-      <div>
-        <label class="text-sm font-medium text-gray-700 block mb-1.5">Turma*</label>
-        <select id="student-group" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white" required>
-            <option value="" disabled selected>Selecione uma turma</option>
-            {{#each groups}}
-                <option value="{{this.id}}">{{this.name}}</option>
-            {{/each}}
-        </select>
-        {{^groups}}
-            <span class="text-xs text-red-500 mt-1 block">Nenhuma turma encontrada no sistema! Crie uma turma primeiro.</span>
-        {{/groups}}
-    </div>
-  
     <div>
-        <label class="text-sm font-medium text-gray-700 block mb-1.5">Status da Matrícula*</label>
-        <select id="student-enrollment" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white" required>
-            <option value="ACTIVE" selected>Ativo</option>
-            <option value="INACTIVE">Inativo</option>
-        </select>
+      <label class="text-sm font-medium text-gray-700 block mb-1.5">Telefone / WhatsApp*</label>
+      <input type="tel" id="student-phone" placeholder="(00) 00000-0000" required
+        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
+    </div>
+
+    <div>
+      <label class="text-sm font-medium text-gray-700 block mb-1.5">Turma*</label>
+      <select id="student-group" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+        <option value="" disabled selected>Selecione uma turma</option>
+        {{#each groups}}
+          <option value="{{this.id}}">{{this.name}}</option>
+        {{/each}}
+      </select>
+      {{^groups}}
+        <span class="text-xs text-red-500 mt-1 block">Nenhuma turma encontrada no sistema! Crie uma turma primeiro.</span>
+      {{/groups}}
+    </div>
+
+    <div>
+      <label class="text-sm font-medium text-gray-700 block mb-1.5">Matrícula*</label>
+      <select id="student-enrollment" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
+        <option value="ACTIVE" selected>Ativa</option>
+        <option value="INACTIVE">Inativa</option>
+      </select>
     </div>
 
     <label class="flex items-center gap-3 cursor-pointer mt-2">

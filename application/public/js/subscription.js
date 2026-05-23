@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     countersDisplay.textContent = `${activeCount} ativas • ${rows.length} total`;
   }
 
+  // Patch handleOpen to normalize ISO dates to YYYY-MM-DD after data load
   const origHandleOpen = window.handleOpen;
   window.handleOpen = (id, config) => {
     const promise =
@@ -16,22 +17,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         ? origHandleOpen(id, config)
         : Promise.resolve();
 
-    if (config === window.APP_CONFIG?.SUBSCRIPTIONS) {
+    if (config === window.APP_CONFIG?.SUBSCRIPTIONS && id) {
       Promise.resolve(promise).then(() => {
-        const startDateEl = document.getElementById("subscription-start-date");
-        const renDateEl = document.getElementById(
-          "subscription-renovation-date",
+        ["subscription-start-date", "subscription-renovation-date"].forEach(
+          (fieldId) => {
+            const el = document.getElementById(fieldId);
+            if (el?.value?.includes("T")) {
+              el.value = el.value.split("T")[0];
+            }
+          },
         );
-
-        if (id) {
-          if (startDateEl?.value?.includes("T"))
-            startDateEl.value = startDateEl.value.split("T")[0];
-          if (renDateEl?.value?.includes("T"))
-            renDateEl.value = renDateEl.value.split("T")[0];
-        } else {
-          const today = new Date().toISOString().split("T")[0]; 
-          if (startDateEl) startDateEl.value = today;
-        }
       });
     }
   };
@@ -45,9 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (studentsRes.ok) {
       const { data: students } = await studentsRes.json();
-      const studentMap = Object.fromEntries(
-        students.map((s) => [s.id, s.name]),
-      );
+      const studentMap = Object.fromEntries(students.map((s) => [s.id, s.name]));
 
       const studentSelect = document.getElementById("subscription-student");
       if (studentSelect) {
@@ -61,12 +54,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           });
       }
 
-      document
-        .querySelectorAll(".student-name[data-student-id]")
-        .forEach((el) => {
-          const name = studentMap[el.dataset.studentId];
-          if (name) el.textContent = name;
-        });
+      document.querySelectorAll(".student-name[data-student-id]").forEach((el) => {
+        const name = studentMap[el.dataset.studentId];
+        if (name) el.textContent = name;
+      });
     }
 
     if (plansRes.ok) {

@@ -8,16 +8,16 @@
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mt-6">
       {{> dashCard
         title="Alunos Ativos"
-        value=dashboard.totalStudents
+        value=dashboard.activeStudents
         icon="icons/users"
       }}
-    
+
       {{> dashCard
         title="Turmas"
-        value=dashboard.totalClasses
+        value=dashboard.activeGroups
         icon="icons/bike"
       }}
-    
+
       {{> dashCard
         title="Aulas Cadastradas"
         value=dashboard.totalLessons
@@ -26,22 +26,37 @@
 
       {{> dashCard
         title="Planos Ativos"
-        value=dashboard.totalPlans
+        value=dashboard.activePlans
         icon="icons/cred-card"
       }}
     </div>
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
       {{> revenueCard
-        month="Maio"
-        amount="0,00"
-        paid=0
-        pending=0
+        month=dashboard.revenue.month
+        amount=dashboard.revenue.amount
+        paid=dashboard.revenue.paid
+        pending=dashboard.revenue.pending
       }}
     
       {{> estimateCard
-        estimate="678,33"
+        estimate=dashboard.estimate
       }} 
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 h-[300px] flex flex-col">
+        <h3 class="text-sm font-bold text-gray-900 mb-4">Alunos por Turma</h3>
+        <div class="flex-1 relative w-full h-full">
+          <canvas id="studentsPerGroupChart"></canvas>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 h-[300px] flex flex-col">
+        <h3 class="text-sm font-bold text-gray-900 mb-4">Distribuição de Planos</h3>
+        <div class="flex-1 relative w-full h-full flex items-center justify-center">
+          <canvas id="planDistributionChart"></canvas>
+        </div>
+      </div>
     </div>
     
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
@@ -55,3 +70,7 @@
     </div>
     
 </div>
+
+<script id="dashboard-data" type="application/json">
+  {{{json dashboard}}}
+</script>

@@ -1,12 +1,11 @@
-import { DataTypes, Model } from "sequelize";
 import { sequelize } from "@config/database";
+import { UUID } from "crypto";
+import { DataTypes, Model } from "sequelize";
 
 export class Plan extends Model {
-  declare id: string;
+  declare id: UUID;
   declare name: string;
   declare description: string;
-  declare price: number;
-  declare durationMonths: string;
   declare isActive: boolean;
 }
 
@@ -14,35 +13,24 @@ Plan.init(
   {
     id: {
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
     },
     name: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      unique: true,
     },
     description: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    price: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
-    },
-    durationMonths: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING(100),
       allowNull: false,
     },
     isActive: {
       type: DataTypes.BOOLEAN,
-      defaultValue: true,
+      allowNull: false,
     },
   },
   {
     sequelize,
-    modelName: "Plan",
-    tableName: "plans",
-    timestamps: true,
+    tableName: "Plans",
   }
 );

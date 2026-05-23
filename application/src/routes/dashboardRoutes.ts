@@ -9,11 +9,10 @@ export const apiDashboardRoutes = Router()
   //.use(auth)
   .get("/", tryCatch(dashboard.getDashboard));
 
-export const dashboardRoutes = Router()
-  .get(
-    "/",
-    renderApi("/api/dashboard", "pages/dashboard/index", "dashboard", {
-      emptyMessage: "Nenhuma informação encontrada para o dashboard.",
-      category: "Dashboard.",
-    })
-  )
+export const dashboardRoutes = Router().get(
+  "/",
+  renderApi("/api/dashboard", "pages/dashboard/index", "dashboard", {
+    emptyMessage: "Nenhuma informação encontrada para o dashboard.",
+    category: "Dashboard.",
+  }),
+);

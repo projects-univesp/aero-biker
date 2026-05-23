@@ -1,20 +1,21 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-
-import { AuthServices } from "../../src/services/authServices";
-import { Admin } from "../../src/models/admin";
-import { Academy } from "../../src/models/academy";
-import { compareHashPasswords, generateHashPassword } from "../../src/utils/encrypt";
 import jwt from "jsonwebtoken";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Academy } from "../../src/models/academy";
+import { Admin } from "../../src/models/admin";
+import { AuthServices } from "../../src/services/authServices";
+import {
+  compareHashPasswords,
+  generateHashPassword,
+} from "../../src/utils/encrypt";
 
 vi.mock("@models/admin");
 vi.mock("@models/academy");
 vi.mock("@utils/encrypt");
 vi.mock("jsonwebtoken");
 
-// Mock Resend before mailService is imported
-vi.mock("resend", () => ({
-  Resend: vi.fn().mockImplementation(() => ({
-    emails: { send: vi.fn().mockResolvedValue({ data: {}, error: null }) },
+vi.mock("@config/mail", () => ({
+  MailClient: vi.fn().mockImplementation(() => ({
+    sendMail: vi.fn().mockResolvedValue(undefined),
   })),
 }));
 
@@ -23,19 +24,30 @@ const mockEnv = vi.hoisted(() => ({
   JWT_EXPIRES_IN: 604800,
   NODE_ENV: "test",
   SALT_RESULT: 10,
-  RESEND_API_KEY: "re_test",
-  RESEND_FROM: "test@test.com",
+  MAIL_FROM: "noreply@test.com",
 }));
 
 vi.mock("@utils/env", () => ({ env: mockEnv }));
 vi.mock("@utils/logger", () => ({
-  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn(), silly: vi.fn(), trace: vi.fn(), fatal: vi.fn() },
+  logger: {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+    silly: vi.fn(),
+    trace: vi.fn(),
+    fatal: vi.fn(),
+  },
 }));
 
 // Mock token service
 vi.mock("../../src/services/tokenService", () => ({
   TokenService: vi.fn().mockImplementation(() => ({
-    create: vi.fn().mockResolvedValue("mock-token-64-chars-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+    create: vi
+      .fn()
+      .mockResolvedValue(
+        "mock-token-64-chars-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      ),
     consume: vi.fn(),
   })),
 }));
@@ -65,7 +77,10 @@ describe("Auth Services - Login", () => {
     vi.mocked(compareHashPasswords).mockResolvedValue(true);
     vi.mocked(jwt.sign).mockReturnValue("mock-jwt-token" as any);
 
-    const response = await authServices.login({ email: "admin@studio.com", password: "senha123" });
+    const response = await authServices.login({
+      email: "admin@studio.com",
+      password: "senha123",
+    });
 
     expect(response.statusCode).toBe(200);
     expect(response.message).toBe("Login realizado com sucesso");
@@ -84,13 +99,21 @@ describe("Auth Services - Login", () => {
   });
 
   it("Must throw 401 when password is incorrect", async () => {
-    const fakeAdmin = { id: "mock-uuid-123", email: "admin@studio.com", password: "hashed-password", role: "ADMIN" };
+    const fakeAdmin = {
+      id: "mock-uuid-123",
+      email: "admin@studio.com",
+      password: "hashed-password",
+      role: "ADMIN",
+    };
 
     vi.mocked(Admin.findOne).mockResolvedValue(fakeAdmin as any);
     vi.mocked(compareHashPasswords).mockResolvedValue(false);
 
     await expect(
-      authServices.login({ email: "admin@studio.com", password: "senha-errada" }),
+      authServices.login({
+        email: "admin@studio.com",
+        password: "senha-errada",
+      }),
     ).rejects.toThrow();
 
     expect(jwt.sign).not.toHaveBeenCalled();
@@ -204,7 +227,10 @@ describe("Auth Services - ForgotPassword", () => {
   it("Must return 200 even when email is not found (anti-enumeration)", async () => {
     vi.mocked(Admin.findOne).mockResolvedValue(null);
 
-    const response = await authServices.forgotPassword("noexist@test.com", "http://localhost:3333");
+    const response = await authServices.forgotPassword(
+      "noexist@test.com",
+      "http://localhost:3333",
+    );
 
     expect(response.statusCode).toBe(200);
   });
@@ -219,7 +245,10 @@ describe("Auth Services - ForgotPassword", () => {
 
     vi.mocked(Admin.findOne).mockResolvedValue(fakeAdmin as any);
 
-    const response = await authServices.forgotPassword("jorge@studio.com", "http://localhost:3333");
+    const response = await authServices.forgotPassword(
+      "jorge@studio.com",
+      "http://localhost:3333",
+    );
 
     expect(response.statusCode).toBe(200);
   });

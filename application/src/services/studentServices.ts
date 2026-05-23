@@ -1,4 +1,4 @@
-import { StudentDTO } from "@dtos/student";
+import type { StudentDTO } from "@dtos/student";
 import { Group } from "@models/group";
 import { Student } from "@models/student";
 import { Subscription } from "@models/subscription";
@@ -11,7 +11,8 @@ export class StudentServices {
       where: { phone: studentData.phone },
     });
 
-    if (existingStudent > 0) responseFormat.error("Student Already exists", 409);
+    if (existingStudent > 0)
+      responseFormat.error("Student Already exists", 409);
 
     const group = await Group.findByPk(studentData.groupId);
     if (!group) responseFormat.error("Group not found", 404);
@@ -46,6 +47,7 @@ export class StudentServices {
 
   getAll = async () => {
     const students = await Student.findAll();
+
     return responseFormat.send({
       message: "Students found successfully",
       statusCode: 200,
@@ -93,14 +95,47 @@ export class StudentServices {
     });
   };
 
+  toggleActive = async (id: string) => {
+    const student = await Student.findByPk(id);
+    if (student === null) responseFormat.error("Student not found", 404);
+
+    const newStatus = !student.isActive;
+    const newEnrollment = newStatus ? "ACTIVE" : "INACTIVE";
+
+    if (newStatus) {
+      const group = await Group.findByPk(student.groupId);
+      if (group) {
+        const activeCount = await Student.count({
+          where: { groupId: student.groupId, enrollment: "ACTIVE" },
+        });
+        if (activeCount >= group.maxCapacity) {
+          responseFormat.error("Group has reached maximum capacity", 400);
+        }
+      }
+    }
+
+    await student.update({ isActive: newStatus, enrollment: newEnrollment });
+
+    return responseFormat.send({
+      message: newStatus
+        ? "Student activated successfully"
+        : "Student deactivated successfully",
+      statusCode: 200,
+    });
+  };
+
   delete = async (id: string) => {
     const student = await Student.findByPk(id);
     if (student === null) responseFormat.error("Student not found", 404);
-    await student.update({ isActive: false, enrollment: "INACTIVE" });
+
+    await (student as NonNullable<typeof student>).update({
+      isActive: false,
+      enrollment: "INACTIVE",
+    });
 
     await Subscription.update(
-      { status: "CANCELLED" },
-      { where: { studentId: id, status: "ACTIVE" } },
+      { status: "INACTIVE" },
+      { where: { studentId: id } },
     );
 
     return responseFormat.send({

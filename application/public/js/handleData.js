@@ -1,5 +1,4 @@
-import { openModal, closeModal } from "./modal.js";
-import { APP_CONFIG } from "./config.js";
+import { closeModal, openModal } from "./modal.js";
 
 export default class HandleData {
   constructor(event, config, itemId = null) {
@@ -99,10 +98,10 @@ export default class HandleData {
     if (this.itemId) {
       if (this.config.id)
         document.getElementById(this.config.id).value = this.itemId;
+
       try {
         const result = await this.dialUp("GET", this.config.path, this.itemId);
         const data = result.data;
-        // O resto da função get() para carregar dados de edição continua exatamente igual...
         if (this.config.fields) {
           for (const [dbKey, htmlId] of Object.entries(this.config.fields)) {
             if (data[dbKey] !== undefined && document.getElementById(htmlId)) {
@@ -128,7 +127,7 @@ export default class HandleData {
             }
           }
         }
-      } catch (error) {
+      } catch (_error) {
         return;
       }
     }
@@ -144,7 +143,7 @@ export default class HandleData {
     try {
       await this.dialUp("POST", this.config.path, "", payload);
       this._onSuccess();
-    } catch (error) {}
+    } catch (_error) {}
   }
 
   // (PATCH)
@@ -153,7 +152,7 @@ export default class HandleData {
     try {
       await this.dialUp("PATCH", this.config.path, id, payload);
       this._onSuccess();
-    } catch (error) {}
+    } catch (_error) {}
   }
 
   submit() {
@@ -164,16 +163,6 @@ export default class HandleData {
 
     if (formElement && !formElement.checkValidity()) {
       formElement.reportValidity();
-      return;
-    }
-
-    const payload = this._buildPayload();
-
-    const hasEmptyFields = Object.values(payload).some((val) => val === "");
-    if (hasEmptyFields) {
-      alert(
-        "Por favor, preencha todos os campos e selecione opções válidas nas listas suspensas (Dropdowns).",
-      );
       return;
     }
 
@@ -192,7 +181,7 @@ export default class HandleData {
     try {
       await this.dialUp("DELETE", this.config.path, this.itemId);
       window.location.reload();
-    } catch (error) {}
+    } catch (_error) {}
   }
   // Helper on success case
   _onSuccess() {
@@ -205,7 +194,7 @@ export default class HandleData {
 
 // Quick functions
 window.handleOpen = (id, config) => {
-  new HandleData(null, config, id).get();
+  return new HandleData(null, config, id).get();
 };
 
 window.handleSubmit = (event, config) => {

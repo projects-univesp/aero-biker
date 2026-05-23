@@ -22,10 +22,18 @@ Subscription.init(
     },
     studentId: {
       type: DataTypes.UUID,
+      references: {
+        model: "Students",
+        key: "id",
+      },
       allowNull: false,
     },
     planId: {
-      type: DataTypes.UUID, 
+      type: DataTypes.UUID,
+      references: {
+        model: "Plans",
+        key: "id",
+      },
       allowNull: false,
     },
     subscriptionValue: {
