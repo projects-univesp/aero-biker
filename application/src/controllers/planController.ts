@@ -12,8 +12,13 @@ export class PlanController {
   }
 
   createPlan = async (request: Request, response: Response) => {
-    const parsedPlan = this.verifyData.verifyPlan(request.body);
-    const plan = await this.planService.create(parsedPlan);
+    const { price, durationMonths, ...base } = this.verifyData.verifyPlan(
+      request.body,
+    );
+    const plan = await this.planService.create({
+      ...base,
+      prices: [{ price, durationMonths, isActive: true }],
+    });
     return response.status(201).send(plan);
   };
 
@@ -29,9 +34,20 @@ export class PlanController {
   };
 
   updatePlan = async (request: Request, response: Response) => {
-    const parsedPlan = this.verifyData.verifyPlanPartial(request.body);
+    const { price, durationMonths, ...base } =
+      this.verifyData.verifyPlanPartial(request.body);
     const { id } = this.verifyData.verifyId(request.params.id);
-    const plan = await this.planService.update(id, parsedPlan);
+    const planData: Record<string, unknown> = { ...base };
+    if (price !== undefined && durationMonths !== undefined) {
+      planData.prices = [{ price, durationMonths, isActive: true }];
+    }
+    const plan = await this.planService.update(id, planData);
+    return response.status(200).send(plan);
+  };
+
+  togglePlan = async (request: Request, response: Response) => {
+    const { id } = this.verifyData.verifyId(request.params.id);
+    const plan = await this.planService.toggleActive(id);
     return response.status(200).send(plan);
   };
 

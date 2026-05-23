@@ -29,7 +29,7 @@ export class PlanService {
           description: planData.description,
           isActive: planData.isActive ?? true,
         },
-        { transaction }
+        { transaction },
       );
 
       // 2. Cria as modalidades de preço associadas
@@ -38,7 +38,7 @@ export class PlanService {
           ...price,
           planId: createdPlan.id,
         }));
-        
+
         await PlanModality.bulkCreate(pricesToCreate, { transaction });
       }
 
@@ -46,7 +46,7 @@ export class PlanService {
 
       // Busca o plano recém-criado com os preços incluídos para retornar na resposta
       const planWithPrices = await Plan.findByPk(createdPlan.id, {
-        include: [{ model: PlanModality, as: "prices" }]
+        include: [{ model: PlanModality, as: "prices" }],
       });
 
       return responseFormat.send({
@@ -57,7 +57,10 @@ export class PlanService {
     } catch (error) {
       await transaction.rollback();
       logger.error(`${error}`);
-      return responseFormat.error("Internal server error during plan creation", 500);
+      return responseFormat.error(
+        "Internal server error during plan creation",
+        500,
+      );
     }
   };
 
@@ -73,8 +76,6 @@ export class PlanService {
         },
       ],
     });
-
-    if (plans.length === 0) return responseFormat.error("Plans not found", 404);
 
     return responseFormat.send({
       message: "Plans found successfully",
@@ -127,15 +128,15 @@ export class PlanService {
           description: planData.description,
           isActive: planData.isActive,
         },
-        { transaction }
+        { transaction },
       );
 
-      // Estratégia de atualização de preços: 
+      // Estratégia de atualização de preços:
       // Para não corromper o histórico de assinaturas antigas, desativamos os preços antigos e criamos os novos.
       if (planData.prices && planData.prices.length > 0) {
         await PlanModality.update(
           { isActive: false },
-          { where: { planId: id }, transaction }
+          { where: { planId: id }, transaction },
         );
 
         const newPrices = planData.prices.map((price) => ({
@@ -159,40 +160,54 @@ export class PlanService {
     } catch (error) {
       await transaction.rollback();
       logger.error(`${error}`);
-      return responseFormat.error("Internal server error during plan update", 500);
+      return responseFormat.error(
+        "Internal server error during plan update",
+        500,
+      );
     }
+  };
+
+  toggleActive = async (id: string) => {
+    const plan = await Plan.findByPk(id);
+    if (plan === null) return responseFormat.error("Plan not found", 404);
+
+    const newStatus = !plan.isActive;
+    await plan.update({ isActive: newStatus });
+
+    return responseFormat.send({
+      message: newStatus
+        ? "Plan activated successfully"
+        : "Plan deactivated successfully",
+      statusCode: 200,
+    });
   };
 
   delete = async (id: string) => {
     const plan = await Plan.findByPk(id);
-
     if (plan === null) return responseFormat.error("Plan not found", 404);
 
-    // Agora validamos as assinaturas ativas cruzando com a nova model PlanModality
-    const activeSubscriptions = await Subscription.count({
+    const linkedSubscriptions = await Subscription.count({
       include: [
         {
           model: PlanModality,
-          as: "llanModality", // Utilizando o alias definido nas associações
+          as: "planModality",
           where: { planId: id },
         },
       ],
-      where: { status: "ACTIVE" }, // Ajuste para o status real que utiliza
     });
 
-    if (activeSubscriptions > 0) {
+    if (linkedSubscriptions > 0) {
       return responseFormat.error(
-        "Cannot deactivate a plan with active subscriptions",
-        400
+        "Cannot delete a plan that has subscriptions linked to it",
+        400,
       );
     }
 
-    // Desativa o plano e, opcionalmente, todos os seus preços
-    await plan.update({ isActive: false });
-    await PlanModality.update({ isActive: false }, { where: { planId: id } });
+    await PlanModality.destroy({ where: { planId: id } });
+    await plan.destroy();
 
     return responseFormat.send({
-      message: "Plan deactivated successfully",
+      message: "Plan deleted successfully",
       statusCode: 200,
     });
   };

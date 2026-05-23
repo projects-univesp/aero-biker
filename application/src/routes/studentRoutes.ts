@@ -13,14 +13,13 @@ export const apiStudentRoutes = Router()
   .get("/", tryCatch(student.getAllStudents))
   .get("/:id", tryCatch(student.getStudent))
   .patch("/:id", tryCatch(student.updateStudent))
+  .patch("/:id/toggle", tryCatch(student.toggleStudent))
   .delete("/:id", tryCatch(student.deleteStudent));
 
-export const studentRoutes = Router()
-  .get(
-    "/",
-    renderApi("/api/students", "pages/students/index", "students", {
-      emptyMessage: "Nenhum estudante cadastrado até o momento.",
-      category: "Students.",
-    }),
-  );
-
+export const studentRoutes = Router().get(
+  "/",
+  renderApi("/api/students", "pages/students/index", "students", {
+    emptyMessage: "Nenhum estudante cadastrado até o momento.",
+    category: "Students.",
+  }),
+);

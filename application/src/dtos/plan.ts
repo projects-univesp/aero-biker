@@ -4,7 +4,7 @@ export enum PLANS {
   MONTHLY = "Mensal",
   QUATERLY = "Trimestral",
   SEMESTER = "Semestral",
-  YEARLY = "Anual"
+  YEARLY = "Anual",
 }
 
 export interface PlanModalityDTO {
@@ -17,5 +17,5 @@ export interface PlanDTO {
   name: string;
   description: string;
   isActive: boolean;
-  prices: PlanModalityDTO[]; 
+  prices: PlanModalityDTO[];
 }

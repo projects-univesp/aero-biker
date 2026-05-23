@@ -11,7 +11,8 @@ export class StudentServices {
       where: { phone: studentData.phone },
     });
 
-    if (existingStudent > 0) responseFormat.error("Student Already exists", 409);
+    if (existingStudent > 0)
+      responseFormat.error("Student Already exists", 409);
 
     const group = await Group.findByPk(studentData.groupId);
     if (!group) responseFormat.error("Group not found", 404);
@@ -46,7 +47,6 @@ export class StudentServices {
 
   getAll = async () => {
     const students = await Student.findAll();
-    if (students.length === 0) responseFormat.error("Students not found", 404);
 
     return responseFormat.send({
       message: "Students found successfully",
@@ -95,18 +95,54 @@ export class StudentServices {
     });
   };
 
+  toggleActive = async (id: string) => {
+    const student = await Student.findByPk(id);
+    if (student === null) responseFormat.error("Student not found", 404);
+
+    const newStatus = !student.isActive;
+    const newEnrollment = newStatus ? "ACTIVE" : "INACTIVE";
+
+    if (newStatus) {
+      const group = await Group.findByPk(student.groupId);
+      if (group) {
+        const activeCount = await Student.count({
+          where: { groupId: student.groupId, enrollment: "ACTIVE" },
+        });
+        if (activeCount >= group.maxCapacity) {
+          responseFormat.error("Group has reached maximum capacity", 400);
+        }
+      }
+    }
+
+    await student.update({ isActive: newStatus, enrollment: newEnrollment });
+
+    return responseFormat.send({
+      message: newStatus
+        ? "Student activated successfully"
+        : "Student deactivated successfully",
+      statusCode: 200,
+    });
+  };
+
   delete = async (id: string) => {
     const student = await Student.findByPk(id);
     if (student === null) responseFormat.error("Student not found", 404);
-    await student.update({ isActive: false, enrollment: "INACTIVE" });
 
-    await Subscription.update(
-      { status: "CANCELLED" },
-      { where: { studentId: id, status: "ACTIVE" } },
-    );
+    const linkedSubscriptions = await Subscription.count({
+      where: { studentId: id },
+    });
+
+    if (linkedSubscriptions > 0) {
+      responseFormat.error(
+        "Cannot delete a student that has subscriptions linked to them",
+        400,
+      );
+    }
+
+    await student.destroy();
 
     return responseFormat.send({
-      message: "Student deactivated succesfully",
+      message: "Student deleted successfully",
       statusCode: 200,
     });
   };
