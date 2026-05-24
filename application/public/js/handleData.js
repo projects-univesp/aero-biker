@@ -50,7 +50,7 @@ export default class HandleData {
         this.config.numericFields,
       )) {
         const el = document.getElementById(elementId);
-        if (el && el.value !== "") payload[apiKey] = parseFloat(el.value);
+        if (el) payload[apiKey] = el.value !== "" ? parseFloat(el.value) : "";
       }
     }
     if (this.config.checkboxes) {
