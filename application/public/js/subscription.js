@@ -75,12 +75,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const planSelect = document.getElementById("subscription-plan");
       if (planSelect) {
-        plans
-          .filter((p) => p.isActive)
-          .forEach((p) => {
+        plans.forEach((p) => {
             const opt = document.createElement("option");
             opt.value = p.id;
             opt.textContent = `${p.name} — R$ ${Number(p.price).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+            if (!p.isActive) opt.disabled = true;
             planSelect.appendChild(opt);
           });
       }
