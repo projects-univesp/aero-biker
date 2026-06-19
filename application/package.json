@@ -57,7 +57,7 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^3.2.6"
+    "vitest": "^4.1.9"
   },
   "lint-staged": {
     "*.{js,ts,json,hbs}": [
