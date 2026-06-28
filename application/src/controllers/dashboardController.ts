@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { DashboardService } from "@services/dashboardService";
+import { AppError } from "@utils/appError";
 
 export class DashboardController {
   private readonly dashboardService: DashboardService;
@@ -11,6 +12,8 @@ export class DashboardController {
   getDashboard = async (request: Request, response: Response) => {
     const dashboard = await this.dashboardService.getDashboard();
 
-    return response.status(200).send(dashboard);
+    return response
+      .status(200)
+      .send({ message: "Dashboard found successfully", data: dashboard });
   };
 }

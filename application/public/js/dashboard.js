@@ -1,11 +1,9 @@
 const formatDate = () => {
-  const date = new Date();
-  const formmatter = new Intl.DateTimeFormat("pt-BR", {
+  return new Intl.DateTimeFormat("pt-BR", {
     month: "2-digit",
     year: "numeric",
-  });
-  return formmatter.format(date);
-}
+  }).format(new Date());
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   const studentRows = document.querySelectorAll(".student-row");

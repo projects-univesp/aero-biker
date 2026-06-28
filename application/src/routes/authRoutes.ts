@@ -6,7 +6,6 @@ import { Router } from "express";
 const auth = new AuthController();
 
 export const apiAuthRoutes = Router()
-  .get("/setup-status", tryCatch(auth.getSetupStatus))
   .post("/setup", rateLimitAuth, tryCatch(auth.setup))
   .post("/login", rateLimitAuth, tryCatch(auth.login))
   .post("/forgot-password", rateLimitAuth, tryCatch(auth.forgotPassword))

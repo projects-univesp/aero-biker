@@ -2,7 +2,7 @@ import { GroupDTO } from "@dtos/group";
 import { Group } from "@models/group";
 import { Student } from "@models/student";
 import { logger } from "@utils/logger";
-import { responseFormat } from "@utils/responseFormat";
+import { AppError } from "@utils/appError";
 
 export class GroupServices {
   // CREATE
@@ -11,50 +11,38 @@ export class GroupServices {
       where: { name: groupData.name },
     });
 
-    if (existingGroup > 0) responseFormat.error("Group Already exists", 409);
+    if (existingGroup > 0) throw new AppError("Group Already exists", 409);
     const createGroup = await Group.create(groupData);
 
-    return responseFormat.send({
-      message: "Group created succesfully",
-      statusCode: 201,
-      data: createGroup,
-    });
+    return createGroup;
   };
 
   // GET ALL
   getAll = async () => {
     const groups = await Group.findAll();
 
-    return responseFormat.send({
-      message: "Groups found successfully",
-      statusCode: 200,
-      data: groups,
-    });
+    return groups;
   };
 
   // GET BY ID
   get = async (id: string) => {
     const group = await Group.findByPk(id);
 
-    if (!group) responseFormat.error("Group not found", 404);
+    if (!group) throw new AppError("Group not found", 404);
 
-    return responseFormat.send({
-      message: "Group found successfully",
-      statusCode: 200,
-      data: group,
-    });
+    return group;
   };
 
   // UPDATE
   update = async (id: string, groupData: Partial<GroupDTO>) => {
     const group = await Group.findByPk(id);
-    if (!group) responseFormat.error("Group not found", 404);
+    if (!group) throw new AppError("Group not found", 404);
     if (groupData.name && groupData.name !== group.name) {
       const existingGroup = await Group.count({
         where: { name: groupData.name },
       });
 
-      if (existingGroup > 0) responseFormat.error("Group Already exists", 409);
+      if (existingGroup > 0) throw new AppError("Group Already exists", 409);
     }
 
     if (groupData.maxCapacity) {
@@ -63,7 +51,7 @@ export class GroupServices {
       });
 
       if (groupData.maxCapacity < activeStudents) {
-        responseFormat.error(
+        throw new AppError(
           `Cannot reduce capacity below current active students (${activeStudents})`,
           400,
         );
@@ -72,11 +60,7 @@ export class GroupServices {
 
     const updatedGroup = await group.update(groupData);
 
-    return responseFormat.send({
-      message: "Group updated succesfully",
-      statusCode: 200,
-      data: updatedGroup,
-    });
+    return updatedGroup;
   };
 
   // SOFT DELETE
@@ -89,17 +73,12 @@ export class GroupServices {
     });
 
     if (activeStudents > 0) {
-      responseFormat.error(
+      throw new AppError(
         "Cannot deactivate a group that has active students",
         400,
       );
     }
 
     await group.update({ isActive: false });
-
-    return responseFormat.send({
-      message: "Group deactivated succesfully",
-      statusCode: 200,
-    });
   };
 }

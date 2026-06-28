@@ -7,8 +7,8 @@
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Plano</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Valor</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Método</th>
-                    <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Início</th>
-                    <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Renovação</th>
+                    <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Vencimento</th>
+                    <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Pagamento</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Status</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
                 </tr>
@@ -35,11 +35,11 @@
                         <p class="text-sm text-gray-600">{{formatDateShort this.renovationDate}}</p>
                     </td>
                     <td class="px-5 py-3.5 hidden md:table-cell">
-                        {{#if (eq this.status "ACTIVE")}}
+                        {{#if (eq this.status "PAID")}}
                             <span class="inline-flex items-center text-xs px-2.5 py-1 rounded-full font-medium bg-green-100 text-green-700">Pago</span>
                         {{else}}
-                            {{#if (eq this.status "INACTIVE")}}
-                                <span class="inline-flex items-center text-xs px-2.5 py-1 rounded-full font-medium bg-yellow-100 text-yellow-700">Não pago</span>
+                            {{#if (eq this.status "PENDING")}}
+                                <span class="inline-flex items-center text-xs px-2.5 py-1 rounded-full font-medium bg-yellow-100 text-yellow-700">Pendente</span>
                             {{else}}
                                 <span class="inline-flex items-center text-xs px-2.5 py-1 rounded-full font-medium bg-red-100 text-red-700">Cancelado</span>
                             {{/if}}

@@ -1,7 +1,7 @@
 import { Subscription } from "@models/subscription";
 import { SubscriptionDTO } from "@dtos/subscription";
 import { logger } from "@utils/logger";
-import { responseFormat } from "@utils/responseFormat";
+import { AppError } from "@utils/appError";
 import { Student } from "@models/student";
 import { Plan } from "@models/plan";
 
@@ -12,82 +12,61 @@ export class SubscriptionService {
     });
 
     if (existingSubscription > 0)
-      responseFormat.error("Subscription already active", 409);
+      throw new AppError("Subscription already active", 409);
 
     const student = await Student.findByPk(subscriptionData.studentId);
-    if (!student || !student.isActive) responseFormat.error("Student not found", 404);
+    if (!student || !student.isActive) throw new AppError("Student not found", 404);
 
     const plan = await Plan.findByPk(subscriptionData.planId);
-    if (!plan  || !plan.isActive) responseFormat.error("Plan not found", 404);
+    if (!plan  || !plan.isActive) throw new AppError("Plan not found", 404);
 
     const createdSubscription = await Subscription.create(subscriptionData);
 
-    return responseFormat.send({
-      message: "Subscription created succesfully",
-      statusCode: 201,
-      data: createdSubscription,
-    });
+    return createdSubscription;
   };
 
   getAll = async () => {
     const subscriptions = await Subscription.findAll();
 
-    return responseFormat.send({
-      message: "Subscriptions found successfully",
-      statusCode: 200,
-      data: subscriptions,
-    });
+    return subscriptions;
   };
 
   get = async (id: string) => {
     const subscription = await Subscription.findByPk(id);
 
     if (subscription === null)
-      responseFormat.error("Subscription not found", 404);
+      throw new AppError("Subscription not found", 404);
 
-    return responseFormat.send({
-      message: "Subscription found successfully",
-      statusCode: 200,
-      data: subscription,
-    });
+    return subscription;
   };
 
   update = async (id: string, subscriptionData: Partial<SubscriptionDTO>) => {
     const subscription = await Subscription.findByPk(id);
 
     if (subscription === null)
-      responseFormat.error("Subscription not found", 404);
+      throw new AppError("Subscription not found", 404);
 
     if (subscriptionData.studentId) {
       const student = await Student.findByPk(subscriptionData.studentId);
-      if (!student || !student.isActive) responseFormat.error("Student not found", 404);
+      if (!student || !student.isActive) throw new AppError("Student not found", 404);
     }
 
     if (subscriptionData.planId) {
       const plan = await Plan.findByPk(subscriptionData.planId);
-      if (!plan) responseFormat.error("Plan not found", 404);
+      if (!plan) throw new AppError("Plan not found", 404);
     }
 
     const updatedSubscription = await subscription.update(subscriptionData);
 
-    return responseFormat.send({
-      message: "Subscription updated succesfully",
-      statusCode: 200,
-      data: updatedSubscription,
-    });
+    return updatedSubscription;
   };
 
   delete = async (id: string) => {
     const subscription = await Subscription.findByPk(id);
 
     if (subscription === null)
-      responseFormat.error("Subscription not found", 404);
+      throw new AppError("Subscription not found", 404);
 
     await subscription.update({ status: "CANCELLED" });
-
-    return responseFormat.send({
-      message: "Subscription cancelled succesfully",
-      statusCode: 200,
-    });
   };
 }

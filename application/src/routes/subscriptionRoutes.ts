@@ -7,7 +7,7 @@ import { renderApi } from "@middlewares/renderApi";
 const subscription = new SubscriptionController();
 
 export const apiSubscriptionRoutes = Router()
-  //.use(auth)
+  .use(auth)
   .post("/", tryCatch(subscription.createSubscription))
   .get("/", tryCatch(subscription.getAllSubscriptions))
   .get("/:id", tryCatch(subscription.getSubscription))

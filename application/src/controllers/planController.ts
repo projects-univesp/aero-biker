@@ -14,30 +14,45 @@ export class PlanController {
   createPlan = async (request: Request, response: Response) => {
     const parsedPlan = this.verifyData.verifyPlan(request.body);
     const plan = await this.planService.create(parsedPlan);
-    return response.status(201).send(plan);
+
+    return response
+      .status(201)
+      .json({ message: "Plan created successfully", data: plan });
   };
 
   getPlan = async (request: Request, response: Response) => {
     const { id } = this.verifyData.verifyId(request.params.id);
     const plan = await this.planService.get(id);
-    return response.status(200).send(plan);
+
+    return response
+      .status(200)
+      .json({ message: "Plan found successfully", data: plan });
   };
 
   getAllPlans = async (request: Request, response: Response) => {
     const plans = await this.planService.getAll();
-    return response.status(200).send(plans);
+
+    return response
+      .status(200)
+      .json({ message: "Plans found successfully", data: plans });
   };
 
   updatePlan = async (request: Request, response: Response) => {
     const parsedPlan = this.verifyData.verifyPlanPartial(request.body);
     const { id } = this.verifyData.verifyId(request.params.id);
     const plan = await this.planService.update(id, parsedPlan);
-    return response.status(200).send(plan);
+
+    return response
+      .status(200)
+      .json({ message: "Plan updated successfully", data: plan});
   };
 
   deletePlan = async (request: Request, response: Response) => {
     const { id } = this.verifyData.verifyId(request.params.id);
-    const plan = await this.planService.delete(id);
-    return response.status(200).send(plan);
+    await this.planService.delete(id);
+
+    return response
+      .status(200)
+      .json({ message: "Plan deactivated successfully" });
   };
 }
