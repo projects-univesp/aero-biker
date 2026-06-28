@@ -72,7 +72,7 @@ export class AuthServices {
 
     // Always return 200 to prevent user enumeration
     if (!admin) {
-      return;
+      throw new AppError("Admin Required", 200);
     }
 
     const token = await this.tokenService.create(admin.id);
