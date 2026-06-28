@@ -70,7 +70,7 @@ export class VerifyData {
       dayOfWeek: z.number().min(0).max(6),
       startTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid start time format (HH:MM)"),
       endTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid end time format (HH:MM)"),
-      groupId: z.string().uuid(),
+      groupId: z.uuid(),
     }).parse(schedule);
   }
 
@@ -79,7 +79,7 @@ export class VerifyData {
       dayOfWeek: z.number().min(0).max(6),
       startTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid start time format (HH:MM)"),
       endTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid end time format (HH:MM)"),
-      groupId: z.string().uuid(),
+      groupId: z.uuid(),
     }).partial().parse(schedule);
   }
 
@@ -110,7 +110,7 @@ export class VerifyData {
       subscriptionValue: z.number().positive(),
       startDate: z.coerce.date(),
       renovationDate: z.coerce.date(),
-      status: z.enum(["ACTIVE", "INACTIVE", "CANCELLED"]),
+      status: z.enum(["PAID", "PENDING", "CANCELLED"]),
       paymentMethod: z.string().min(1),
     }).parse(subscription);
   }
@@ -122,7 +122,7 @@ export class VerifyData {
       subscriptionValue: z.number().positive(),
       startDate: z.coerce.date(),
       renovationDate: z.coerce.date(),
-      status: z.enum(["ACTIVE", "INACTIVE", "CANCELLED"]),
+      status: z.enum(["PAID", "PENDING", "CANCELLED"]),
       paymentMethod: z.string().min(1),
     }).partial().parse(subscription);
   }

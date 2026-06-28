@@ -52,7 +52,7 @@ export class DashboardService {
       }),
 
       Subscription.findAll({
-        where: { renovationDate: { [Op.between]: [startOfToday, in30Days] }, status: "ACTIVE" },
+        where: { renovationDate: { [Op.between]: [startOfToday, endOfMonth] }, status: "PAID" },
         include: [
           { model: Student, as: "student", attributes: ["name"] },
           { model: Plan, as: "plan", attributes: ["name"] },
