@@ -2,46 +2,55 @@ import { Academy } from "@models/academy";
 import { Admin } from "@models/admin";
 import { compareHashPasswords, generateHashPassword } from "@utils/encrypt";
 import { logger } from "@utils/logger";
-import { responseFormat } from "@utils/responseFormat";
-
-function makeError(message: string, statusCode: number): Error {
-  const err = new Error(message);
-  (err as Error & { statusCode: number }).statusCode = statusCode;
-  return err;
-}
-
-function safeAdmin(admin: Admin) {
-  const plain = admin.get({ plain: true }) as Record<string, unknown>;
-  const { password: _, ...rest } = plain;
-  return rest;
-}
+import { AppError } from "@utils/appError";
+import { AdminMapper } from "@mappers/admin";
 
 export class ConfigService {
+  private safeAdmin = AdminMapper.toSafeObject;
+
   getAcademy = async () => {
     const academy = await Academy.findOne();
-    return responseFormat.send({ statusCode: 200, message: "Academy retrieved", data: academy });
+    return academy;
   };
 
-  updateAcademy = async (data: { name?: string; cnpj?: string; phone?: string; address?: string }) => {
+  updateAcademy = async (data: {
+    name?: string;
+    cnpj?: string;
+    phone?: string;
+    address?: string;
+  }) => {
     const academy = await Academy.findOne();
-    if (!academy) throw makeError("Academia não encontrada", 404);
+    if (!academy) throw new AppError("Academia não encontrada", 404);
 
     await academy.update(data);
 
-    return responseFormat.send({ statusCode: 200, message: "Academia atualizada com sucesso", data: academy });
+    return academy;
   };
 
   listAdmins = async () => {
     const admins = await Admin.findAll({
-      attributes: ["id", "name", "email", "role", "isActive", "phone", "createdAt"],
+      attributes: [
+        "id",
+        "name",
+        "email",
+        "role",
+        "isActive",
+        "phone",
+        "createdAt",
+      ],
       order: [["createdAt", "ASC"]],
     });
-    return responseFormat.send({ statusCode: 200, message: "Admins retrieved", data: admins });
+    return admins;
   };
 
-  createAdmin = async (data: { name: string; email: string; password: string; role?: "ADMIN" | "USER" }) => {
+  createAdmin = async (data: {
+    name: string;
+    email: string;
+    password: string;
+    role?: "ADMIN" | "USER";
+  }) => {
     const existing = await Admin.findOne({ where: { email: data.email } });
-    if (existing) throw makeError("Email já cadastrado", 409);
+    if (existing) throw new AppError("Email já cadastrado", 409);
 
     const passwordHash = await generateHashPassword(data.password);
     const admin = await Admin.create({
@@ -54,44 +63,52 @@ export class ConfigService {
 
     logger.info(`ConfigService: admin ${admin.id} created`);
 
-    return responseFormat.send({ statusCode: 201, message: "Usuário criado com sucesso", data: safeAdmin(admin) });
+    return this.safeAdmin(admin)
   };
 
-  changePassword = async (adminId: string, currentPassword: string, newPassword: string) => {
+  changePassword = async (
+    adminId: string,
+    currentPassword: string,
+    newPassword: string,
+  ) => {
     const admin = await Admin.findByPk(adminId);
-    if (!admin) throw makeError("Usuário não encontrado", 404);
+    if (!admin) throw new AppError("Usuário não encontrado", 404);
 
     const valid = await compareHashPasswords(currentPassword, admin.password);
-    if (!valid) throw makeError("Senha atual incorreta", 401);
+    if (!valid) throw new AppError("Senha atual incorreta", 401);
 
     const passwordHash = await generateHashPassword(newPassword);
     await admin.update({ password: passwordHash });
 
     logger.info(`ConfigService: password changed for admin ${admin.id}`);
-
-    return responseFormat.send({ statusCode: 200, message: "Senha alterada com sucesso" });
   };
 
   deactivateAdmin = async (targetId: string, requesterId: string) => {
-    if (targetId === requesterId) throw makeError("Você não pode desativar sua própria conta", 400);
+    if (targetId === requesterId)
+      throw new AppError(
+        "Você não pode desativar sua própria conta",
+        400,
+      );
 
     const admin = await Admin.findByPk(targetId);
-    if (!admin) throw makeError("Usuário não encontrado", 404);
-    if (admin.role === "OWNER") throw makeError("Não é possível desativar o proprietário", 403);
+    if (!admin) throw new AppError("Usuário não encontrado", 404);
+    if (admin.role === "OWNER")
+      throw new AppError(
+        "Não é possível desativar o proprietário",
+        403,
+      );
 
     await admin.update({ isActive: false });
 
-    logger.info(`ConfigService: admin ${targetId} deactivated by ${requesterId}`);
-
-    return responseFormat.send({ statusCode: 200, message: "Usuário desativado com sucesso" });
+    logger.info(
+      `ConfigService: admin ${targetId} deactivated by ${requesterId}`,
+    );
   };
 
   reactivateAdmin = async (targetId: string) => {
     const admin = await Admin.findByPk(targetId);
-    if (!admin) throw makeError("Usuário não encontrado", 404);
+    if (!admin) throw new AppError("Usuário não encontrado", 404);
 
     await admin.update({ isActive: true });
-
-    return responseFormat.send({ statusCode: 200, message: "Usuário reativado com sucesso" });
   };
 }

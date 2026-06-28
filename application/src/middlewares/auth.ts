@@ -1,6 +1,6 @@
 import { IToken } from "@dtos/auth";
 import { env } from "@utils/env";
-import { responseFormat } from "@utils/responseFormat";
+import { AppError } from "@utils/appError";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
@@ -41,7 +41,7 @@ export const auth = (
   if (!token) {
     response
       .status(401)
-      .json(responseFormat.send({ message: "Token not provided", statusCode: 401 }));
+      .json({ message: "Token not provided", statusCode: 401 });
     return;
   }
 
@@ -49,7 +49,7 @@ export const auth = (
     if (err) {
       response
         .status(401)
-        .json(responseFormat.send({ message: "Invalid token", statusCode: 401 }));
+        .json({ message: "Invalid token", statusCode: 401 });
       return;
     }
     request.user = decoded as IToken;

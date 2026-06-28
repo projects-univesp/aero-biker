@@ -1,6 +1,6 @@
 import type { IToken } from "@dtos/auth";
 import { Admin } from "@models/admin";
-import { responseFormat } from "@utils/responseFormat";
+import { COOKIE_NAME } from "@utils/cookies";
 import { env } from "@utils/env";
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
@@ -23,9 +23,9 @@ function getSessionToken(req: Request): string | undefined {
   if (!cookieHeader) return undefined;
   const match = cookieHeader
     .split(";")
-    .find((c) => c.trim().startsWith("aero_session="));
+    .find((c) => c.trim().startsWith("COOKIE_NAME="));
   if (!match) return undefined;
-  return decodeURIComponent(match.trim().substring("aero_session=".length));
+  return decodeURIComponent(match.trim().substring("COOKIE_NAME=".length));
 }
 
 export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
@@ -48,7 +48,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
       res.locals.currentUser = { id: decoded.id, name: decoded.name, email: decoded.email, role: decoded.role };
       next();
     } catch {
-      res.clearCookie("aero_session");
+      res.clearCookie("COOKIE_NAME");
       res.redirect("/login");
     }
   } catch {
@@ -85,7 +85,7 @@ export const requireSetupComplete = async (req: Request, res: Response, next: Ne
 export const requireRole = (...roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role ?? "")) {
-      res.status(403).json(responseFormat.send({ statusCode: 403, message: "Acesso não autorizado" }));
+      res.status(403).json({ statusCode: 403, message: "Acesso não autorizado" });
       return;
     }
     next();

@@ -13,30 +13,49 @@ export class StudentController {
   createStudent = async (request: Request, response: Response) => {
     const parsedStudent = this.verifyData.verifyStudent(request.body);
     const student = await this.studentServices.create(parsedStudent);
-    return response.status(201).send(student);
+
+    return response.status(201).send({
+      message: "Student created succesfully",
+      data: student,
+    });
   };
 
   getStudent = async (request: Request, response: Response) => {
     const { id } = this.verifyData.verifyId(request.params.id);
     const student = await this.studentServices.get(id);
-    return response.status(200).send(student);
+
+    return response.status(200).send({
+      message: "Student found successfully",
+      data: student,
+    });
   };
 
   getAllStudents = async (request: Request, response: Response) => {
     const students = await this.studentServices.getAll();
-    return response.status(200).send(students);
+
+    return response.status(200).send({
+      message: "Students found successfully",
+      data: students,
+    });
   };
 
   updateStudent = async (request: Request, response: Response) => {
     const parsedStudent = this.verifyData.verifyStudentPartial(request.body);
     const { id } = this.verifyData.verifyId(request.params.id);
     const student = await this.studentServices.update(id, parsedStudent);
-    return response.status(200).send(student);
+
+    return response.status(200).send({
+      message: "Student updated succesfully",
+      data: student,
+    });
   };
 
   deleteStudent = async (request: Request, response: Response) => {
     const { id } = this.verifyData.verifyId(request.params.id);
-    const student = await this.studentServices.delete(id);
-    return response.status(200).send(student);
+    await this.studentServices.delete(id);
+
+    return response
+      .status(200)
+      .send({ message: "Student deactivated succesfully" });
   };
 }

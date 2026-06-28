@@ -3,7 +3,7 @@ import { Group } from "@models/group";
 import { Student } from "@models/student";
 import { Subscription } from "@models/subscription";
 import { logger } from "@utils/logger";
-import { responseFormat } from "@utils/responseFormat";
+import { AppError } from "@utils/appError";
 
 export class StudentServices {
   create = async (studentData: Partial<StudentDTO>) => {
@@ -11,57 +11,45 @@ export class StudentServices {
       where: { phone: studentData.phone },
     });
 
-    if (existingStudent > 0) responseFormat.error("Student Already exists", 409);
+    if (existingStudent > 0) throw new AppError("Student Already exists", 409);
 
     const group = await Group.findByPk(studentData.groupId);
-    if (!group) responseFormat.error("Group not found", 404);
+    if (!group) throw new AppError("Group not found", 404);
 
     const activeStudentsInGroup = await Student.count({
       where: { groupId: studentData.groupId, enrollment: "ACTIVE" },
     });
 
     if (activeStudentsInGroup >= group.maxCapacity) {
-      responseFormat.error("Group has reached maximum capacity", 400);
+      throw new AppError("Group has reached maximum capacity", 400);
     }
 
     const createStudent = await Student.create(studentData);
 
-    return responseFormat.send({
-      message: "Student created succesfully",
-      statusCode: 201,
-      data: createStudent,
-    });
+    return createStudent;
   };
 
   get = async (id: string) => {
     const student = await Student.findByPk(id);
-    if (student === null) responseFormat.error("Student not found", 404);
+    if (student === null) throw new AppError("Student not found", 404);
 
-    return responseFormat.send({
-      message: "Student found successfully",
-      statusCode: 200,
-      data: student,
-    });
+    return student
   };
 
   getAll = async () => {
     const students = await Student.findAll();
-    return responseFormat.send({
-      message: "Students found successfully",
-      statusCode: 200,
-      data: students,
-    });
+    return students;
   };
 
   update = async (id: string, studentData: Partial<StudentDTO>) => {
     const student = await Student.findByPk(id);
-    if (student === null) responseFormat.error("Student not found", 404);
+    if (student === null) throw new AppError("Student not found", 404);
     if (studentData.phone && studentData.phone !== student.phone) {
       const existingStudent = await Student.findOne({
         where: { phone: studentData.phone },
       });
 
-      if (existingStudent) responseFormat.error("Phone already in use", 409);
+      if (existingStudent) throw new AppError("Phone already in use", 409);
     }
 
     const changingGroup =
@@ -73,39 +61,30 @@ export class StudentServices {
       const targetGroupId = studentData.groupId || student.groupId;
 
       const group = await Group.findByPk(targetGroupId);
-      if (!group) responseFormat.error("Group not found", 404);
+      if (!group) throw new AppError("Group not found", 404);
 
       const activeStudentsInGroup = await Student.count({
         where: { groupId: targetGroupId, enrollment: "ACTIVE" },
       });
 
       if (activeStudentsInGroup >= group.maxCapacity) {
-        responseFormat.error("Group has reached maximum capacity", 400);
+        throw new AppError("Group has reached maximum capacity", 400);
       }
     }
 
     const updatedStudent = await student.update(studentData);
 
-    return responseFormat.send({
-      message: "Student updated succesfully",
-      statusCode: 200,
-      data: updatedStudent,
-    });
+    return updatedStudent;
   };
 
   delete = async (id: string) => {
     const student = await Student.findByPk(id);
-    if (student === null) responseFormat.error("Student not found", 404);
+    if (student === null) throw new AppError("Student not found", 404);
     await student.update({ isActive: false, enrollment: "INACTIVE" });
 
     await Subscription.update(
       { status: "CANCELLED" },
       { where: { studentId: id, status: "ACTIVE" } },
     );
-
-    return responseFormat.send({
-      message: "Student deactivated succesfully",
-      statusCode: 200,
-    });
   };
 }

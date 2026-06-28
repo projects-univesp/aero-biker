@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { responseFormat } from "@utils/responseFormat";
+import { AppError } from "@utils/appError";
 import { logger } from "@utils/logger";
 
 declare global {
@@ -25,9 +25,9 @@ export const errorHandler = (
 ) => {
   const zodMessage = extractZodMessage(error);
   if (zodMessage) {
-    response.status(400).json(
-      responseFormat.send({ statusCode: 400, message: zodMessage, data: null }),
-    );
+    response
+      .status(400)
+      .json({ statusCode: 400, message: zodMessage, data: null });
     return;
   }
 
@@ -36,21 +36,17 @@ export const errorHandler = (
   logger.error(`ERROR: ${error.statusCode} - ${error.message}`, error);
 
   if (error instanceof Error) {
-    response.status(status).json(
-      responseFormat.send({
-        statusCode: status,
-        message: error.message,
-        data: null,
-      }),
-    );
+    response.status(status).json({
+      statusCode: status,
+      message: error.message,
+      data: null,
+    });
     return;
   }
 
-  response.status(500).json(
-    responseFormat.send({
-      message: error?.message || "Internal Server Error",
-      statusCode: 500,
-      data: null,
-    }),
-  );
+  response.status(500).json({
+    message: error?.message || "Internal Server Error",
+    statusCode: 500,
+    data: null,
+  });
 };

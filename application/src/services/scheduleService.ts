@@ -2,20 +2,16 @@ import { ScheduleDTO } from "@dtos/schedule";
 import { Schedule } from "@models/schedules";
 import { Group } from "@models/group";
 import { logger } from "@utils/logger";
-import { responseFormat } from "@utils/responseFormat";
+import { AppError } from "@utils/appError";
 
 export class ScheduleService {
   create = async (scheduleData: Partial<ScheduleDTO>) => {
     const group = await Group.findByPk(scheduleData.groupId);
-    if (!group) responseFormat.error("Group not found", 404);
+    if (!group) throw new AppError("Group not found", 404);
 
     const createdSchedule = await Schedule.create(scheduleData);
 
-    return responseFormat.send({
-      message: "Schedule created successfully",
-      statusCode: 201,
-      data: createdSchedule,
-    });
+    return createdSchedule;
   };
 
   getAll = async () => { 
@@ -27,11 +23,7 @@ export class ScheduleService {
       ],
     });
 
-    return responseFormat.send({
-      message: "Schedules found successfully",
-      statusCode: 200,
-      data: schedules,
-    });
+    return schedules;
   };
 
   get = async (id: string) => {
@@ -39,42 +31,29 @@ export class ScheduleService {
       include: [{ model: Group, as: "group" }],
     });
 
-    if (schedule === null) responseFormat.error("Schedule not found", 404);
+    if (schedule === null) throw new AppError("Schedule not found", 404);
 
-    return responseFormat.send({
-      message: "Schedule found successfully",
-      statusCode: 200,
-      data: schedule,
-    });
+    return schedule;
   };
 
   update = async (id: string, scheduleData: Partial<ScheduleDTO>) => {
     const schedule = await Schedule.findByPk(id);
-    if (schedule === null) responseFormat.error("Schedule not found", 404);
+    if (schedule === null) throw new AppError("Schedule not found", 404);
 
     if (scheduleData.groupId) {
       const group = await Group.findByPk(scheduleData.groupId);
-      if (!group) responseFormat.error("Group not found", 404);
+      if (!group) throw new AppError("Group not found", 404);
     }
 
     const updatedSchedule = await schedule.update(scheduleData);
 
-    return responseFormat.send({
-      message: "Schedule updated successfully",
-      statusCode: 200,
-      data: updatedSchedule,
-    });
+    return updatedSchedule;
   };
 
   delete = async (id: string) => {
     const schedule = await Schedule.findByPk(id);
-    if (schedule === null) responseFormat.error("Schedule not found", 404);
+    if (schedule === null) throw new AppError("Schedule not found", 404);
 
-    await schedule.destroy(); 
-
-    return responseFormat.send({
-      message: "Schedule deleted successfully",
-      statusCode: 200,
-    });
+    await schedule.destroy();
   };
 }
