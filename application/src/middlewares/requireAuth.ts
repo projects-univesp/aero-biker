@@ -23,9 +23,9 @@ function getSessionToken(req: Request): string | undefined {
   if (!cookieHeader) return undefined;
   const match = cookieHeader
     .split(";")
-    .find((c) => c.trim().startsWith("COOKIE_NAME="));
+    .find((c) => c.trim().startsWith(`${COOKIE_NAME}=`));
   if (!match) return undefined;
-  return decodeURIComponent(match.trim().substring("COOKIE_NAME=".length));
+  return decodeURIComponent(match.trim().substring(`${COOKIE_NAME}=`.length));
 }
 
 export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
@@ -48,7 +48,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
       res.locals.currentUser = { id: decoded.id, name: decoded.name, email: decoded.email, role: decoded.role };
       next();
     } catch {
-      res.clearCookie("COOKIE_NAME");
+      res.clearCookie(COOKIE_NAME);
       res.redirect("/login");
     }
   } catch {

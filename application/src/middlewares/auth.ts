@@ -3,6 +3,7 @@ import { env } from "@utils/env";
 import { AppError } from "@utils/appError";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { COOKIE_NAME } from "@utils/cookies";
 
 declare global {
   namespace Express {
@@ -22,9 +23,9 @@ function extractToken(request: Request): string | undefined {
   if (cookieHeader) {
     const match = cookieHeader
       .split(";")
-      .find((c) => c.trim().startsWith("aero_session="));
+      .find((c) => c.trim().startsWith(`${COOKIE_NAME}=`));
     if (match) {
-      return decodeURIComponent(match.trim().substring("aero_session=".length));
+      return decodeURIComponent(match.trim().substring(`${COOKIE_NAME}=`.length));
     }
   }
 
