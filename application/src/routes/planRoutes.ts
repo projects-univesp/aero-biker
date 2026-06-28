@@ -7,7 +7,7 @@ import { renderApi } from "@middlewares/renderApi";
 const plan = new PlanController();
 
 export const apiPlanRoutes = Router()
-  //.use(auth)
+  .use(auth)
   .post("/", tryCatch(plan.createPlan))
   .get("/", tryCatch(plan.getAllPlans))
   .get("/:id", tryCatch(plan.getPlan))
