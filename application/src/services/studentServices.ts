@@ -33,11 +33,19 @@ export class StudentServices {
     const student = await Student.findByPk(id);
     if (student === null) throw new AppError("Student not found", 404);
 
-    return student
+    return student;
   };
 
   getAll = async () => {
-    const students = await Student.findAll();
+    const students = await Student.findAll({
+      include: [
+        {
+          model: Group,
+          as: "group",
+          attributes: ["name"],
+        },
+      ],
+    });
     return students;
   };
 

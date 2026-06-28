@@ -28,7 +28,13 @@
                     </td>
                     <td class="px-5 py-3.5 hidden md:table-cell">
                         <div class="flex flex-wrap gap-1">
-                            <span class="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-100">Teste</span>
+                            <span class="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full border border-green-100">
+                              {{#if this.group}}
+                                  {{this.group.name}}
+                                {{else}}
+                                  —
+                                {{/if}}
+                            </span>
                         </div>
                     </td>
                     <td class="px-5 py-3.5 hidden sm:table-cell">
