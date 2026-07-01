@@ -11,28 +11,28 @@
         title="Alunos Ativos"
         value=dashboard.totalStudents
         icon="icons/users"
-        color="bg-blue-50 text-blue-600"
+        color="bg-blue-500/10 text-blue-400 border border-blue-500/20"
       }}
 
       {{> dashCard
         title="Turmas"
         value=dashboard.totalClasses
         icon="icons/bike"
-        color="bg-green-50 text-green-600"
+        color="bg-green-500/10 text-green-400 border border-green-500/20"
       }}
 
       {{> dashCard
         title="Aulas Cadastradas"
         value=dashboard.totalLessons
         icon="icons/calendar"
-        color="bg-purple-50 text-purple-600"
+        color="bg-purple-500/10 text-purple-400 border border-purple-500/20"
       }}
 
       {{> dashCard
         title="Planos Ativos"
         value=dashboard.totalPlans
         icon="icons/cred-card"
-        color="bg-orange-50 text-orange-600"
+        color="bg-orange-500/10 text-orange-400 border border-orange-500/20"
       }}
     </div>
 
@@ -53,15 +53,15 @@
     {{! Charts row }}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
 
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h2 class="text-base font-semibold text-gray-900 mb-4">Alunos por Turma</h2>
+      <div class="bg-zinc-900 rounded-2xl p-6 shadow-xl border border-zinc-800">
+        <h2 class="text-base font-semibold text-zinc-100 mb-4">Alunos por Turma</h2>
         <div class="relative h-52" id="studentsPerGroupWrap">
           <canvas id="studentsPerGroupChart"></canvas>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-        <h2 class="text-base font-semibold text-gray-900 mb-4">Distribuição de Planos</h2>
+      <div class="bg-zinc-900 rounded-2xl p-6 shadow-xl border border-zinc-800">
+        <h2 class="text-base font-semibold text-zinc-100 mb-4">Distribuição de Planos</h2>
         <div class="relative h-52" id="planDistributionWrap">
           <canvas id="planDistributionChart"></canvas>
         </div>
@@ -87,6 +87,8 @@
   var studentsData = {{{toJSON dashboard.studentsPerGroup}}};
   var plansData    = {{{toJSON dashboard.planDistribution}}};
 
+  Chart.defaults.color = '#a1a1aa'; // Define a cor padrão dos textos do gráfico para zinc-400
+
   // Bar chart — Alunos por Turma
   var barCanvas = document.getElementById('studentsPerGroupChart');
   var barWrap   = document.getElementById('studentsPerGroupWrap');
@@ -110,18 +112,18 @@
         scales: {
           y: {
             beginAtZero: true,
-            ticks: { stepSize: 1, font: { size: 11 } },
-            grid: { color: 'rgba(0,0,0,0.05)' }
+            ticks: { stepSize: 1, font: { size: 11 }, color: '#a1a1aa' },
+            grid: { color: 'rgba(255, 255, 255, 0.05)' } // Linhas de grade mais claras
           },
           x: {
-            ticks: { maxRotation: 45, font: { size: 9 } },
+            ticks: { maxRotation: 45, font: { size: 9 }, color: '#a1a1aa' },
             grid: { display: false }
           }
         }
       }
     });
   } else if (barWrap) {
-    barWrap.innerHTML = '<p class="text-sm text-gray-400 text-center pt-10">Nenhuma turma ativa encontrada.</p>';
+    barWrap.innerHTML = '<p class="text-sm text-zinc-500 text-center pt-10">Nenhuma turma ativa encontrada.</p>';
   }
 
   // Pie chart — Distribuição de Planos
@@ -136,7 +138,7 @@
           data: plansData.map(function(d){ return d.count; }),
           backgroundColor: ['#3b82f6', '#f97316', '#f59e0b', '#8b5cf6', '#22c55e', '#ec4899'],
           borderWidth: 2,
-          borderColor: '#fff',
+          borderColor: '#18181b', // Mesma cor do bg-zinc-900 para o vão entre as fatias
         }]
       },
       options: {
@@ -145,13 +147,13 @@
         plugins: {
           legend: {
             position: 'bottom',
-            labels: { font: { size: 11 }, padding: 12 }
+            labels: { font: { size: 11 }, padding: 12, color: '#a1a1aa' }
           }
         }
       }
     });
   } else if (pieWrap) {
-    pieWrap.innerHTML = '<p class="text-sm text-gray-400 text-center pt-10">Nenhum plano com assinatura ativa.</p>';
+    pieWrap.innerHTML = '<p class="text-sm text-zinc-500 text-center pt-10">Nenhum plano com assinatura ativa.</p>';
   }
 })();
 </script>

@@ -7,7 +7,6 @@ export class Group extends Model {
   declare name: string;
   declare maxCapacity: number;
   declare daysOfWeek: string;
-  declare time: string;
   declare isActive: boolean;
 }
 
@@ -28,10 +27,6 @@ Group.init(
     },
     daysOfWeek: {
       type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    time: {
-      type: DataTypes.STRING(20),
       allowNull: false,
     },
     isActive: {

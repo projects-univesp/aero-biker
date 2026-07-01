@@ -7,3 +7,4 @@ migrations
 application/dist/
 dist/
 requests.http
+llm.sh

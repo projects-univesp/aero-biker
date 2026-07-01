@@ -41,12 +41,20 @@ document.addEventListener("DOMContentLoaded", () => {
       currentFilter = e.target.getAttribute("data-filter");
 
       filterBtns.forEach((b) => {
-        b.classList.remove("bg-green-500", "text-white");
-        b.classList.add("bg-white", "text-gray-600");
+        b.classList.remove("bg-green-500", "text-white", "border-green-500");
+        b.classList.add("bg-zinc-900", "text-zinc-400", "border-zinc-800");
       });
 
-      e.target.classList.remove("bg-white", "text-gray-600");
-      e.target.classList.add("bg-green-500", "text-white");
+      e.currentTarget.classList.remove(
+        "bg-zinc-900",
+        "text-zinc-400",
+        "border-zinc-800",
+      );
+      e.currentTarget.classList.add(
+        "bg-green-500",
+        "text-white",
+        "border-green-500",
+      );
 
       filterTable();
     });

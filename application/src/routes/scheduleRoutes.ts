@@ -17,7 +17,7 @@ export const apiScheduleRoutes = Router()
 // SSR ROUTES
 export const scheduleRoutes = Router().get(
   "/",
-  renderApi("/api/schedules", "pages/schedules/index", "schedules", {
+  renderApi(["/api/schedules", "/api/groups"], "pages/schedules/index", ["schedules", "groups"], {
     emptyMessage: "Nenhuma aula cadastrada até o momento.",
     category: "Agenda de Aulas.",
   }),

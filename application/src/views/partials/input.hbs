@@ -1,4 +1,4 @@
 <div>
-  <label class="text-sm font-medium text-gray-700 block mb-1.5">{{label}}</label>
-  <input type="text" placeholder="{{placeholder}}" id="{{id}}" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
+  <label class="text-sm font-medium text-zinc-400 block mb-1.5">{{label}}</label>
+  <input type="text" placeholder="{{placeholder}}" id="{{id}}" {{#if required}}required{{/if}} class="w-full border border-zinc-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 bg-zinc-900/50 text-zinc-100 placeholder-zinc-500 transition-colors">
 </div>

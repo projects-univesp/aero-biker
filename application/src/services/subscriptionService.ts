@@ -4,11 +4,12 @@ import { logger } from "@utils/logger";
 import { AppError } from "@utils/appError";
 import { Student } from "@models/student";
 import { Plan } from "@models/plan";
+import { Op } from "sequelize";
 
 export class SubscriptionService {
   create = async (subscriptionData: Partial<SubscriptionDTO>) => {
     const existingSubscription = await Subscription.count({
-      where: { studentId: subscriptionData.studentId, status: "ACTIVE" },
+      where: { studentId: subscriptionData.studentId, status: { [Op.ne]: "CANCELLED" } },
     });
 
     if (existingSubscription > 0)

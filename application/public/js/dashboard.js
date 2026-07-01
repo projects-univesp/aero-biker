@@ -11,8 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const planRows = document.querySelectorAll(".plan-row");
   const paymentRows = document.querySelectorAll(".payment-row");
   const dashboardCounters = document.getElementById("dashboard-counters");
-  const dashboardSubtitle = document.getElementById("dashboard-subtitle")
-
+  const dashboardSubtitle = document.getElementById("dashboard-subtitle");
+  const urlParams = new URLSearchParams(window.location.search);
+  const searchQuery = urlParams.get("q");
+  
   const activeGroupsCount = Array.from(groupRows).filter(
     (row) => row.getAttribute("data-status") === "active",
   ).lenght;
@@ -27,4 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (dashboardSubtitle) {
     dashboardSubtitle.textContent = `Visão Geral — ${formatDate()}`;
   }
-})
+
+  if (searchQuery) {
+    const searchInput = document.getElementById("search-input");
+    if (searchInput) {
+      searchInput.value = searchQuery;
+      searchInput.dispatchEvent(new Event("input"));
+    }
+  }
+});
