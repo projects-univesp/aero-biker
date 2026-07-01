@@ -15,22 +15,16 @@
     <div>
         <label class="text-sm font-medium text-gray-700 block mb-1.5">Dia da semana*</label>
         <select id="schedule-day" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white">
-            <option value="">Selecione o dia</option>
-            <option value="0">Domingo</option>
-            <option value="1">Segunda-feira</option>
-            <option value="2">Terça-feira</option>
-            <option value="3">Quarta-feira</option>
-            <option value="4">Quinta-feira</option>
-            <option value="5">Sexta-feira</option>
-            <option value="6">Sábado</option>
+          <option value="">Selecione o dia</option>
+          <option value="Dom">Domingo</option>
+          <option value="Seg">Segunda-feira</option>
+          <option value="Ter">Terça-feira</option>
+          <option value="Qua">Quarta-feira</option>
+          <option value="Qui">Quinta-feira</option>
+          <option value="Sex">Sexta-feira</option>
+          <option value="Sab">Sábado</option>
         </select>
     </div>
-    <div>
-        <label class="text-sm font-medium text-gray-700 block mb-1.5">Horário início*</label>
-        <input type="time" id="schedule-start" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
-    </div>
-    <div>
-        <label class="text-sm font-medium text-gray-700 block mb-1.5">Horário fim*</label>
-        <input type="time" id="schedule-end" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-300">
-    </div>
+
+    {{> timePicker name="Horário das aulas" id-start="schedule-start" id-end="schedule-end"}}
 {{/modal}}

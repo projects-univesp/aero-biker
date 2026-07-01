@@ -4,7 +4,7 @@ import { DataTypes, Model } from "sequelize";
 
 export class Schedule extends Model {
   declare id: UUID;
-  declare dayOfWeek: number;
+  declare dayOfWeek: string;
   declare startTime: string;
   declare endTime: string;
   declare groupId: UUID;
@@ -18,7 +18,7 @@ Schedule.init(
       defaultValue: DataTypes.UUIDV4,
     },
     dayOfWeek: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     startTime: {

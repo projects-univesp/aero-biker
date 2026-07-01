@@ -6,7 +6,6 @@
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Nome</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Capacidade</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Dias</th>
-                    <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Horário</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Status</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ações</th>
                 </tr>
@@ -22,9 +21,6 @@
                     </td>
                     <td class="px-5 py-3.5 hidden md:table-cell">
                         <p class="text-sm text-gray-600">{{this.daysOfWeek}}</p>
-                    </td>
-                    <td class="px-5 py-3.5 hidden sm:table-cell">
-                        <p class="font-medium text-sm text-gray-900">{{this.time}}</p>
                     </td>
                     <td class="px-5 py-3.5 hidden md:table-cell">
                         {{#if this.isActive}}

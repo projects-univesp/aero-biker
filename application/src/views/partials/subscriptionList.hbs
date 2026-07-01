@@ -2,7 +2,7 @@
     <div class="overflow-x-auto">
         <table class="w-full">
             <thead class="bg-gray-50 border-b border-gray-100">
-                <tr>
+              <tr class="subscription-row hover:bg-gray-50 transition-colors" data-status="{{this.status}}" data-date="{{this.renovationDate}}">
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Aluno</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Plano</th>
                     <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Valor</th>

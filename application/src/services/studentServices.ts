@@ -4,6 +4,7 @@ import { Student } from "@models/student";
 import { Subscription } from "@models/subscription";
 import { logger } from "@utils/logger";
 import { AppError } from "@utils/appError";
+import { Op } from "sequelize";
 
 export class StudentServices {
   create = async (studentData: Partial<StudentDTO>) => {
@@ -92,7 +93,7 @@ export class StudentServices {
 
     await Subscription.update(
       { status: "CANCELLED" },
-      { where: { studentId: id, status: "ACTIVE" } },
+      { where: { studentId: id, status: { [Op.ne]: "CANCELLED" } } },
     );
   };
 }

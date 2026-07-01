@@ -1,95 +1,50 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  // Counters
   const rows = document.querySelectorAll(".subscription-row");
   const countersDisplay = document.getElementById("subscription-counters");
-  const activeCount = Array.from(rows).filter(
-    (row) => row.getAttribute("data-status") === "ACTIVE",
-  ).length;
-  if (countersDisplay) {
-    countersDisplay.textContent = `${activeCount} ativas • ${rows.length} total`;
+  const searchInput = document.getElementById("search-input");
+  const monthFilter = document.getElementById("month-filter");
+  
+  // Função mestre de filtro
+  function filterAndCount() {
+    const term = searchInput ? searchInput.value.toLowerCase() : "";
+    const selectedMonth = monthFilter ? monthFilter.value : ""; // "2026-07"
+    let counts = { all: 0, PAID: 0, PENDING: 0, CANCELLED: 0 };
+
+    rows.forEach((row) => {
+      // Usamos atributos de dados (data-*) para filtrar, pois são fixos
+      const studentName = row.querySelector(".student-name")?.textContent?.toLowerCase() || "";
+      const status = row.getAttribute("data-status");
+      
+      // Captura a data da linha (assumindo que você colocou data-date na <tr>)
+      const rawDate = row.getAttribute("data-date") || "";
+      const rowMonth = rawDate.substring(0, 7); 
+
+      const matchesSearch = studentName.includes(term);
+      const matchesMonth = selectedMonth === "" || rowMonth === selectedMonth;
+
+      if (matchesSearch && matchesMonth) {
+        counts.all++;
+        if (counts[status] !== undefined) counts[status]++;
+        row.style.display = ""; // Mostra
+      } else {
+        row.style.display = "none"; // Esconde
+      }
+    });
+
+    // Atualiza contadores
+    if (countersDisplay) countersDisplay.textContent = `${counts.all} filtradas • ${rows.length} total`;
+    
+    // Atualiza badges dos botões
+    Object.keys(counts).forEach(key => {
+      const el = document.getElementById(`count-${key.toLowerCase()}`);
+      if(el) el.textContent = counts[key];
+    });
   }
 
-  const origHandleOpen = window.handleOpen;
-  window.handleOpen = (id, config) => {
-    const promise =
-      typeof origHandleOpen === "function"
-        ? origHandleOpen(id, config)
-        : Promise.resolve();
-
-    if (config === window.APP_CONFIG?.SUBSCRIPTIONS) {
-      Promise.resolve(promise).then(() => {
-        const startDateEl = document.getElementById("subscription-start-date");
-        const renDateEl = document.getElementById(
-          "subscription-renovation-date",
-        );
-
-        if (id) {
-          if (startDateEl?.value?.includes("T"))
-            startDateEl.value = startDateEl.value.split("T")[0];
-          if (renDateEl?.value?.includes("T"))
-            renDateEl.value = renDateEl.value.split("T")[0];
-        } else {
-          const today = new Date().toISOString().split("T")[0]; 
-          if (startDateEl) startDateEl.value = today;
-        }
-      });
-    }
-  };
-
-  // Load students and plans: populate selects + enrich table display
-  try {
-    const [studentsRes, plansRes] = await Promise.all([
-      fetch("/api/students"),
-      fetch("/api/plans"),
-    ]);
-
-    if (studentsRes.ok) {
-      const { data: students } = await studentsRes.json();
-      const studentMap = Object.fromEntries(
-        students.map((s) => [s.id, s.name]),
-      );
-
-      const studentSelect = document.getElementById("subscription-student");
-      if (studentSelect) {
-        students
-          .filter((s) => s.isActive)
-          .forEach((s) => {
-            const opt = document.createElement("option");
-            opt.value = s.id;
-            opt.textContent = s.name;
-            studentSelect.appendChild(opt);
-          });
-      }
-
-      document
-        .querySelectorAll(".student-name[data-student-id]")
-        .forEach((el) => {
-          const name = studentMap[el.dataset.studentId];
-          if (name) el.textContent = name;
-        });
-    }
-
-    if (plansRes.ok) {
-      const { data: plans } = await plansRes.json();
-      const planMap = Object.fromEntries(plans.map((p) => [p.id, p.name]));
-
-      const planSelect = document.getElementById("subscription-plan");
-      if (planSelect) {
-        plans.forEach((p) => {
-            const opt = document.createElement("option");
-            opt.value = p.id;
-            opt.textContent = `${p.name} — R$ ${Number(p.price).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-            if (!p.isActive) opt.disabled = true;
-            planSelect.appendChild(opt);
-          });
-      }
-
-      document.querySelectorAll(".plan-name[data-plan-id]").forEach((el) => {
-        const name = planMap[el.dataset.planId];
-        if (name) el.textContent = name;
-      });
-    }
-  } catch (e) {
-    console.error("[Subscription] Falha ao carregar dados:", e);
-  }
+  // Eventos
+  searchInput?.addEventListener("input", filterAndCount);
+  monthFilter?.addEventListener("change", filterAndCount);
+  
+  // Inicialização forçada após um breve delay para garantir que os nomes foram carregados
+  setTimeout(filterAndCount, 500); 
 });

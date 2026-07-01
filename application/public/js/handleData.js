@@ -61,6 +61,21 @@ export default class HandleData {
         if (el) payload[apiKey] = el.checked;
       }
     }
+    if (this.config.checkboxGroups) {
+      for (const [apiKey, containerId] of Object.entries(
+        this.config.checkboxGroups,
+      )) {
+        const container = document.getElementById(containerId);
+        if (container) {
+          const checkedValues = Array.from(
+            container.querySelectorAll("input:checked"),
+          )
+            .map((el) => el.value)
+            .join(",");
+          payload[apiKey] = checkedValues;
+        }
+      }
+    }
     return payload;
   }
 
