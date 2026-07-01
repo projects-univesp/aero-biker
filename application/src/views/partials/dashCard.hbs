@@ -1,19 +1,11 @@
-<div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-  <div
-    class="w-10 h-10 rounded-xl {{#if color}}{{color}}{{else}}bg-blue-50 text-blue-600{{/if}} flex items-center justify-center mb-3"
-  >
+<div class="bg-zinc-900 rounded-2xl p-5 shadow-xl border border-zinc-800">
+  <div class="w-10 h-10 rounded-xl {{#if color}}{{color}}{{else}}bg-zinc-800 text-zinc-400{{/if}} flex items-center justify-center mb-3">
       {{> (lookup . "icon") }}
   </div>
-
-  <p class="text-2xl font-bold text-gray-900">
-    {{#if value}}
-      {{value}}
-    {{else}}
-        0
-    {{/if}}
+  <p class="text-2xl font-bold text-zinc-100">
+    {{#if value}}{{value}}{{else}}0{{/if}}
   </p>
-
-  <p class="text-sm text-gray-500 mt-1">
+  <p class="text-sm text-zinc-400 mt-1">
     {{title}}
   </p>
 </div>

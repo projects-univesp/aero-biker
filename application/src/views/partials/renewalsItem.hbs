@@ -1,17 +1,11 @@
-<a
-  href="/subscriptions"
-  class="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 hover:bg-gray-100 hover:shadow-sm transition-all cursor-pointer block"
->
+<a href="/subscriptions" class="flex items-center justify-between rounded-xl bg-zinc-800/40 border border-zinc-800/50 px-4 py-3 hover:bg-zinc-800 hover:shadow-md transition-all cursor-pointer block">
   <div>
-    <p class="font-medium text-gray-900">
-      {{student}}
-    </p>
-    <p class="text-sm text-gray-500 mt-0.5">
-      Plano {{plan}} <span class="text-gray-300 mx-1">•</span> <span class="font-semibold text-green-600">R$ {{value}}</span>
+    <p class="font-medium text-zinc-100">{{student}}</p>
+    <p class="text-sm text-zinc-400 mt-0.5">
+      Plano {{plan}} <span class="text-zinc-600 mx-1">•</span> <span class="font-semibold text-green-400">R$ {{value}}</span>
     </p>
   </div>
-
-  <span class="text-xs font-medium text-gray-500 bg-white border border-gray-200 px-2 py-1 rounded-md">
+  <span class="text-xs font-medium text-zinc-400 bg-zinc-900 border border-zinc-700 px-2 py-1 rounded-md">
     {{expiresAt}}
   </span>
 </a>

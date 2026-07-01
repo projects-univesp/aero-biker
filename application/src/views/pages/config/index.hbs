@@ -4,60 +4,60 @@
   <div class="max-w-2xl space-y-6">
 
     <div>
-      <h1 class="text-xl font-semibold text-gray-900">Configurações</h1>
-      <p class="text-sm text-gray-500 mt-1">Gerencie os dados da academia e sua senha de acesso.</p>
+      <h1 class="text-xl font-semibold text-zinc-100">Configurações</h1>
+      <p class="text-sm text-zinc-500 mt-1">Gerencie os dados da academia e sua senha de acesso.</p>
     </div>
 
     {{!-- Academia --}}
-    <div class="bg-white border border-gray-200 rounded-2xl p-6">
-      <h2 class="text-base font-semibold text-gray-900 mb-4">Dados da Academia</h2>
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl p-6">
+      <h2 class="text-base font-semibold text-zinc-100 mb-4">Dados da Academia</h2>
 
-      <div id="academy-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm"></div>
-      <div id="academy-success" class="hidden mb-4 p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm"></div>
+      <div id="academy-error" class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm"></div>
+      <div id="academy-success" class="hidden mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-xl text-green-400 text-sm"></div>
 
       <form id="academy-form" class="space-y-4" novalidate>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1.5">Nome da academia</label>
+          <label class="block text-sm font-medium text-zinc-400 mb-1.5">Nome da academia</label>
           <input
             id="academy-name"
             type="text"
             value="{{academy.name}}"
             placeholder="Nome da academia"
-            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white"
+            class="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-xl text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-colors"
           >
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">CNPJ</label>
+            <label class="block text-sm font-medium text-zinc-400 mb-1.5">CNPJ</label>
             <input
               id="academy-cnpj"
               type="text"
               value="{{academy.cnpj}}"
               placeholder="00.000.000/0000-00"
-              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white"
+              class="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-xl text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-colors"
             >
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1.5">Telefone</label>
+            <label class="block text-sm font-medium text-zinc-400 mb-1.5">Telefone</label>
             <input
               id="academy-phone"
               type="text"
               value="{{academy.phone}}"
               placeholder="(00) 00000-0000"
-              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white"
+              class="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-xl text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-colors"
             >
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1.5">Endereço</label>
+          <label class="block text-sm font-medium text-zinc-400 mb-1.5">Endereço</label>
           <input
             id="academy-address"
             type="text"
             value="{{academy.address}}"
             placeholder="Rua, número, bairro, cidade"
-            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white"
+            class="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-xl text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-colors"
           >
         </div>
 
@@ -66,7 +66,7 @@
             id="academy-btn"
             type="submit"
             data-label="Salvar alterações"
-            class="px-6 py-2.5 bg-green-500 hover:bg-green-400 text-white font-semibold rounded-xl text-sm transition-colors disabled:opacity-50"
+            class="px-6 py-2.5 bg-green-500 hover:bg-green-400 text-white font-semibold rounded-xl text-sm transition-colors shadow-lg shadow-green-900/20 disabled:opacity-50"
           >
             Salvar alterações
           </button>
@@ -75,32 +75,32 @@
     </div>
 
     {{!-- Alterar senha --}}
-    <div id="change-password" class="bg-white border border-gray-200 rounded-2xl p-6">
-      <h2 class="text-base font-semibold text-gray-900 mb-4">Alterar senha</h2>
+    <div id="change-password" class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl p-6">
+      <h2 class="text-base font-semibold text-zinc-100 mb-4">Alterar senha</h2>
 
-      <div id="password-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm"></div>
-      <div id="password-success" class="hidden mb-4 p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm"></div>
+      <div id="password-error" class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm"></div>
+      <div id="password-success" class="hidden mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-xl text-green-400 text-sm"></div>
 
       <form id="password-form" class="space-y-4" novalidate>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1.5">Senha atual</label>
+          <label class="block text-sm font-medium text-zinc-400 mb-1.5">Senha atual</label>
           <input
             id="current-password"
             type="password"
             autocomplete="current-password"
             placeholder="••••••••"
-            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white"
+            class="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-xl text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-colors"
           >
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1.5">Nova senha</label>
+          <label class="block text-sm font-medium text-zinc-400 mb-1.5">Nova senha</label>
           <input
             id="new-password"
             type="password"
             autocomplete="new-password"
             placeholder="Mínimo 8 caracteres"
-            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-300 bg-white"
+            class="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-xl text-zinc-100 text-sm placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500 transition-colors"
           >
         </div>
 
@@ -109,7 +109,7 @@
             id="password-btn"
             type="submit"
             data-label="Alterar senha"
-            class="px-6 py-2.5 bg-green-500 hover:bg-green-400 text-white font-semibold rounded-xl text-sm transition-colors disabled:opacity-50"
+            class="px-6 py-2.5 bg-green-500 hover:bg-green-400 text-white font-semibold rounded-xl text-sm transition-colors shadow-lg shadow-green-900/20 disabled:opacity-50"
           >
             Alterar senha
           </button>
@@ -119,23 +119,23 @@
 
     {{!-- Link para gerenciar usuários --}}
     {{#if (eq currentUser.role "OWNER")}}
-    <a href="/config/users" class="flex items-center justify-between bg-white border border-gray-200 rounded-2xl p-5 hover:border-green-300 transition-colors group">
+    <a href="/config/users" class="flex items-center justify-between bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl p-5 hover:border-green-500/50 transition-colors group">
       <div>
-        <p class="font-medium text-gray-900 text-sm">Gerenciar usuários</p>
-        <p class="text-xs text-gray-500 mt-0.5">Adicionar ou desativar contas de acesso ao sistema</p>
+        <p class="font-medium text-zinc-100 text-sm">Gerenciar usuários</p>
+        <p class="text-xs text-zinc-500 mt-0.5">Adicionar ou desativar contas de acesso ao sistema</p>
       </div>
-      <svg class="w-5 h-5 text-gray-400 group-hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-5 h-5 text-zinc-500 group-hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
       </svg>
     </a>
     {{/if}}
     {{#if (eq currentUser.role "ADMIN")}}
-    <a href="/config/users" class="flex items-center justify-between bg-white border border-gray-200 rounded-2xl p-5 hover:border-green-300 transition-colors group">
+    <a href="/config/users" class="flex items-center justify-between bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl p-5 hover:border-green-500/50 transition-colors group">
       <div>
-        <p class="font-medium text-gray-900 text-sm">Gerenciar usuários</p>
-        <p class="text-xs text-gray-500 mt-0.5">Adicionar ou desativar contas de acesso ao sistema</p>
+        <p class="font-medium text-zinc-100 text-sm">Gerenciar usuários</p>
+        <p class="text-xs text-zinc-500 mt-0.5">Adicionar ou desativar contas de acesso ao sistema</p>
       </div>
-      <svg class="w-5 h-5 text-gray-400 group-hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-5 h-5 text-zinc-500 group-hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
       </svg>
     </a>

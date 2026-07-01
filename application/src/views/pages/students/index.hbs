@@ -7,9 +7,9 @@
         <div class="flex flex-col sm:flex-row gap-3">
             {{> search tagId="search-input" tagPlaceholder="Buscar aluno..."}}
             <div class="flex gap-2">
-                <button id="btn-all" data-filter="all" class="filter-btn px-4 py-2.5 rounded-xl text-sm font-medium capitalize transition-colors bg-green-500 text-white">todos</button>
-                <button id="btn-active" data-filter="active" class="filter-btn px-4 py-2.5 rounded-xl text-sm font-medium capitalize transition-colors bg-white border border-gray-200 text-gray-600 hover:bg-gray-50">ativos</button>
-                <button id="btn-inactive" data-filter="inactive" class="filter-btn px-4 py-2.5 rounded-xl text-sm font-medium capitalize transition-colors bg-white border border-gray-200 text-gray-600 hover:bg-gray-50">inativos</button>
+                <button id="btn-all" data-filter="all" class="filter-btn px-4 py-2.5 rounded-xl text-sm font-medium capitalize transition-colors bg-green-500 text-white border border-green-500">todos</button>
+                <button id="btn-active" data-filter="active" class="filter-btn px-4 py-2.5 rounded-xl text-sm font-medium capitalize transition-colors bg-zinc-900 border border-zinc-800 text-zinc-400 hover:bg-zinc-800">ativos</button>
+                <button id="btn-inactive" data-filter="inactive" class="filter-btn px-4 py-2.5 rounded-xl text-sm font-medium capitalize transition-colors bg-zinc-900 border border-zinc-800 text-zinc-400 hover:bg-zinc-800">inativos</button>
             </div>
         </div>
         {{#if isEmpty}}

@@ -1,13 +1,10 @@
 {{#if isEmpty}}
-  <section class="rounded-2xl border border-dashed border-gray-200 bg-white p-8 text-center">
-    <h2 class="text-lg font-semibold text-gray-900">
+  <section class="rounded-2xl border border-dashed border-zinc-700 bg-zinc-900/50 p-8 text-center">
+    <h2 class="text-lg font-semibold text-zinc-200">
       {{emptyMessage}}
     </h2>
-
     {{#if category}}
-      <p class="mt-2 text-sm text-gray-500">
-        Categoria: {{category}}
-      </p>
+      <p class="mt-2 text-sm text-zinc-500">Categoria: {{category}}</p>
     {{/if}}
   </section>
 {{/if}}
