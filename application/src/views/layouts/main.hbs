@@ -2,11 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#09090b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/img/aero-biker.png.avif">
+
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <link rel="icon" type="image/png" href="/img/favicon/favicon.ico">
   <title>AEROBIC BIKER</title>
+
+  <style>
+    @media (max-width: 768px) {
+      /* Chrome, Safari, Opera */
+      ::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+      }
+      /* Firefox, IE e Edge */
+      * {
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+      }
+    }
+  </style>
 </head>
 <body class="h-screen flex flex-col bg-zinc-950 text-zinc-100 antialiased">
   <section class="flex flex-1 overflow-hidden">

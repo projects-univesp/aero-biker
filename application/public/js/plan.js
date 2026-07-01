@@ -27,25 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function calculateCardTotals() {
     const summaryCards = document.querySelectorAll(".plan-summary-card");
 
-    // Nosso dicionário mapeando cada modalidade para as suas classes de cor no Tailwind
-    const colorMap = {
-      Mensal: ["bg-blue-100", "text-blue-700"],
-      Trimestral: ["bg-green-100", "text-green-700"],
-      Semestral: ["bg-purple-100", "text-purple-700"],
-      Anual: ["bg-orange-100", "text-orange-700"],
-    };
-
     summaryCards.forEach((card) => {
       const modality = card.getAttribute("data-modality");
-
-      const badge = card.querySelector(".modality-badge");
-      if (badge) {
-        if (colorMap[modality]) {
-          badge.classList.add(...colorMap[modality]);
-        } else {
-          badge.classList.add("bg-gray-100", "text-gray-700");
-        }
-      }
 
       const modRows = Array.from(rows).filter(
         (row) => row.getAttribute("data-duration") === modality,
@@ -94,12 +77,20 @@ document.addEventListener("DOMContentLoaded", () => {
       currentFilter = e.target.getAttribute("data-filter");
 
       filterBtns.forEach((b) => {
-        b.classList.remove("bg-green-500", "text-white");
-        b.classList.add("bg-white", "text-gray-600");
+        b.classList.remove("bg-green-500", "text-white", "border-green-500");
+        b.classList.add("bg-zinc-900", "text-zinc-400", "border-zinc-800");
       });
 
-      e.target.classList.remove("bg-white", "text-gray-600");
-      e.target.classList.add("bg-green-500", "text-white");
+      e.currentTarget.classList.remove(
+        "bg-zinc-900",
+        "text-zinc-400",
+        "border-zinc-800",
+      );
+      e.currentTarget.classList.add(
+        "bg-green-500",
+        "text-white",
+        "border-green-500",
+      );
 
       filterTable();
     });

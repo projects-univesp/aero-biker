@@ -1,0 +1,30 @@
+{
+  "name": "Aerobic Biker - Sistema de Gestão",
+  "short_name": "Aerobic Biker",
+  "description": "Sistema de gestão de alunos e mensalidades para Spinning Bike.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/img/aero-biker.png.avif",
+      "sizes": "192x192",
+      "type": "image/avif",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/aero-biker.png.avif",
+      "sizes": "512x512",
+      "type": "image/avif",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/aero-biker.png.avif",
+      "sizes": "512x512",
+      "type": "image/avif",
+      "purpose": "maskable"
+    }
+  ]
+}
