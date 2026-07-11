@@ -15,4 +15,5 @@ export const apiConfigRoutes = Router()
   .post("/users", requireRole("OWNER", "ADMIN"), tryCatch(config.createAdmin))
   .patch("/users/:id/deactivate", requireRole("OWNER", "ADMIN"), tryCatch(config.deactivateAdmin))
   .patch("/users/:id/reactivate", requireRole("OWNER", "ADMIN"), tryCatch(config.reactivateAdmin))
-  .post("/change-password", tryCatch(config.changePassword));
+  .post("/change-password", tryCatch(config.changePassword))
+  .get("/export/general", requireRole("OWNER", "ADMIN"), tryCatch(config.exportGeneralReport));
