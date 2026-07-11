@@ -267,7 +267,7 @@ export class VerifyData {
         name: z.string().min(2).max(50),
         email: z.email().max(100),
         password: z.string().min(8).max(72),
-        role: z.enum(["ADMIN", "USER"]).default("USER"),
+        role: z.enum(["OWNER", "ADMIN", "USER"]).default("ADMIN"),
       })
       .parse(data);
   }

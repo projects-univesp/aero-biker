@@ -47,7 +47,7 @@ export class ConfigService {
     name: string;
     email: string;
     password: string;
-    role?: "ADMIN" | "USER";
+    role?: "OWNER" | "ADMIN" | "USER";
   }) => {
     const existing = await Admin.findOne({ where: { email: data.email } });
     if (existing) throw new AppError("Email já cadastrado", 409);
@@ -58,7 +58,7 @@ export class ConfigService {
       email: data.email,
       password: passwordHash,
       isActive: true,
-      role: data.role ?? "USER",
+      role: data.role ?? "ADMIN",
     });
 
     logger.info(`ConfigService: admin ${admin.id} created`);

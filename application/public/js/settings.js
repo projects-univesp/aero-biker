@@ -125,3 +125,11 @@ window.handleReactivate = async (id) => {
     alert(err.message);
   }
 };
+
+// ── Export Data ───────────────────────────────────────────────────────────────
+const exportGeneralBtn = document.getElementById('export-general-btn');
+if (exportGeneralBtn) {
+  exportGeneralBtn.addEventListener('click', () => {
+    window.location.href = '/api/config/export/general';
+  });
+}
